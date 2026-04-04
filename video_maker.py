@@ -85,7 +85,7 @@ SPORT_IDENTITY = {
     },
     "transfer": {
         "name":         "TRANSFERS",
-        "header_title": "TRANSFERS",
+        "header_title": "WEEKLY TRANSFER NEWS",
         "bg":     (18, 8, 0),
         "accent": (255, 140, 0),
         "dim":    (46, 26, 4),
@@ -99,21 +99,21 @@ SPORT_IDENTITY = {
     },
     "news": {
         "name":         "WORLD NEWS",
-        "header_title": "WORLD NEWS",
+        "header_title": "WEEKLY WORLD NEWS",
         "bg":     (6, 6, 14),
         "accent": (129, 140, 248),
         "dim":    (22, 22, 52),
     },
     "games": {
         "name":         "GAMING",
-        "header_title": "GAMING WEEKLY",
+        "header_title": "WEEKLY GAME NEWS",
         "bg":     (8, 4, 20),
         "accent": (168, 85, 247),
         "dim":    (28, 14, 58),
     },
     "music": {
         "name":         "MUSIC CHARTS",
-        "header_title": "WEEKLY CHARTS",
+        "header_title": "WEEKLY WORLD BILLBOARD",
         "bg":     (14, 4, 18),
         "accent": (224, 64, 251),
         "dim":    (40, 14, 52),
@@ -324,20 +324,15 @@ def generate_header(sport_id: str, date_str: str) -> Image.Image:
     draw = ImageDraw.Draw(img)
 
     f_title = get_font(82, bold=True)
-    f_date  = get_font(36)
+    f_date  = get_font(48)
 
-    y = 52
+    y = 72
 
-    # Satır 1: WEEKLY SCORES — beyaz, bold
+    # Header title — beyaz, bold
     title = ident.get("header_title", "WEEKLY SCORES")
     x = centered_x(draw, title, f_title)
     draw_text_shadow(draw, (x, y), title, f_title, (255, 255, 255, 255))
-    y += text_height(draw, title, f_title) + 8
-
-    # Satır 2: SPOR ADI — aksent rengi, aynı font/boyut
-    x = centered_x(draw, name, f_title)
-    draw.text((x, y), name, font=f_title, fill=accent + (245,))
-    y += text_height(draw, name, f_title) + 18
+    y += text_height(draw, title, f_title) + 24
 
     # Aksent çubuğu
     bar_w = 74
@@ -345,12 +340,12 @@ def generate_header(sport_id: str, date_str: str) -> Image.Image:
         [(W - bar_w) // 2, y, (W + bar_w) // 2, y + 4],
         fill=accent + (255,)
     )
-    y += 4 + 18
+    y += 4 + 24
 
-    # Tarih + Hafta — tek satır
-    date_text = f"{date_str}  ·  Week {week:02d}"
+    # Tarih + Hafta — tek satır, larger font
+    date_text = f"{date_str}  \u00b7  Week {week:02d}"
     x = centered_x(draw, date_text, f_date)
-    draw.text((x, y), date_text, font=f_date, fill=dim + (210,))
+    draw.text((x, y), date_text, font=f_date, fill=(220, 220, 235, 255))
 
     # Alt ayırıcı çizgi
     draw.line(
@@ -402,9 +397,10 @@ def generate_footer(sport_id: str, channel_name: str) -> Image.Image:
     # Metin bloğu
     tx = tri_x + tri_w + 20
     draw.text((tx, tri_y + 2),               "SUBSCRIBE FOR MORE",
-              font=f_sub, fill=dim + (155,))
+              font=f_sub, fill=(210, 210, 225, 255))
+    bright_accent = tuple(min(c + 40, 255) for c in accent) + (255,)
     draw.text((tx, tri_y + 2 + 30 + 8),      f"@{channel_name}",
-              font=f_hdl, fill=accent + (255,))
+              font=f_hdl, fill=bright_accent)
 
     # YOUTUBE — ortalı
     yt_y = tri_y + tri_h + 16
@@ -413,11 +409,11 @@ def generate_footer(sport_id: str, channel_name: str) -> Image.Image:
 
     # Finance disclaimer
     if sport_id == "finance":
-        f_disc = get_font(18)
-        disc = "NOT FINANCIAL ADVICE · Educational only"
+        f_disc = get_font(22)
+        disc = "NOT FINANCIAL ADVICE \u00b7 Educational only"
         x = centered_x(draw, disc, f_disc)
         draw.text((x, yt_y + 28), disc, font=f_disc,
-                  fill=dim + (120,))
+                  fill=(190, 190, 200, 230))
 
     return img
 
@@ -507,8 +503,11 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
                 # Alternatif satır arkaplanı
                 if mi % 2 == 0:
                     row_bg = Image.new("RGBA", (W - 2*MARGIN, ROW_H - 8),
-                                       (255, 255, 255, 10))
-                    img.alpha_composite(row_bg, (MARGIN, y + 4))
+                                       (255, 255, 255, 18))
+                else:
+                    row_bg = Image.new("RGBA", (W - 2*MARGIN, ROW_H - 8),
+                                       (0, 0, 0, 22))
+                img.alpha_composite(row_bg, (MARGIN, y + 4))
 
                 home  = m.get("home",  "")
                 score = m.get("score", "–")
@@ -528,7 +527,7 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
                     draw.text((MARGIN + 10, y + 6), label, font=f_label,
                               fill=safe_col + (180,))
                     draw.text((MARGIN + 10, y + 28), line1, font=f_line1,
-                              fill=(195, 195, 210, 225))
+                              fill=(225, 225, 240, 245))
                     if line2:
                         draw.text((MARGIN + 10, y + 55), line2, font=f_line2,
                                   fill=(130, 130, 155, 170))
@@ -560,12 +559,12 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
                 hw = bb[2] - bb[0]
                 hx = max(MARGIN, box_x - hw - 16)
                 draw.text((hx, y + 18), home, font=f_team,
-                          fill=(195, 195, 210, 220))
+                          fill=(225, 225, 240, 245))
 
                 # Deplasman (sola yaslı)
                 ax = box_x + box_w + 16
                 draw.text((ax, y + 18), away, font=f_team,
-                          fill=(195, 195, 210, 220))
+                          fill=(225, 225, 240, 245))
 
                 y += ROW_H
 
@@ -614,7 +613,7 @@ def make_reel(config: dict, output_path: str, bg_path: str = None,
     # ── Süre hesapla ──────────────────────────────────────────────────────
     # İçerik tamamen üstten çıkana kadar kaydır
     scroll_dist = content_h
-    scroll_spd  = 40.0   # px/s
+    scroll_spd  = 60.0   # px/s (1.5x from Phase 14)
     pause_top   = 3.0    # başlangıç duraklaması (sn)
     PAUSE_BOTTOM = 2.0   # son satır çıktıktan sonra bekleme
     scroll_dur  = scroll_dist / scroll_spd if scroll_dist > 0 else 0

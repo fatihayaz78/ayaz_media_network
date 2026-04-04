@@ -4,6 +4,49 @@
 
 ---
 
+## [Sprint 14] April 2026 — Visual QA Fixes + Sport Reels
+**Phase:** 14 | **Status:** ✅ Complete
+
+### What was built
+- 1.5x scroll speed (40 → 60 px/s) — finance 115s→78s, music 128s→87s
+- Header: removed sport name second line, enlarged date/week text (36→48px)
+- Footer: fixed visibility — Subscribe text brighter, channel handle brighter accent
+- Finance disclaimer: larger font (18→22px), brighter color
+- Row backgrounds: alternating light/dark contrast (both even+odd now draw)
+- Font brightness increased: team/item names 195→225 across all channels
+- Wide-row mode text also brightened for techai/news
+- Per-channel header_title updates:
+  - finance→WEEKLY MARKETS, games→WEEKLY GAME NEWS
+  - music→WEEKLY WORLD BILLBOARD, news→WEEKLY WORLD NEWS
+  - transfer→WEEKLY TRANSFER NEWS
+- Test reels in output/phase14/ (sport channels: 0 rows due to API quota)
+- Delisted ticker fixes: TAVHL.IS, TOTS3.SA
+
+### Test results
+```
+tests/test_app_routes.py        11/11 passed
+tests/channels/test_fixtures.py  5/5 passed
+Total: 16/16 passed
+```
+
+### Reel outputs
+```
+finance     2022KB   78.3s
+music       2551KB   87.0s
+games        464KB   26.6s
+techai       285KB   18.0s
+news         162KB   14.1s
+transfer      95KB   11.7s
+```
+
+### Files changed
+- video_maker.py — scroll speed, header, footer, row bg, font brightness
+- channels/finance/finance_fetcher.py — ticker fixes
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 13] April 2026 — Header Titles + Visual QA Reels
 **Phase:** 13 | **Status:** ✅ Complete
 

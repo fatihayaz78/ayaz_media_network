@@ -57,7 +57,8 @@ Phase 10:   ✅ COMPLETE (Channel Manager UI, color palettes, AI description)
 Phase 11:   ✅ COMPLETE (bug fixes: tickers, toggles, persistence, date presets)
 Phase 12:   ✅ COMPLETE (music all-continents, news geo, games combined, redirect)
 Phase 13:   ✅ COMPLETE (per-channel header titles, test reels generated)
-Phase 14:   📋 PLANNED  (visual QA feedback → layout fixes)
+Phase 14:   ✅ COMPLETE (visual QA fixes, 1.5x speed, font visibility)
+Phase 15:   📋 PLANNED  (Fatih visual review → final layout polish)
 See CHANGELOG.md for details.
 ```
 
