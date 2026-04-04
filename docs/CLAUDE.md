@@ -44,20 +44,19 @@ Fetch data → generate 1080×1920 MP4 → upload to YouTube.
 **Path:** `/Users/fatihayaz/Documents/Projects/ayaz_media_network`
 **Stack:** Python 3.14.3, Flask 3.1.3, Pillow 12.2.0, ffmpeg, APScheduler 3.11.2, Anthropic SDK 0.89.0
 **venv:** amn (source amn/bin/activate)
+**Port:** 5052
 
 ---
 
 ## Build Status
 
 ```
-Phase 1–5: ✅ COMPLETE
-Phase 6:   ✅ COMPLETE (6/7 reels, 9 tests, fonts+env+git+YouTube)
-Phase 7:   ✅ COMPLETE (12/13 schedules, AI channels live, datetime fixed)
-Phase 8:   ✅ COMPLETE (fixtures rate limit fix, 6h cache, quota detection)
-Phase 9:   ✅ COMPLETE (finance redesign, music country level, scroll fix)
-Phase 10:  ✅ COMPLETE (Channel Manager UI, color palettes, AI description)
-Phase 11:  ✅ COMPLETE (stock names, crypto fix, toggle fix, data persist, date presets)
-Phase 12:  ✅ COMPLETE (date fix, music all-continents, ticker fix, news geo, games combined)
+Phase 1–8:  ✅ COMPLETE
+Phase 9:    ✅ COMPLETE (finance redesign, music country level, scroll fix)
+Phase 10:   ✅ COMPLETE (Channel Manager UI, color palettes, AI description)
+Phase 11:   ✅ COMPLETE (bug fixes: tickers, toggles, persistence, date presets)
+Phase 12:   ✅ COMPLETE (music all-continents, news geo, games combined, redirect)
+Phase 13:   📋 PLANNED  (manual testing, UI visual QA, reel design approval)
 See CHANGELOG.md for details.
 ```
 
@@ -78,15 +77,17 @@ See CHANGELOG.md for details.
 
 ---
 
-## Known Issues (Phase 9 targets)
+## Known Issues
 
 | Issue | File | Priority |
 |---|---|---|
-| YouTube credentials.json missing | youtube.py | 🔴 High |
-| SportAPI 50 req/month limit | fixtures_fetcher.py | 🟡 Medium |
-| PANDASCORE_KEY not set (esports) | games_fetcher.py | 🟡 Medium |
-| RAWG_KEY not set (game releases) | games_fetcher.py | 🟡 Medium |
-| CoinGecko SSL (some networks) | finance_fetcher.py | 🟢 Low |
+| YouTube credentials.json missing | youtube.py | 🔴 Config |
+| CoinGecko SSL on local network | finance_fetcher.py | 🟡 Network |
+| Crypto: 0 rows until network fix | finance_fetcher.py | 🟡 Network |
+| Fixtures: SportAPI monthly quota | fixtures_fetcher.py | 🟡 Quota |
+| Sports: API quota on test runs | fetcher.py | 🟡 Quota |
+| PANDASCORE_KEY not set (esports) | games_fetcher.py | 🟢 Optional |
+| RAWG_KEY not set (game releases) | games_fetcher.py | 🟢 Optional |
 
 ---
 

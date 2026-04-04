@@ -1,29 +1,49 @@
-# NEXT_SESSION_PROMPT.md — Phase 8
-> Phase 7 complete. Next: YouTube upload + visual QA + content quality.
+# NEXT_SESSION_PROMPT.md — Phase 13
+> Phase 12 complete. Next: manual testing + UI visual QA + reel design.
 
-## Phase 8 Focus Areas
+## Context
+Channel Manager UI is at http://localhost:5052/channel
+Start app: cd /Users/fatihayaz/Documents/Projects/ayaz_media_network && source amn/bin/activate && python app.py
 
-### 8.1 YouTube Upload (HIGH)
-- Fatih places credentials.json in project root
-- Run: python youtube.py --auth
-- Run: python youtube.py --test-upload
-- If success: set youtube_enabled: true in config.json
-- Test scheduler auto-upload with one real channel
+## Phase 13 Focus
 
-### 8.2 Visual QA (HIGH)
-- Open all 6 output/phase7/*.mp4 files
-- Check: header readable, text not truncated, scroll smooth, footer correct
-- Report any layout issues (text overflow, wrong colors, wrong theme)
-- Fix issues in video_maker.py
+### 13.1 Sports + Fixtures Manual Test
+- Sports: test when API quota resets (not blocked by tests)
+- Fixtures: test when monthly quota resets (~28 days)
+- Verify continent/country grouping in channel.html
 
-### 8.3 Fixtures Channel Fix (MEDIUM)
-- SportAPI rate limit causes fixtures to return 0 rows
-- Options:
-  A) Add longer delay between API calls (time.sleep)
-  B) Use cache more aggressively (cache fixtures for 24h)
-  C) Switch to football-data.org free fixtures endpoint
+### 13.2 Reel UI Visual QA
+Fatih will test each channel:
+  1. Fetch Data -> pick color -> Reel Uret -> open MP4
+  2. Check: header readable, scroll smooth, footer correct
+  3. Report layout issues
 
-### 8.4 Stack Update (LOW)
-- CLAUDE.md shows Python 3.11 but actual is 3.14.3 — update doc
-- APScheduler 3.11.2 installed — verify no breaking changes
-- venv name: amn — document in CLAUDE.md
+Known items to check per channel:
+  Finance:  continent->country hierarchy visible? gainers green, losers red?
+  Music:    per-country top 5 visible? trend arrows correct?
+  TechAI:   wide-row mode readable? categories correct?
+  News:     highlights showing? category chips work?
+  Transfer: player->club->fee columns readable?
+  Games:    Steam+Deals in one reel?
+
+### 13.3 Reel Design Decisions (Fatih to approve)
+  - Header title text: "WEEKLY SCORES" -- change per channel?
+    Finance -> "WEEKLY MARKETS"
+    Music   -> "WEEKLY CHARTS"
+    TechAI  -> "AI & TECH WEEKLY"
+    News    -> "WORLD NEWS"
+  - Font size: current 82px bold -- too large/small?
+  - Content row height: current ~60px -- enough padding?
+  - Scroll speed: 40px/s -- too fast/slow?
+
+### 13.4 Bug Fixes from visual QA
+Based on Fatih's feedback, fix layout issues.
+
+## Session Startup (Claude Code)
+cd /Users/fatihayaz/Documents/Projects/ayaz_media_network
+source amn/bin/activate
+cat docs/CLAUDE.md
+tail -40 docs/CHANGELOG.md
+python -m pytest tests/test_app_routes.py -v --tb=short 2>&1 | tail -5
+git log --oneline -3
+git status --short
