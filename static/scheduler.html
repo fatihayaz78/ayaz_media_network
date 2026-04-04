@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sports Reel Studio — Scheduler</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f4f0;--bg3:#eeedea;
+  --text:#1a1a18;--text2:#6b6b67;--text3:#9c9a96;
+  --border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.18);
+  --accent:#1a1a18;--acc-inv:#fff;
+  --success:#3b6d11;--success-bg:#eaf3de;
+  --danger:#a32d2d;--danger-bg:#fcebeb;
+  --info:#185fa5;--info-bg:#e6f1fb;
+  --warn:#854f0b;--warn-bg:#faeeda;
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;background:var(--bg2);color:var(--text);min-height:100vh}
+.topbar{display:flex;align-items:center;gap:12px;padding:9px 16px;background:var(--bg);border-bottom:0.5px solid var(--border)}
+.brand{font-size:15px;font-weight:600}
+.nav-link{font-size:12px;color:var(--info);text-decoration:none;padding:4px 10px;border-radius:var(--radius);border:0.5px solid var(--border2)}
+.nav-link:hover{background:var(--bg2)}
+.page{max-width:900px;margin:0 auto;padding:20px 16px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:0.5px solid var(--border);background:var(--bg2)}
+.card-title{font-size:13px;font-weight:600}
+.card-body{padding:14px}
+.row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.row:last-child{margin-bottom:0}
+.lbl{font-size:11px;color:var(--text2);min-width:110px}
+input[type=text],input[type=number]{font-size:12px;padding:5px 9px;height:30px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text)}
+input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.toggle{display:flex;align-items:center;gap:8px;cursor:pointer}
+.sw{width:36px;height:20px;background:var(--border2);border-radius:10px;position:relative;transition:background .2s;flex-shrink:0}
+.sw.on{background:var(--accent)}
+.sw::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.sw.on::after{transform:translateX(16px)}
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px}
+.badge-run{background:var(--success-bg);color:var(--success)}
+.badge-stop{background:var(--bg3);color:var(--text3)}
+.badge-err{background:var(--danger-bg);color:var(--danger)}
+.badge-skip{background:var(--warn-bg);color:var(--warn)}
+.btn{height:30px;padding:0 14px;font-size:12px;font-weight:600;background:var(--accent);color:var(--acc-inv);border:none;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{opacity:.85}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-outline{background:transparent;color:var(--text);border:0.5px solid var(--border2)}
+.btn-outline:hover{background:var(--bg2)}
+.btn-danger{background:var(--danger)}
+.btn-success{background:var(--success)}
+.sched-table{width:100%;border-collapse:collapse}
+.sched-table th{padding:6px 10px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;background:var(--bg2);border-bottom:0.5px solid var(--border);text-align:left}
+.sched-table td{padding:8px 10px;font-size:12px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+.sched-table tr:last-child td{border-bottom:none}
+.time-inp{width:60px;font-size:12px;padding:3px 6px;height:26px;border-radius:5px;border:0.5px solid var(--border2);background:var(--bg);color:var(--text);text-align:center}
+.log-box{background:#111;color:#ccc;font-family:monospace;font-size:11px;padding:12px;border-radius:var(--radius);max-height:280px;overflow-y:auto;line-height:1.6}
+.log-ok{color:#7ec87e}.log-err{color:#e87e7e}.log-warn{color:#f0c060}.log-info{color:#7eb8e8}
+.daemon-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot-run{background:var(--success)}.dot-stop{background:var(--text3)}.dot-unk{background:var(--warn)}
+.save-banner{font-size:11px;color:var(--success);display:none}
+.spin{animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">🏆 Sports Reel Studio</div>
+  <a class="nav-link" href="/">← Reel Stüdyo</a>
+  <span style="font-size:12px;color:var(--text2);margin-left:auto">Scheduler & YouTube</span>
+</div>
+
+<div class="page">
+
+  <!-- DAEMON STATUS -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">Daemon Durumu</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="daemon-dot" id="daemon-dot"></span>
+        <span id="daemon-label" style="font-size:12px;color:var(--text2)">Kontrol ediliyor...</span>
+        <button class="btn btn-outline" id="daemon-btn" onclick="toggleDaemon()" style="height:26px;font-size:11px">—</button>
+      </div>
+    </div>
+    <div class="card-body" style="font-size:11px;color:var(--text2);line-height:1.8">
+      Daemon macOS launchd servisi olarak çalışır. Mac yeniden başlatılsa bile otomatik açılır.<br>
+      Kurulum için terminal: <code style="background:var(--bg2);padding:1px 6px;border-radius:4px">bash setup_launchd.sh</code>
+    </div>
+  </div>
+
+  <!-- GENEL AYARLAR -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">Genel Ayarlar</div>
+      <span class="save-banner" id="save-ok">✓ Kaydedildi</span>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <span class="lbl">Kanal adı</span>
+        <input type="text" id="channel-name" style="width:220px" placeholder="DailyScoreBoard">
+      </div>
+      <div class="row">
+        <span class="lbl">Müzik ses seviyesi</span>
+        <input type="range" id="music-vol" min="0" max="100" value="40" style="width:140px">
+        <span id="vol-label" style="font-size:11px;color:var(--text2);min-width:30px">40%</span>
+      </div>
+      <div class="row">
+        <span class="lbl">YouTube upload</span>
+        <div class="toggle" onclick="toggleYT()">
+          <div class="sw" id="yt-sw"></div>
+          <span id="yt-label" style="font-size:12px;color:var(--text2)">Kapalı</span>
+        </div>
+      </div>
+      <div class="row" id="yt-warn" style="display:none">
+        <span class="lbl"></span>
+        <div style="font-size:11px;color:var(--warn);background:var(--warn-bg);padding:6px 10px;border-radius:var(--radius)">
+          ⚠ credentials.json olmadan upload çalışmaz. Önce SETUP_YOUTUBE.md'yi oku.
+        </div>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <span class="lbl"></span>
+        <button class="btn" onclick="saveConfig()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZAMANLAMALAR -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">Zamanlamalar (UTC)</div>
+      <button class="btn btn-outline" onclick="saveSchedules()" style="font-size:11px;height:26px">Kaydet</button>
+    </div>
+    <table class="sched-table">
+      <thead><tr>
+        <th>Active</th>
+        <th>Channel</th>
+        <th>Schedule</th>
+        <th>Source</th>
+        <th>Time (UTC)</th>
+        <th>Last Run</th>
+        <th>Next</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="sched-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- SON ÇALIŞMALAR -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">Son Çalışmalar</div>
+      <button class="btn btn-outline" onclick="loadStatus()" style="font-size:11px;height:26px">↺ Yenile</button>
+    </div>
+    <div class="card-body" id="last-runs-body" style="font-size:12px;color:var(--text2)">Yükleniyor...</div>
+  </div>
+
+  <!-- LOG -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">Daemon Log (son 100 satır)</div>
+      <button class="btn btn-outline" onclick="loadLogs()" style="font-size:11px;height:26px">↺ Yenile</button>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="log-box" id="log-box">Log yükleniyor...</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let status = {};
+let ytOn   = false;
+
+const BADGE = {
+  ok_local:   ['badge-run',  '✓ Local'],
+  ok_youtube: ['badge-run',  '✓ YouTube'],
+  skipped:    ['badge-skip', '— Skipped'],
+  error:      ['badge-err',  '✗ Error'],
+  error_youtube:['badge-err','✗ YT Error'],
+  running:    ['badge-run',  '⟳ Running'],
+  no_data:    ['badge-skip', '— No Data'],
+};
+
+const SCHEDULE_CHANNEL = {
+  "europe":"@ayaz_sports","americas":"@ayaz_sports",
+  "global":"@ayaz_sports","asiapac":"@ayaz_sports",
+  "fixtures":"@ayaz_fixtures","transfer":"@ayaz_transfer",
+  "finance":"@ayaz_finance","news":"@ayaz_news",
+  "music_europe":"@ayaz_musics","music_americas":"@ayaz_musics",
+  "music_asia":"@ayaz_musics","techai":"@ayaz_techai",
+  "games_deals":"@ayaz_gamezs","games_steam":"@ayaz_gamezs",
+  "games_esports":"@ayaz_gamezs",
+};
+
+async function loadStatus(){
+  const r = await fetch('/api/scheduler/status');
+  status  = await r.json();
+
+  // Daemon
+  const dot = document.getElementById('daemon-dot');
+  const lbl = document.getElementById('daemon-label');
+  const btn = document.getElementById('daemon-btn');
+  if(status.daemon==='running'){
+    dot.className='daemon-dot dot-run';
+    lbl.textContent='Çalışıyor';
+    btn.textContent='Durdur';
+    btn.className='btn btn-danger';
+  } else if(status.daemon==='stopped'){
+    dot.className='daemon-dot dot-stop';
+    lbl.textContent='Durduruldu';
+    btn.textContent='Başlat';
+    btn.className='btn btn-success';
+  } else {
+    dot.className='daemon-dot dot-unk';
+    lbl.textContent='Bilinmiyor (launchd kurulmamış?)';
+    btn.textContent='—';
+    btn.className='btn btn-outline';
+  }
+
+  // Genel
+  document.getElementById('channel-name').value = status.channel || '';
+  document.getElementById('music-vol').value = Math.round((status.music_volume||0.4)*100);
+  document.getElementById('vol-label').textContent = Math.round((status.music_volume||0.4)*100) + '%';
+  ytOn = status.youtube || false;
+  renderYT();
+
+  // Zamanlamalar
+  renderSchedules(status.schedules||[], status.last_runs||{}, status.next_runs||{});
+
+  // Son çalışmalar
+  renderLastRuns(status.last_runs||{}, status.schedules||[]);
+}
+
+function renderYT(){
+  const sw = document.getElementById('yt-sw');
+  const lb = document.getElementById('yt-label');
+  const wn = document.getElementById('yt-warn');
+  sw.className = ytOn ? 'sw on' : 'sw';
+  lb.textContent = ytOn ? 'Açık' : 'Kapalı';
+  wn.style.display = ytOn ? 'flex' : 'none';
+}
+
+function toggleYT(){
+  ytOn = !ytOn;
+  renderYT();
+}
+
+function renderSchedules(scheds, lastRuns, nextRuns){
+  const tb = document.getElementById('sched-tbody');
+  tb.innerHTML = scheds.map(s=>{
+    const lr = lastRuns[s.id];
+    const nr = nextRuns[s.id];
+    const [bc, bt] = BADGE[lr?.status] || ['badge-stop','—'];
+    const sports = Object.values(s.sport_labels||{}).join(' · ');
+    const ch = SCHEDULE_CHANNEL[s.id] || '';
+    return `<tr>
+      <td><div class="toggle" onclick="toggleSched('${s.id}')">
+        <div class="sw ${s.enabled?'on':''}" id="sw-${s.id}"></div>
+      </div></td>
+      <td style="color:var(--text3);font-size:10px">${ch}</td>
+      <td>${s.emoji||''} ${s.label}</td>
+      <td style="color:var(--text2)">${sports}</td>
+      <td>
+        <input class="time-inp" id="h-${s.id}" type="number" min="0" max="23" value="${s.cron_hour_utc}">
+        <span style="color:var(--text3)">:</span>
+        <input class="time-inp" id="m-${s.id}" type="number" min="0" max="59" value="${s.cron_minute_utc}">
+      </td>
+      <td>${lr?`<span class="badge ${bc}">${bt}</span> <span style="color:var(--text3);font-size:10px">${lr.time}</span>`:'<span class="badge badge-stop">Hiç çalışmadı</span>'}</td>
+      <td style="color:var(--text2);font-size:11px">${nr||'—'}</td>
+      <td><button class="btn btn-outline" onclick="runNow('${s.id}','${s.label}')" style="height:26px;font-size:11px">▶ Şimdi çalıştır</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function toggleSched(id){
+  const sw = document.getElementById('sw-'+id);
+  sw.classList.toggle('on');
+}
+
+function renderLastRuns(lastRuns, scheds){
+  const el = document.getElementById('last-runs-body');
+  const ids = Object.keys(lastRuns);
+  if(!ids.length){ el.textContent='Henüz çalışma yok'; return; }
+  el.innerHTML = ids.map(id=>{
+    const lr = lastRuns[id];
+    const s  = scheds.find(x=>x.id===id);
+    const [bc,bt] = BADGE[lr.status]||['badge-stop','—'];
+    return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:0.5px solid var(--border)">
+      <span style="min-width:110px;font-weight:500">${s?.emoji||''} ${s?.label||id}</span>
+      <span class="badge ${bc}">${bt}</span>
+      <span style="color:var(--text3);font-size:11px">${lr.time}</span>
+      ${lr.detail?`<span style="color:var(--text2);font-size:11px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${lr.detail}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function saveConfig(){
+  const vol = parseInt(document.getElementById('music-vol').value)/100;
+  await fetch('/api/scheduler/config',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      channel_name:    document.getElementById('channel-name').value,
+      youtube_enabled: ytOn,
+      music_volume:    vol,
+    })
+  });
+  const b = document.getElementById('save-ok');
+  b.style.display='inline';
+  setTimeout(()=>b.style.display='none',2000);
+}
+
+async function saveSchedules(){
+  const scheds = (status.schedules||[]).map(s=>{
+    const sw = document.getElementById('sw-'+s.id);
+    const h  = parseInt(document.getElementById('h-'+s.id)?.value||s.cron_hour_utc);
+    const m  = parseInt(document.getElementById('m-'+s.id)?.value||s.cron_minute_utc);
+    return {id:s.id, enabled: sw?.classList.contains('on'), cron_hour_utc:h, cron_minute_utc:m};
+  });
+  await fetch('/api/scheduler/config',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({schedules: scheds})
+  });
+  alert('Zamanlamalar kaydedildi. Daemon yeniden başlatılmadan etkin olmaz.');
+}
+
+async function runNow(id, label){
+  if(!confirm(`${label} şimdi çalıştırılsın mı?`)) return;
+  await fetch('/api/scheduler/run-now',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id})
+  });
+  alert(`${label} başlatıldı — log'u izle`);
+  setTimeout(loadLogs, 3000);
+}
+
+async function toggleDaemon(){
+  const action = status.daemon==='running' ? 'stop' : 'start';
+  const r = await fetch('/api/scheduler/daemon',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action})
+  });
+  const d = await r.json();
+  status.daemon = d.daemon;
+  loadStatus();
+}
+
+async function loadLogs(){
+  const r = await fetch('/api/scheduler/logs');
+  const d = await r.json();
+  const box = document.getElementById('log-box');
+  box.innerHTML = d.lines.map(l=>{
+    let cls = '';
+    if(l.includes('[ERROR]')||l.includes('hatası')||l.includes('failed')) cls='log-err';
+    else if(l.includes('[WARNING]')) cls='log-warn';
+    else if(l.includes('✓')||l.includes('tamamlandı')||l.includes('başladı')) cls='log-ok';
+    else if(l.includes('[INFO]')) cls='log-info';
+    return `<div class="${cls}">${escHtml(l)}</div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+document.getElementById('music-vol').addEventListener('input',function(){
+  document.getElementById('vol-label').textContent = this.value+'%';
+});
+
+loadStatus();
+loadLogs();
+setInterval(loadStatus, 30000);
+setInterval(loadLogs, 15000);
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+# CLAUDE.md — Ayaz Media Network
+> Version: 3.0 | April 2026
+> **Read this file FIRST** — every session, both Claude.ai and Claude Code.
+
+---
+
+## Roles & Workflow
+
+```
+Claude.ai  = PM + Architect
+  - Talks with Fatih Ayaz
+  - Reads Claude Code's state report
+  - Writes prompts for Claude Code
+  - Makes architectural decisions
+  - NEVER writes code directly
+
+Claude Code = Developer + Software Architect  
+  - Reads all MD files before starting work
+  - Implements what Claude.ai instructs
+  - Reports current state back to Claude.ai
+  - Updates MD files + CHANGELOG after every change
+  - Runs tests before declaring done
+```
+
+### Every Session Flow
+
+```
+1. Claude Code → runs startup checks → pastes report to Claude.ai
+2. Claude.ai   → reads report + MD files → writes prompt
+3. Claude Code → implements → runs tests → updates docs
+4. Claude Code → pastes completion report to Claude.ai
+5. Repeat
+```
+
+---
+
+## Project Overview
+
+**Ayaz Media Network** — automated YouTube Shorts factory.
+Fetch data → generate 1080×1920 MP4 → upload to YouTube.
+8 channels, 13 schedules, zero manual work after setup.
+
+**Owner:** Fatih Ayaz
+**Path:** `/Users/fatihayaz/Documents/Projects/ayaz_media_network`
+**Stack:** Python 3.11, Flask, Pillow, ffmpeg, APScheduler, Anthropic SDK
+
+---
+
+## Build Status
+
+```
+Phase 1–5: ✅ COMPLETE
+Phase 6:   ✅ COMPLETE — fonts fixed, env setup, git init, YouTube guide
+See CHANGELOG.md for details.
+```
+
+---
+
+## Channels (8 total)
+
+| Channel | Module Doc | Status |
+|---|---|---|
+| @ayaz_sports | modules/SPORTS.md | ✅ Production |
+| @ayaz_fixtures | modules/SPORTS.md | ✅ Built |
+| @ayaz_finance | modules/FINANCE.md | ✅ Built |
+| @ayaz_musics | modules/MUSIC.md | ✅ Built |
+| @ayaz_techai | modules/TECHAI.md | ✅ Built |
+| @ayaz_transfer | modules/TRANSFER.md | ⚠️ RSS only |
+| @ayaz_news | modules/NEWS.md | ✅ Built |
+| @ayaz_gamezs | modules/GAMES.md | ✅ Built |
+
+---
+
+## Doc Index (read before touching that module)
+
+```
+CLAUDE.md              ← this file
+CHANGELOG.md           ← history of changes
+ARCHITECTURE.md        ← data flow, contracts, API routes
+UI.md                  ← visual spec, 15 themes, layout zones
+modules/SPORTS.md      ← fetcher.py + fixtures_fetcher.py
+modules/FINANCE.md     ← finance_fetcher.py
+modules/MUSIC.md       ← music_fetcher.py
+modules/TECHAI.md      ← techai_fetcher.py
+modules/TRANSFER.md    ← transfer_fetcher.py
+modules/NEWS.md        ← news_fetcher.py
+modules/GAMES.md       ← games_fetcher.py
+prompts/AI_PROMPTS.md  ← Claude API prompt library
+NEXT_SESSION_PROMPT.md ← paste into Claude Code
+```
+
+---
+
+## Golden Rules
+
+1. **Read MD before touching code** — relevant module doc always first
+2. **Update MD + CHANGELOG after every change** — no exceptions
+3. **Never break** `fetcher.py` / `sports_daemon.py` existing behavior
+4. **Never remove** entries from `video_maker.py` SPORT_IDENTITY
+5. **Home/score/away contract** — universal row format, see ARCHITECTURE.md
+6. **Test before done** — `pytest tests/test_app_routes.py -v` must pass
+
+---
+
+## Session Startup Script (Claude Code)
+
+```bash
+#!/bin/bash
+# Run this at start of every Claude Code session
+cd /Users/fatihayaz/Documents/Projects/ayaz_media_network
+
+echo "=== AYAZ MEDIA NETWORK — SESSION START ==="
+echo ""
+echo "--- Docs ---"
+cat CLAUDE.md | head -30
+echo ""
+cat CHANGELOG.md | tail -30
+echo ""
+echo "--- Tests ---"
+python -m pytest tests/test_app_routes.py -v --tb=short 2>&1 | tail -20
+echo ""
+echo "--- Git ---"
+git status --short
+git log --oneline -3
+echo ""
+echo "=== READY — paste this report to Claude.ai ==="
+```
+
+---
+
+## Known Issues (Phase 6 targets)
+
+| Issue | File | Priority |
+|---|---|---|
+| Roboto fonts 404 | video_maker.py | 🔴 High |
+| TransferMarkt 404 | transfer_fetcher.py | 🔴 High |
+| YouTube OAuth2 not configured | youtube.py | 🔴 High |
+| CoinGecko SSL (some networks) | finance_fetcher.py | 🟡 Medium |
+| Apple Music timeouts | music_fetcher.py | 🟡 Medium |
+| Transfer needs Claude API key | transfer_fetcher.py | 🟡 Medium |
