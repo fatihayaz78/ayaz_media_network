@@ -3,9 +3,9 @@
 
 ## @ayaz_sports ✅ Production
 Fetcher: `fetcher.py` | Theme: futbol/basket/amerikan/motor
-API: SportAPI7 (RAPIDAPI_KEY, hardcoded — TODO move to env)
+API: SportAPI7 (RAPIDAPI_KEY from .env)
 Endpoint: GET /api/v1/sport/{sport}/scheduled-events/{date}
-Rate: 100 req/day, 0.5s between calls
+Rate: 50 req/month (BASIC plan), 2s between calls
 
 Sports: futbol→football | basket→basketball | amerikan→american-football | motor→motorsport
 Schedules: europe(22:00), americas(06:00), global(Mon 10:00), asiapac(disabled)
@@ -20,5 +20,6 @@ Schedule: Monday 07:00 UTC, fetches next 7 days
 Tests: tests/channels/test_fixtures.py — 5 passed ✅
 
 ## Known Issues
-- RAPIDAPI_KEY hardcoded in fetcher.py (security risk)
-- 429 rate limit during heavy test runs
+- ~~RAPIDAPI_KEY hardcoded~~ — moved to .env (Sprint 6)
+- 50 req/month BASIC plan — fixtures uses 6h cache + stale fallback (Sprint 8)
+- FIXTURES_CACHE_ONLY=1 env var available for test runs

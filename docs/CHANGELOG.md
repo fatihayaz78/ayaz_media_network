@@ -4,6 +4,38 @@
 
 ---
 
+## [Sprint 8] April 2026 — Fixtures Rate Limit Fix
+**Phase:** 8 | **Status:** ✅ Complete
+
+### What was built
+- Task 8.1: Diagnosed SportAPI rate limit — 429 MONTHLY quota (50 req/month BASIC plan)
+  Not per-minute — retries/backoff alone won't help
+- Task 8.2: Implemented 3-layer fix in fixtures_fetcher.py:
+  1. Range-level cache with 6h TTL (avoids redundant API calls)
+  2. Stale cache fallback when API fails
+  3. Monthly quota detection — stops immediately on "MONTHLY" in 429 response
+  4. FIXTURES_CACHE_ONLY env var for tests/quota protection
+  5. Increased sleep to 2s between requests (conserve 50/month)
+- Task 8.3: Verified graceful degradation — 0 rows, no crash
+- Task 8.4: Added _cache_age_hours() to BaseFetcher (available to all channels)
+- Updated SPORTS.md with correct quota info (50/month, not 100/day)
+
+### Test results
+```
+tests/test_app_routes.py        9/9 passed
+tests/channels/test_fixtures.py 5/5 passed
+Total: 14/14 passed
+```
+
+### Files changed
+- channels/fixtures/fixtures_fetcher.py — 6h cache, retry, quota detection
+- channels/base_fetcher.py             — _cache_age_hours() added
+- docs/modules/SPORTS.md               — rate limit info corrected
+- docs/CHANGELOG.md                    — this entry
+- docs/CLAUDE.md                       — phase status updated
+
+---
+
 ## [Sprint 7] April 2026 — Production Go-Live
 **Phase:** 7 | **Status:** ✅ Complete
 

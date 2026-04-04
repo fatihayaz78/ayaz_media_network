@@ -53,7 +53,8 @@ Fetch data → generate 1080×1920 MP4 → upload to YouTube.
 Phase 1–5: ✅ COMPLETE
 Phase 6:   ✅ COMPLETE (6/7 reels, 9 tests, fonts+env+git+YouTube)
 Phase 7:   ✅ COMPLETE (12/13 schedules, AI channels live, datetime fixed)
-Phase 8:   📋 PLANNED  (YouTube upload, visual QA, content quality)
+Phase 8:   ✅ COMPLETE (fixtures rate limit fix, 6h cache, quota detection)
+Phase 9:   📋 PLANNED  (YouTube upload, visual QA, content quality)
 See CHANGELOG.md for details.
 ```
 
@@ -74,12 +75,12 @@ See CHANGELOG.md for details.
 
 ---
 
-## Known Issues (Phase 8 targets)
+## Known Issues (Phase 9 targets)
 
 | Issue | File | Priority |
 |---|---|---|
 | YouTube credentials.json missing | youtube.py | 🔴 High |
-| fixtures SportAPI rate limit | fixtures_fetcher.py | 🟡 Medium |
+| SportAPI 50 req/month limit | fixtures_fetcher.py | 🟡 Medium |
 | PANDASCORE_KEY not set (esports) | games_fetcher.py | 🟡 Medium |
 | RAWG_KEY not set (game releases) | games_fetcher.py | 🟡 Medium |
 | CoinGecko SSL (some networks) | finance_fetcher.py | 🟢 Low |

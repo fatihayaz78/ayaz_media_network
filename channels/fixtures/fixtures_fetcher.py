@@ -56,40 +56,88 @@ MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
+CACHE_TTL_HOURS = 6  # Fixtures valid for 6h (schedule doesn't change often)
+
+
 class FixturesFetcher(BaseFetcher):
     channel_id = "fixtures"
     sport_id   = "fixtures"
 
     def fetch(self, date_from: str, date_to: str) -> List[Dict]:
-        """Fetch upcoming matches for date range."""
+        """Fetch upcoming matches for date range with aggressive caching."""
+        # Cache-only mode: never hit API (for tests / quota protection)
+        if os.environ.get("FIXTURES_CACHE_ONLY"):
+            cache_key = f"fixtures_range_{date_from}_{date_to}"
+            cached = self._load_cache(cache_key)
+            print(f"[fixtures] Cache-only mode: {len(cached) if cached else 0} rows")
+            return cached or []
+
+        # Range-level cache with 6h TTL
+        cache_key = f"fixtures_range_{date_from}_{date_to}"
+        cached = self._load_cache(cache_key)
+        if cached is not None:
+            age = self._cache_age_hours(cache_key)
+            if age < CACHE_TTL_HOURS:
+                print(f"[fixtures] Cache hit ({age:.1f}h old, {len(cached)} rows)")
+                return cached
+
+        # Fetch fresh data
         dates = self._get_dates(date_from, date_to)
         all_rows: List[Dict] = []
 
         for date in dates:
             rows = self._fetch_by_date(date)
+            if rows is None:
+                # API quota exhausted — stop burning requests
+                break
             all_rows.extend(rows)
 
-        return self.deduplicate(all_rows)
+        result = self.deduplicate(all_rows)
 
-    def _fetch_by_date(self, date: str) -> List[Dict]:
-        """Fetch upcoming matches for a single date. Uses cache."""
-        cache_key = f"fixtures_{date}"
+        if result:
+            self._save_cache(cache_key, result)
+        elif cached is not None:
+            print("[fixtures] API failed, using stale cache")
+            return cached
 
-        # Only cache future dates that have passed (skip today)
+        return result
+
+    def _fetch_by_date(self, date: str) -> Optional[List[Dict]]:
+        """Fetch upcoming matches for a single date with retry."""
+        # Per-date cache for past dates
+        per_date_key = f"fixtures_{date}"
         today = datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%d")
         if date < today:
-            cached = self._load_cache(cache_key)
+            cached = self._load_cache(per_date_key)
             if cached is not None:
                 return cached
 
         url = f"{BASE_URL}/sport/football/scheduled-events/{date}"
-        try:
-            time.sleep(0.5)
-            resp = requests.get(url, headers=HEADERS, timeout=15)
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as e:
-            print(f"[fixtures] fetch error {date}: {e}")
+
+        for attempt in range(3):
+            try:
+                time.sleep(2)  # Conservative: 50 req/month quota
+                resp = requests.get(url, headers=HEADERS, timeout=15)
+                if resp.status_code == 429:
+                    msg = resp.json().get("message", "")
+                    if "MONTHLY" in msg.upper():
+                        print(f"[fixtures] Monthly quota exhausted — stopping")
+                        return None  # Signal to stop all requests
+                    wait = 2 ** attempt
+                    print(f"[fixtures] Rate limited, waiting {wait}s...")
+                    time.sleep(wait)
+                    continue
+                resp.raise_for_status()
+                data = resp.json()
+                break
+            except requests.exceptions.HTTPError:
+                print(f"[fixtures] HTTP error {date} (attempt {attempt+1})")
+                if attempt == 2:
+                    return []
+            except Exception as e:
+                print(f"[fixtures] fetch error {date}: {e}")
+                return []
+        else:
             return []
 
         rows = []
@@ -107,7 +155,6 @@ class FixturesFetcher(BaseFetcher):
             league_name   = tournament.get("name", "")
             category      = (tournament.get("category") or {}).get("name", "")
 
-            # Apply league filter
             if LEAGUES_FILTER:
                 if league_name not in LEAGUES_FILTER:
                     continue
@@ -127,13 +174,13 @@ class FixturesFetcher(BaseFetcher):
                 "away":     away_team,
                 "league":   league_name,
                 "category": category,
-                "time":     league_name[:12],   # short league label
+                "time":     league_name[:12],
                 "status":   kickoff or "TBD",
-                "date":     date,               # extra field for grouping
+                "date":     date,
             })
 
         if date < today:
-            self._save_cache(cache_key, rows)
+            self._save_cache(per_date_key, rows)
 
         return rows
 

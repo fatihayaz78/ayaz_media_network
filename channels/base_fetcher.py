@@ -16,6 +16,7 @@ Data contract:
 
 import os
 import json
+import time
 import logging
 from abc import ABC, abstractmethod
 from typing import List, Dict, Optional
@@ -57,6 +58,13 @@ class BaseFetcher(ABC):
                 json.dump(data, f, ensure_ascii=False)
         except Exception as e:
             logger.warning(f"Cache write error {key}: {e}")
+
+    def _cache_age_hours(self, key: str) -> float:
+        path = self._cache_path(key)
+        if not os.path.exists(path):
+            return 999.0
+        age = time.time() - os.path.getmtime(path)
+        return age / 3600
 
     # ── Abstract interface ────────────────────────────────────
     @abstractmethod
