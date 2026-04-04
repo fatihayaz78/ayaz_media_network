@@ -4,6 +4,58 @@
 
 ---
 
+## [Sprint 9] April 2026 — Finance Redesign + Music Country Level + Scroll Fix
+**Phase:** 9 | **Status:** ✅ Complete
+
+### What was built
+- Task 9.1: Scroll fix in video_maker.py
+  - Removed 180s duration cap — reel now ends when last row scrolls off screen
+  - Added 2s PAUSE_BOTTOM after last row exits (no abrupt cut)
+  - 50-row test: 96s duration (was capped at 180s before, now unbounded)
+
+- Task 9.2: Finance redesign in finance_fetcher.py
+  - Expanded MARKETS: 9 exchanges, 20 tickers each (was 8 exchanges, 3-5 tickers)
+  - Added CAC40 (France) — 4 European markets now
+  - Batch download via yfinance.download() (was 1-by-1 with 0.3s sleep)
+  - Top 3 gainers + top 2 losers per market (smart selection)
+  - Country-level grouping: category="🇩🇪 Germany", continent="EUROPE"
+  - New commodities: Gold (XAU) + Silver (XAG) via batch download
+  - Schedule changed: Weekly Friday 18:00 UTC (was daily 22:30 UTC)
+  - Updated to_reel_groups() for continent→country hierarchy
+
+- Task 9.3: Music country-level in music_fetcher.py
+  - Per-country top 5 (was merged continent top 10)
+  - COUNTRIES dict with flags: 🇬🇧🇩🇪🇫🇷🇪🇸🇹🇷🇺🇸🇧🇷🇲🇽🇯🇵🇰🇷🇮🇳
+  - ~25 rows per continent (5 countries × 5 songs for Europe)
+  - category="🇬🇧 UK", continent="EUROPE" — same pattern as finance
+
+- Task 9.4: group_by_continent() fixed in sports_daemon.py
+  - Now uses row.get("continent") before row.get("category") for grouping
+  - display_name shows "🇩🇪 Germany · DAX" for country-level channels
+  - CONTINENT_ORDER expanded: ASIA, COMMODITIES added
+  - CONTINENT_COLORS in video_maker.py: ASIA, COMMODITIES, CRYPTO added
+  - cron_day_of_week support added to scheduler
+
+### Test results
+```
+tests/test_app_routes.py        9/9 passed
+tests/channels/test_fixtures.py 5/5 passed
+Total: 14/14 passed
+```
+
+### Files changed
+- video_maker.py                        — scroll fix (no 180s cap, PAUSE_BOTTOM)
+- channels/finance/finance_fetcher.py   — full redesign (batch, country, commodities)
+- channels/music/music_fetcher.py       — country-level top 5
+- sports_daemon.py                      — continent field, cron_day_of_week
+- config.json                           — finance schedule weekly Friday
+- docs/modules/FINANCE.md              — redesigned doc
+- docs/modules/MUSIC.md               — country-level doc
+- docs/CHANGELOG.md                    — this entry
+- docs/CLAUDE.md                       — phase status updated
+
+---
+
 ## [Sprint 8] April 2026 — Fixtures Rate Limit Fix
 **Phase:** 8 | **Status:** ✅ Complete
 

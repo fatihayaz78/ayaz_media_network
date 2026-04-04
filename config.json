@@ -124,18 +124,19 @@
     },
     {
       "id": "finance",
-      "label": "Finance Daily",
+      "label": "Finance Weekly",
       "emoji": "📈",
-      "cron_hour_utc": 22,
-      "cron_minute_utc": 30,
+      "cron_hour_utc": 18,
+      "cron_minute_utc": 0,
+      "cron_day_of_week": "fri",
       "enabled": true,
       "source": "finance",
       "sports": ["finance"],
       "sport_labels": {"finance": "Markets"},
       "leagues_filter": [],
-      "youtube_title": "📈 Market Close | {date} | {channel}",
-      "youtube_description": "Daily stock & crypto summary. Not financial advice.\n\n#{channel}",
-      "youtube_tags": ["stocks", "crypto", "markets", "nasdaq", "bist100"]
+      "youtube_title": "📈 Weekly Market Close | {date} | {channel}",
+      "youtube_description": "Weekly stock & crypto summary. Not financial advice.\n\n#{channel}",
+      "youtube_tags": ["stocks", "crypto", "markets", "nasdaq", "bist100", "commodities"]
     },
     {
       "id": "music_europe",

@@ -1,7 +1,7 @@
 """
 @ayaz_musics — Music charts fetcher.
 Uses Apple Music RSS (free, no API key needed).
-Aggregates weighted charts across countries per continent.
+Phase 9: per-country top 5 (not merged continent top 10).
 """
 
 import os
@@ -11,17 +11,31 @@ import requests
 import time
 from typing import List, Dict, Optional
 from datetime import datetime, timezone
+from collections import defaultdict
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 from channels.base_fetcher import BaseFetcher
 
 APPLE_BASE = "https://rss.applemarketingtools.com/api/v2/{cc}/music/most-played/10/songs.json"
 
-CONTINENTS = {
-    "EUROPE":   {"gb": 30, "de": 20, "fr": 20, "es": 15, "tr": 15},
-    "AMERICAS": {"us": 50, "br": 30, "mx": 20},
-    "ASIA":     {"jp": 50, "kr": 50},
-    "TURKEY":   {"tr": 100},
+COUNTRIES = {
+    "EUROPE": [
+        {"code": "gb", "name": "UK",      "flag": "\U0001f1ec\U0001f1e7", "weight": 30},
+        {"code": "de", "name": "Germany", "flag": "\U0001f1e9\U0001f1ea", "weight": 20},
+        {"code": "fr", "name": "France",  "flag": "\U0001f1eb\U0001f1f7", "weight": 20},
+        {"code": "es", "name": "Spain",   "flag": "\U0001f1ea\U0001f1f8", "weight": 15},
+        {"code": "tr", "name": "Turkey",  "flag": "\U0001f1f9\U0001f1f7", "weight": 15},
+    ],
+    "AMERICAS": [
+        {"code": "us", "name": "USA",    "flag": "\U0001f1fa\U0001f1f8", "weight": 50},
+        {"code": "br", "name": "Brazil", "flag": "\U0001f1e7\U0001f1f7", "weight": 30},
+        {"code": "mx", "name": "Mexico", "flag": "\U0001f1f2\U0001f1fd", "weight": 20},
+    ],
+    "ASIA": [
+        {"code": "jp", "name": "Japan",       "flag": "\U0001f1ef\U0001f1f5", "weight": 40},
+        {"code": "kr", "name": "South Korea", "flag": "\U0001f1f0\U0001f1f7", "weight": 40},
+        {"code": "in", "name": "India",       "flag": "\U0001f1ee\U0001f1f3", "weight": 20},
+    ],
 }
 
 MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -40,61 +54,46 @@ class MusicFetcher(BaseFetcher):
 
     def fetch(self, date_from: str = "", date_to: str = "",
               continent: str = "EUROPE") -> List[Dict]:
-        """Fetch and aggregate chart for one continent."""
+        """Fetch top 5 per country for a continent."""
         week = _week_key()
         cache_key = f"chart_{continent}_{week}"
         cached = self._load_cache(cache_key)
         if cached is not None:
             return cached
 
-        weights = CONTINENTS.get(continent, {"gb": 100})
-        prev    = self._load_prev(continent)
+        countries = COUNTRIES.get(continent, COUNTRIES["EUROPE"])
+        prev = self._load_prev(continent)
 
-        # Fetch each country
-        country_charts: dict = {}
-        for cc, weight in weights.items():
-            chart = self._fetch_country(cc)
-            if chart:
-                country_charts[cc] = (chart, weight)
-            time.sleep(0.3)
-
-        if not country_charts:
-            return []
-
-        # Weighted aggregation
-        scores: dict = {}
-        for cc, (chart, weight) in country_charts.items():
-            for item in chart:
-                key = f"{item['song']}::{item['artist']}"
-                if key not in scores:
-                    scores[key] = {
-                        "song":   item["song"],
-                        "artist": item["artist"],
-                        "score":  0,
-                    }
-                rank_pts = (11 - item["rank"]) * weight
-                scores[key]["score"] += rank_pts
-
-        merged = sorted(scores.values(), key=lambda x: x["score"], reverse=True)
-
-        # Build rows with trend
         rows = []
-        for i, entry in enumerate(merged[:10]):
-            rank = i + 1
-            key  = f"{entry['song']}::{entry['artist']}"
-            trend = self._calc_trend(key, rank, prev)
-            weeks_str = self._calc_weeks(key, rank, continent)
+        for country in countries:
+            cc   = country["code"]
+            name = country["name"]
+            flag = country["flag"]
 
-            rows.append({
-                "id":       f"music-{continent}-{rank}",
-                "home":     f"{rank} {trend}",
-                "score":    entry["song"][:35],
-                "away":     entry["artist"][:28],
-                "league":   f"{continent} TOP 10",
-                "category": continent,
-                "time":     "",
-                "status":   weeks_str,
-            })
+            chart = self._fetch_country(cc)
+            if not chart:
+                continue
+
+            # Take top 5 per country
+            for i, item in enumerate(chart[:5]):
+                rank = i + 1
+                key  = f"{item['song']}::{item['artist']}"
+                trend = self._calc_trend(key, rank, prev)
+                weeks_str = self._calc_weeks(key, rank, continent)
+
+                rows.append({
+                    "id":        f"music-{continent}-{cc}-{rank}",
+                    "home":      f"{rank} {trend}",
+                    "score":     item["song"][:35],
+                    "away":      item["artist"][:28],
+                    "league":    f"{name} TOP 5",
+                    "category":  f"{flag} {name}",
+                    "continent": continent,
+                    "time":      "",
+                    "status":    weeks_str,
+                })
+
+            time.sleep(0.3)
 
         # Save prev for next week
         self._save_prev(continent, rows)
@@ -128,10 +127,10 @@ class MusicFetcher(BaseFetcher):
             return "NEW"
         prev_rank = int(prev_entry["home"].split()[0])
         if current_rank < prev_rank:
-            return "↑"
+            return "\u2191"
         if current_rank > prev_rank:
-            return "↓"
-        return "●"
+            return "\u2193"
+        return "\u25cf"
 
     def _calc_weeks(self, key: str, rank: int, continent: str) -> str:
         history_key = f"history_{continent}"
@@ -158,11 +157,22 @@ class MusicFetcher(BaseFetcher):
     def to_reel_groups(self, items: List[Dict]) -> List[Dict]:
         if not items:
             return []
-        continent = items[0]["category"]
+
+        # Group by league (per-country)
+        by_league = defaultdict(list)
+        for item in items:
+            by_league[item["league"]].append(item)
+
         now = datetime.now(timezone.utc).replace(tzinfo=None)
-        display = f"{continent} Charts · {MONTH_NAMES[now.month - 1]} {now.year}"
-        return [{
-            "league":       f"{continent} TOP 10",
-            "display_name": display,
-            "matches":      items,
-        }]
+        continent = items[0].get("continent", items[0].get("category", ""))
+
+        groups = []
+        for league, league_items in by_league.items():
+            country_label = league_items[0].get("category", continent)
+            groups.append({
+                "league":       league,
+                "display_name": f"{country_label} \u00b7 {league}",
+                "continent":    continent,
+                "matches":      league_items,
+            })
+        return groups

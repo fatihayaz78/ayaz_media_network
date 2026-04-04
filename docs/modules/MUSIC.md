@@ -1,30 +1,44 @@
 # modules/MUSIC.md — @ayaz_musics
-> Updated: Sprint 2 (April 2026)
+> Updated: Sprint 9 (April 2026)
 
-## Status: ✅ Built
+## Status: ✅ Built (Country-level)
 Fetcher: channels/music/music_fetcher.py | Theme: music (violet)
 API: Apple Music RSS (free, no key needed)
 URL: https://rss.applemarketingtools.com/api/v2/{cc}/music/most-played/10/songs.json
-Schedule: Every Friday — 4 reels at 08/09/10/11:00 UTC
-Tests: tests/channels/test_music.py — 5 passed ✅
+Schedule: Every Friday — 3 reels at 08/09/10:00 UTC
+Tests: tests/test_app_routes.py — music route passing ✅
 
-## Continents & Weights
-EUROPE:   gb=30%, de=20%, fr=20%, es=15%, tr=15%
-AMERICAS: us=50%, br=30%, mx=20%
-ASIA:     jp=50%, kr=50%
-TURKEY:   tr=100% (separate reel)
+## Countries & Flags (Phase 9 — per-country top 5)
 
-## Aggregation
-Score = (11 - rank) × weight. Merge all countries, sort descending, take top 10.
+### EUROPE (5 countries × 5 songs = 25 rows)
+- 🇬🇧 UK (gb) — weight 30
+- 🇩🇪 Germany (de) — weight 20
+- 🇫🇷 France (fr) — weight 20
+- 🇪🇸 Spain (es) — weight 15
+- 🇹🇷 Turkey (tr) — weight 15
+
+### AMERICAS (3 countries × 5 songs = 15 rows)
+- 🇺🇸 USA (us) — weight 50
+- 🇧🇷 Brazil (br) — weight 30
+- 🇲🇽 Mexico (mx) — weight 20
+
+### ASIA (3 countries × 5 songs = 15 rows)
+- 🇯🇵 Japan (jp) — weight 40
+- 🇰🇷 South Korea (kr) — weight 40
+- 🇮🇳 India (in) — weight 20
+
+## Fetch Method
+- 1 API call per country (Apple Music RSS)
+- Top 5 songs per country (not merged continent top 10)
+- Each row has category=flag+country, continent=EUROPE/AMERICAS/ASIA
 
 ## Column Mapping
-home=rank+trend("1 ↑"), score=song_title, away=artist, status=weeks_on_chart("3w"), league="EUROPE TOP 10"
+home=rank+trend("1 ↑"), score=song_title, away=artist, status=weeks_on_chart("3w"), league="UK TOP 5", category="🇬🇧 UK"
 
 ## Trend Logic
 ↑ = rank improved vs last week | ↓ = rank worse | ● = same | NEW = first appearance
 Prev chart saved: cache/music/prev_{continent}.json (updated weekly)
 
 ## Known Issues
-- gb/us/br endpoints occasionally timeout (graceful degradation — works with partial data)
+- Occasional country timeout (graceful degradation — works with partial data)
 - All trends show "NEW" on first run (expected — prev cache empty)
-- Spotify Charts not integrated yet (optional backup source)

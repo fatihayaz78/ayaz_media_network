@@ -38,11 +38,11 @@ UPLOAD_DIR  = os.path.join(BASE_DIR, "uploads")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 CONTINENT_ORDER = [
-    "EUROPE", "AMERICAS", "ASIA-PACIFIC", "MOTORSPORT", "OTHER",
+    "EUROPE", "AMERICAS", "ASIA-PACIFIC", "ASIA", "MOTORSPORT", "OTHER",
     # New channel categories
     "UPCOMING", "CONFIRMED", "RUMOURS",
     "CHARTS", "DEALS", "ESPORTS", "RELEASES",
-    "CRYPTO",
+    "COMMODITIES", "CRYPTO",
     "MODEL_UPDATE", "BIG_TECH", "TOOLS", "FUNDING", "RESEARCH", "REGULATION",
     "POLITICS", "TECHNOLOGY", "ECONOMY", "SCIENCE", "HEALTH", "CLIMATE",
     "CONFLICT", "CULTURE",
@@ -83,8 +83,13 @@ def group_by_continent(rows: list, league_display: dict) -> list:
     for row in rows:
         league    = row.get("league", "")
         info      = league_display.get(league, {})
-        continent = info.get("continent") or row.get("category", "OTHER")
+        continent = info.get("continent") or row.get("continent") or row.get("category", "OTHER")
         display   = info.get("display") or row.get("league", league)
+
+        # Use category (country label) for display when continent field exists
+        country_label = row.get("category", "")
+        if row.get("continent") and country_label and country_label != continent:
+            display = f"{country_label} \u00b7 {league}"
 
         if continent not in cont_map:
             cont_map[continent] = {}
@@ -305,8 +310,11 @@ def start_scheduler():
         h = sched["cron_hour_utc"]
         m = sched["cron_minute_utc"]
 
+        dow = sched.get("cron_day_of_week")
         if sched.get("race_week_only"):
             trigger = CronTrigger(day_of_week="mon", hour=h, minute=m, timezone="UTC")
+        elif dow:
+            trigger = CronTrigger(day_of_week=dow, hour=h, minute=m, timezone="UTC")
         else:
             trigger = CronTrigger(hour=h, minute=m, timezone="UTC")
 
@@ -321,10 +329,14 @@ def start_scheduler():
             max_instances=1,
             coalesce=True,
         )
+        schedule_desc = "her gün"
+        if sched.get("race_week_only"):
+            schedule_desc = "(Pazartesi)"
+        elif dow:
+            schedule_desc = f"({dow})"
         logger.info(
             f"  Zamanlandı: {sched['label']} → "
-            f"{h:02d}:{m:02d} UTC "
-            f"{'(Pazartesi)' if sched.get('race_week_only') else 'her gün'}"
+            f"{h:02d}:{m:02d} UTC {schedule_desc}"
         )
 
     def write_next_runs():

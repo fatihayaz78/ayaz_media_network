@@ -117,6 +117,7 @@ CONTINENT_COLORS = {
     "EUROPE":       (79, 150, 255),
     "AMERICAS":     (220, 64, 64),
     "ASIA-PACIFIC": (88, 192, 48),
+    "ASIA":         (88, 192, 48),
     "MOTORSPORT":   (240, 120, 32),
     "OTHER":        (150, 150, 180),
     "UPCOMING":     (64, 200, 112),   # fixtures green
@@ -124,6 +125,8 @@ CONTINENT_COLORS = {
     "AI & TECH":    (96, 165, 250),   # techai blue
     "GAMING":       (168, 85, 247),   # games purple
     "MARKETS":      (0, 200, 83),     # finance green
+    "COMMODITIES":  (218, 165, 32),   # gold
+    "CRYPTO":       (247, 147, 26),   # bitcoin orange
     "TRANSFERS":    (255, 140, 0),    # transfer orange
     "NEWS":         (129, 140, 248),  # news indigo
 }
@@ -567,9 +570,10 @@ def make_reel(config: dict, output_path: str, bg_path: str = None,
     scroll_dist = content_h
     scroll_spd  = 40.0   # px/s
     pause_top   = 3.0    # başlangıç duraklaması (sn)
+    PAUSE_BOTTOM = 2.0   # son satır çıktıktan sonra bekleme
     scroll_dur  = scroll_dist / scroll_spd if scroll_dist > 0 else 0
-    duration    = pause_top + scroll_dur
-    duration    = max(8.0, min(180.0, duration))
+    duration    = pause_top + scroll_dur + PAUSE_BOTTOM
+    duration    = max(8.0, duration)   # no upper cap — ends when content exits
 
     # ── Geçici PNG dosyaları ──────────────────────────────────────────────
     tmp_dir = os.path.dirname(output_path) or "."
