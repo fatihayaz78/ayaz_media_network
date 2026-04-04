@@ -74,3 +74,19 @@ def test_scheduler_status(client):
     assert "fixtures" in ids
     assert "finance" in ids
     assert "news" in ids
+
+
+def test_channel_page_serves_html(client):
+    r = client.get("/channel")
+    assert r.status_code == 200
+    assert b"Channel Manager" in r.data
+
+
+def test_channel_description_api(client):
+    r = client.post("/api/channel/description",
+                    json={"channel_id": "finance", "rows": []})
+    j = r.get_json()
+    # Without ANTHROPIC_API_KEY, should return ok=False with error
+    assert "ok" in j
+    if not j["ok"]:
+        assert "error" in j

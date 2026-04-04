@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Channel Manager — Ayaz Media Network</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f4f0;--bg3:#eeedea;
+  --text:#1a1a18;--text2:#6b6b67;--text3:#9c9a96;
+  --border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.18);
+  --accent:#1a1a18;--acc-inv:#fff;
+  --success:#3b6d11;--success-bg:#eaf3de;
+  --danger:#a32d2d;--danger-bg:#fcebeb;
+  --info:#185fa5;--info-bg:#e6f1fb;
+  --warn:#854f0b;--warn-bg:#faeeda;
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;background:var(--bg2);color:var(--text);height:100vh;display:flex;flex-direction:column}
+a{color:var(--info);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;gap:12px;padding:9px 16px;background:var(--bg);border-bottom:0.5px solid var(--border);flex-shrink:0}
+.brand{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.nav-links{display:flex;gap:16px;margin-left:auto;font-size:12px}
+.nav-links a{color:var(--text2);padding:4px 8px;border-radius:var(--radius)}
+.nav-links a:hover{background:var(--bg2);text-decoration:none}
+.nav-links a.active{color:var(--accent);font-weight:600}
+#api-status{font-size:11px;color:var(--text3)}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:185px 1fr;flex:1;overflow:hidden}
+.sidebar{background:var(--bg2);border-right:0.5px solid var(--border);overflow-y:auto;padding-bottom:20px}
+.slbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:14px 12px 6px}
+.si{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;border-left:3px solid transparent;user-select:none;transition:background .1s}
+.si:hover{background:var(--bg3)}
+.si.on{background:var(--bg);border-left-color:var(--accent)}
+.si-ico{font-size:16px;width:22px;text-align:center}
+.si-name{font-size:13px}
+.si-cnt{margin-left:auto;font-size:10px;padding:1px 7px;border-radius:10px;background:var(--success-bg);color:var(--success);font-weight:600}
+
+/* Main panel */
+.main{background:var(--bg);display:flex;flex-direction:column;overflow-y:auto}
+.m-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+.m-title{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+
+/* Sections */
+.sec{border-bottom:0.5px solid var(--border)}
+.sec-hdr{display:flex;align-items:center;gap:8px;padding:10px 16px;cursor:pointer;user-select:none}
+.sec-hdr:hover{background:var(--bg2)}
+.sec-arrow{font-size:10px;color:var(--text3);transition:transform .15s;width:14px}
+.sec-arrow.open{transform:rotate(90deg)}
+.sec-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.sec-badge{font-size:10px;padding:1px 7px;border-radius:8px;background:var(--bg2);color:var(--text3);margin-left:auto}
+.sec-body{padding:0 16px 14px;display:none}
+.sec-body.open{display:block}
+
+/* Color palette */
+.palette-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pal-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:8px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.pal-card:hover{border-color:var(--text3)}
+.pal-card.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,0,0,.1)}
+.pal-preview{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.pal-dot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.15)}
+.pal-name{font-size:11px;font-weight:600}
+.pal-colors{display:flex;gap:3px}
+.pal-swatch{width:22px;height:10px;border-radius:3px;border:0.5px solid rgba(0,0,0,.1)}
+
+/* Data table */
+.data-tabs{display:flex;gap:4px;margin-bottom:10px}
+.data-tab{padding:5px 12px;font-size:11px;border:0.5px solid var(--border2);border-radius:var(--radius);cursor:pointer;background:transparent;color:var(--text2)}
+.data-tab.on{background:var(--accent);color:var(--acc-inv);border-color:var(--accent)}
+.fbtn{height:30px;padding:0 14px;font-size:12px;font-weight:600;background:var(--accent);color:var(--acc-inv);border:none;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:opacity .15s}
+.fbtn:hover{opacity:.85}
+.fbtn:disabled{opacity:.4;cursor:not-allowed}
+
+.cont-group{margin-bottom:12px;border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cont-hdr{padding:6px 10px;background:var(--bg3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:6px}
+.league-hdr{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--bg2);border-bottom:0.5px solid var(--border);font-size:11px;color:var(--text2);font-weight:600}
+.league-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+.row-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:0.5px solid var(--border);font-size:12px;transition:opacity .15s}
+.row-item:last-child{border-bottom:none}
+.row-item.hidden{opacity:.35;text-decoration:line-through}
+.row-toggle{width:18px;height:18px;border:1.5px solid var(--border2);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;background:var(--bg);transition:all .1s}
+.row-toggle.on{background:var(--accent);border-color:var(--accent);color:var(--acc-inv)}
+.row-home{font-weight:600;min-width:100px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-score{font-weight:700;font-family:monospace;font-size:13px;min-width:70px;text-align:center}
+.row-away{flex:1;min-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-status{font-size:10px;padding:1px 6px;border-radius:8px;background:var(--bg2);color:var(--text3);font-weight:600}
+
+.reset-btn{font-size:11px;color:var(--info);background:none;border:none;cursor:pointer;padding:4px 8px}
+.reset-btn:hover{text-decoration:underline}
+
+/* League filter chips */
+.chip-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.chip{padding:3px 10px;font-size:10px;border:1px solid var(--border2);border-radius:12px;cursor:pointer;user-select:none;transition:all .1s}
+.chip.on{background:var(--accent);color:var(--acc-inv);border-color:var(--accent)}
+
+/* Music section */
+.music-current{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--success-bg);border:0.5px solid #c0dd97;border-radius:var(--radius);margin-bottom:10px}
+.music-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.music-btn{height:28px;padding:0 12px;font-size:11px;border:0.5px solid var(--border2);border-radius:var(--radius);cursor:pointer;background:transparent;color:var(--text)}
+.music-btn:hover{background:var(--bg2)}
+.pix-list{border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+.pix-item{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .1s}
+.pix-item:hover{background:var(--bg2)}
+.pix-item:last-child{border-bottom:none}
+.pix-item.sel{background:var(--success-bg)}
+.vol-row{display:flex;align-items:center;gap:10px}
+.vol-row input[type=range]{flex:1}
+
+/* Description */
+.desc-area{width:100%;min-height:100px;padding:10px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);resize:vertical;font-family:inherit;line-height:1.6;color:var(--text);background:var(--bg)}
+.desc-area:focus{outline:2px solid var(--accent);outline-offset:1px}
+.desc-actions{display:flex;gap:8px;margin-top:8px;align-items:center}
+.desc-btn{height:28px;padding:0 12px;font-size:11px;border:0.5px solid var(--border2);border-radius:var(--radius);cursor:pointer;background:transparent;color:var(--text);display:inline-flex;align-items:center;gap:5px}
+.desc-btn:hover{background:var(--bg2)}
+.desc-btn.primary{background:var(--accent);color:var(--acc-inv);border-color:var(--accent)}
+.desc-btn.primary:hover{opacity:.85}
+.lock-badge{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--warn-bg);color:var(--warn);font-weight:600}
+
+/* Action bar */
+.action-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg2);border-top:0.5px solid var(--border);flex-shrink:0;flex-wrap:wrap;gap:10px}
+.action-meta{font-size:12px;color:var(--text2);line-height:1.7}
+.action-meta strong{color:var(--text)}
+.rbtn{height:38px;padding:0 22px;font-size:13px;font-weight:700;background:var(--accent);color:var(--acc-inv);border:none;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;gap:8px}
+.rbtn:hover{opacity:.85}
+.rbtn:disabled{opacity:.35;cursor:not-allowed}
+.dl-box{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--success-bg);border:0.5px solid #c0dd97;border-radius:var(--radius);margin-top:8px}
+.dl-btn{height:30px;padding:0 14px;font-size:12px;font-weight:600;background:var(--success);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+
+.loading{text-align:center;padding:20px;color:var(--text2);font-size:12px}
+.spin{display:inline-block;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.errbox{padding:8px 12px;background:var(--danger-bg);border:0.5px solid #f7c1c1;border-radius:var(--radius);font-size:12px;color:var(--danger);margin-top:8px}
+.empty{text-align:center;padding:24px;color:var(--text3);font-size:12px;border:0.5px solid var(--border);border-radius:var(--radius-lg)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Ayaz Media Network</div>
+  <div class="nav-links">
+    <a href="/">Studio</a>
+    <a href="/channel" class="active">Channels</a>
+    <a href="/scheduler">Scheduler</a>
+  </div>
+  <span id="api-status"></span>
+</div>
+
+<div class="layout">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+// ── Channel definitions ──────────────────────────────────────────────────────
+const CHANNELS = [
+  {id:"finance",  icon:"\u{1F4C8}", name:"Finance",    channel:"ayaz_finance",  theme:"finance"},
+  {id:"music",    icon:"\u{1F3B5}", name:"Music",      channel:"ayaz_musics",   theme:"music"},
+  {id:"techai",   icon:"\u{1F916}", name:"Tech & AI",  channel:"ayaz_techai",   theme:"techai"},
+  {id:"news",     icon:"\u{1F4F0}", name:"World News", channel:"ayaz_news",     theme:"news"},
+  {id:"transfer", icon:"\u26BD",    name:"Transfer",   channel:"ayaz_transfer", theme:"transfer"},
+  {id:"games",    icon:"\u{1F3AE}", name:"Games",      channel:"ayaz_gamezs",   theme:"games"},
+  {id:"sports",   icon:"\u{1F3C6}", name:"Sports",     channel:"ayaz_sports",   theme:"futbol"},
+  {id:"fixtures", icon:"\u{1F4C5}", name:"Fixtures",   channel:"ayaz_fixtures", theme:"fixtures"},
+];
+
+const PALETTES = [
+  {id:"dark-blue",   name:"Dark Blue",   bg:[13,15,26],   accent:[79,150,255],  dim:[30,42,74]},
+  {id:"dark-green",  name:"Dark Green",  bg:[6,16,8],     accent:[64,200,112],  dim:[18,44,24]},
+  {id:"dark-orange", name:"Dark Orange", bg:[18,8,0],     accent:[255,140,0],   dim:[42,26,4]},
+  {id:"dark-gold",   name:"Dark Gold",   bg:[10,8,0],     accent:[212,175,55],  dim:[32,26,0]},
+  {id:"dark-purple", name:"Dark Purple", bg:[14,8,20],    accent:[144,80,208],  dim:[40,22,64]},
+  {id:"dark-cyan",   name:"Dark Cyan",   bg:[4,16,16],    accent:[42,184,160],  dim:[14,36,32]},
+  {id:"dark-red",    name:"Dark Red",    bg:[18,4,4],     accent:[224,64,48],   dim:[50,16,16]},
+  {id:"dark-pink",   name:"Dark Pink",   bg:[20,8,24],    accent:[224,64,160],  dim:[44,16,48]},
+  {id:"midnight",    name:"Midnight",    bg:[8,8,16],     accent:[96,96,192],   dim:[24,24,48]},
+  {id:"forest",      name:"Forest",      bg:[4,12,4],     accent:[48,160,64],   dim:[12,32,16]},
+  {id:"crimson",     name:"Crimson",     bg:[20,0,0],     accent:[204,32,32],   dim:[48,8,8]},
+  {id:"navy",        name:"Navy",        bg:[0,8,20],     accent:[32,96,176],   dim:[8,24,60]},
+  {id:"amber",       name:"Amber",       bg:[16,8,0],     accent:[255,160,32],  dim:[36,20,0]},
+  {id:"teal",        name:"Teal",        bg:[4,16,16],    accent:[32,160,144],  dim:[12,40,40]},
+  {id:"slate",       name:"Slate",       bg:[8,12,16],    accent:[96,128,160],  dim:[24,32,48]},
+  {id:"rose-gold",   name:"Rose Gold",   bg:[18,8,8],     accent:[192,96,128],  dim:[42,20,24]},
+];
+
+const DEFAULT_PALETTES = {
+  finance:"dark-gold", music:"dark-purple", techai:"dark-cyan", news:"dark-red",
+  transfer:"dark-orange", games:"dark-pink", sports:"dark-blue", fixtures:"dark-green",
+};
+
+const MUSIC_CONTINENTS = ["EUROPE","AMERICAS","ASIA"];
+const GAMES_FORMATS = [{id:"steam_charts",label:"Steam Charts"},{id:"game_deals",label:"Game Deals"},{id:"esports",label:"Esports"}];
+
+// ── State ────────────────────────────────────────────────────────────────────
+let active = "finance";
+let fetchedRows = [];
+let fetchLoading = false;
+let fetchError = null;
+let downloadUrl = null;
+let reelLoading = false;
+let pixTracks = [];
+let pixLoading = false;
+let descLoading = false;
+let openSections = {theme:false, music:false, data:true, desc:false, action:true};
+
+// Music sub-state
+let musicContinent = "EUROPE";
+let gamesFormat = "game_deals";
+
+function storageKey(chId){ return "amn_channel_"+chId; }
+
+function loadState(chId){
+  try{
+    return JSON.parse(localStorage.getItem(storageKey(chId))) || {};
+  }catch(e){ return {}; }
+}
+function saveState(chId, partial){
+  const current = loadState(chId);
+  const merged = {...current, ...partial};
+  localStorage.setItem(storageKey(chId), JSON.stringify(merged));
+}
+
+function getHidden(chId){ return loadState(chId).hiddenRows || []; }
+function setHidden(chId, arr){ saveState(chId, {hiddenRows: arr}); }
+function getPalette(chId){ return loadState(chId).palette || DEFAULT_PALETTES[chId] || "dark-blue"; }
+function setPalette(chId, palId){ saveState(chId, {palette: palId}); }
+function getDesc(chId){ return loadState(chId).description || ""; }
+function setDesc(chId, txt){ saveState(chId, {description: txt}); }
+function getDescLocked(chId){ return loadState(chId).descriptionLocked || false; }
+function setDescLocked(chId, v){ saveState(chId, {descriptionLocked: v}); }
+function getMusicFile(chId){ return loadState(chId).musicFile || null; }
+function setMusicFile(chId, obj){ saveState(chId, {musicFile: obj}); }
+function getMusicVolume(chId){ const v=loadState(chId).musicVolume; return v!==undefined?v:0.4; }
+function setMusicVolume(chId, v){ saveState(chId, {musicVolume: v}); }
+
+function visibleRows(){
+  const hidden = new Set(getHidden(active));
+  return fetchedRows.filter(r => !hidden.has(r.id));
+}
+
+// ── Sidebar ──────────────────────────────────────────────────────────────────
+function renderSidebar(){
+  document.getElementById("sidebar").innerHTML = `
+    <div class="slbl">Channels</div>
+    ${CHANNELS.map(ch => {
+      const cnt = ch.id === active ? visibleRows().length : "";
+      return `<div class="si${ch.id===active?" on":""}" onclick="selectChannel('${ch.id}')">
+        <span class="si-ico">${ch.icon}</span>
+        <span class="si-name">${ch.name}</span>
+        ${cnt ? `<span class="si-cnt">${cnt}</span>` : ""}
+      </div>`;
+    }).join("")}
+  `;
+}
+
+function selectChannel(id){
+  active = id;
+  fetchedRows = [];
+  fetchError = null;
+  downloadUrl = null;
+  openSections = {theme:false, music:false, data:true, desc:false, action:true};
+  renderSidebar();
+  renderMain();
+}
+
+// ── Toggle section ───────────────────────────────────────────────────────────
+function toggleSec(key){
+  openSections[key] = !openSections[key];
+  renderMain();
+}
+
+// ── Palette ──────────────────────────────────────────────────────────────────
+function rgbStr(arr){ return `rgb(${arr[0]},${arr[1]},${arr[2]})`; }
+
+function renderPalettes(){
+  const sel = getPalette(active);
+  return `<div class="palette-grid">
+    ${PALETTES.map(p => `
+      <div class="pal-card${p.id===sel?" selected":""}" onclick="pickPalette('${p.id}')">
+        <div class="pal-preview">
+          <div class="pal-dot" style="background:${rgbStr(p.accent)}"></div>
+          <span class="pal-name">${p.name}</span>
+        </div>
+        <div class="pal-colors">
+          <div class="pal-swatch" style="background:${rgbStr(p.bg)}" title="BG"></div>
+          <div class="pal-swatch" style="background:${rgbStr(p.accent)}" title="Accent"></div>
+          <div class="pal-swatch" style="background:${rgbStr(p.dim)}" title="Dim"></div>
+        </div>
+      </div>
+    `).join("")}
+  </div>`;
+}
+
+function pickPalette(palId){
+  setPalette(active, palId);
+  renderMain();
+}
+
+function getSelectedPalette(){
+  const id = getPalette(active);
+  return PALETTES.find(p=>p.id===id) || PALETTES[0];
+}
+
+// ── Data section ─────────────────────────────────────────────────────────────
+function renderDataTabs(){
+  if(active === "music"){
+    return `<div class="data-tabs">
+      ${MUSIC_CONTINENTS.map(c =>
+        `<button class="data-tab${c===musicContinent?" on":""}" onclick="musicContinent='${c}';renderMain()">${c}</button>`
+      ).join("")}
+    </div>`;
+  }
+  if(active === "games"){
+    return `<div class="data-tabs">
+      ${GAMES_FORMATS.map(f =>
+        `<button class="data-tab${f.id===gamesFormat?" on":""}" onclick="gamesFormat='${f.id}';renderMain()">${f.label}</button>`
+      ).join("")}
+    </div>`;
+  }
+  return "";
+}
+
+async function doFetch(){
+  fetchLoading = true;
+  fetchError = null;
+  downloadUrl = null;
+  renderSidebar(); renderMain();
+
+  const today = new Date().toISOString().slice(0,10);
+  let url = `/api/fetch/channel?channel_id=${active}&from=${today}&to=${today}`;
+  if(active === "music") url += `&continent=${musicContinent}`;
+  if(active === "games") url += `&fmt=${gamesFormat}`;
+
+  try{
+    const res = await fetch(url);
+    const j = await res.json();
+    if(!j.ok) throw new Error(j.error || "API error");
+    fetchedRows = j.data || [];
+    if(!fetchedRows.length) fetchError = "No data found.";
+  }catch(e){
+    fetchError = e.message;
+    fetchedRows = [];
+  }
+  fetchLoading = false;
+  renderSidebar(); renderMain();
+}
+
+function toggleRow(rowId){
+  const hidden = getHidden(active);
+  const idx = hidden.indexOf(rowId);
+  if(idx >= 0) hidden.splice(idx, 1);
+  else hidden.push(rowId);
+  setHidden(active, hidden);
+  renderSidebar(); renderMain();
+}
+
+function resetHidden(){
+  setHidden(active, []);
+  renderSidebar(); renderMain();
+}
+
+function toggleLeague(league){
+  const rows = fetchedRows.filter(r => r.league === league);
+  const hidden = getHidden(active);
+  const hiddenSet = new Set(hidden);
+  const allHidden = rows.every(r => hiddenSet.has(r.id));
+  if(allHidden){
+    // Show all
+    const newHidden = hidden.filter(id => !rows.some(r => r.id === id));
+    setHidden(active, newHidden);
+  } else {
+    // Hide all
+    const newHidden = [...hidden, ...rows.map(r=>r.id).filter(id => !hiddenSet.has(id))];
+    setHidden(active, newHidden);
+  }
+  renderSidebar(); renderMain();
+}
+
+function renderDataRows(){
+  if(fetchLoading) return `<div class="loading"><span class="spin">&#9676;</span> Fetching data...</div>`;
+  if(!fetchedRows.length) return `<div class="empty">No data yet. Click Fetch Data to load.</div>`;
+
+  const hidden = new Set(getHidden(active));
+  const hiddenCount = fetchedRows.filter(r => hidden.has(r.id)).length;
+
+  // Group by continent -> league
+  const contMap = {};
+  for(const r of fetchedRows){
+    const cont = r.continent || r.category || "OTHER";
+    const lg = r.league || "OTHER";
+    if(!contMap[cont]) contMap[cont] = {};
+    if(!contMap[cont][lg]) contMap[cont][lg] = {display: "", rows: []};
+    contMap[cont][lg].rows.push(r);
+    if(!contMap[cont][lg].display && r.category && r.category !== cont){
+      contMap[cont][lg].display = r.category + " \u00b7 " + lg;
+    }
+  }
+
+  // League filter chips
+  const leagues = [...new Set(fetchedRows.map(r => r.league))];
+  const chipHtml = leagues.length > 3 ? `<div class="chip-row">
+    ${leagues.map(lg => {
+      const lgRows = fetchedRows.filter(r => r.league === lg);
+      const allHidden = lgRows.every(r => hidden.has(r.id));
+      return `<span class="chip${allHidden?"":" on"}" onclick="toggleLeague('${esc(lg)}')">${esc(lg)}</span>`;
+    }).join("")}
+  </div>` : "";
+
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <span style="font-size:11px;color:var(--text2)">${fetchedRows.length} rows${hiddenCount ? ` (${hiddenCount} hidden)` : ""}</span>
+    ${hiddenCount ? `<button class="reset-btn" onclick="resetHidden()">Show all</button>` : ""}
+  </div>`;
+  html += chipHtml;
+
+  const contOrder = ["EUROPE","AMERICAS","ASIA","ASIA-PACIFIC","COMMODITIES","CRYPTO","MOTORSPORT",
+                     "UPCOMING","CONFIRMED","RUMOURS","CHARTS","POLITICS","TECHNOLOGY","ECONOMY",
+                     "SCIENCE","HEALTH","CLIMATE","CONFLICT","CULTURE","MODEL_UPDATE","BIG_TECH",
+                     "TOOLS","FUNDING","RESEARCH","REGULATION","DEALS","ESPORTS","RELEASES",
+                     "TURKEY","OTHER"];
+  const sortedConts = Object.keys(contMap).sort((a,b) => {
+    const ai = contOrder.indexOf(a), bi = contOrder.indexOf(b);
+    return (ai<0?999:ai) - (bi<0?999:bi);
+  });
+
+  for(const cont of sortedConts){
+    const lgMap = contMap[cont];
+    html += `<div class="cont-group">`;
+    html += `<div class="cont-hdr">${cont}</div>`;
+    for(const [lg, data] of Object.entries(lgMap)){
+      const display = data.display || lg;
+      html += `<div class="league-hdr"><div class="league-dot" style="background:var(--text3)"></div>${esc(display)}<span style="margin-left:auto;font-size:10px;color:var(--text3)">${data.rows.length}</span></div>`;
+      for(const r of data.rows){
+        const isHidden = hidden.has(r.id);
+        html += `<div class="row-item${isHidden?" hidden":""}">
+          <div class="row-toggle${isHidden?"":" on"}" onclick="toggleRow('${esc(r.id)}')">${isHidden?"\u2715":"\u2713"}</div>
+          <span class="row-home">${esc(r.home)}</span>
+          <span class="row-score">${esc(r.score)}</span>
+          <span class="row-away">${esc(r.away)}</span>
+          <span class="row-status">${esc(r.status||"")}</span>
+        </div>`;
+      }
+    }
+    html += `</div>`;
+  }
+  return html;
+}
+
+// ── Music section ────────────────────────────────────────────────────────────
+function renderMusicSec(){
+  const mt = getMusicFile(active);
+  const vol = getMusicVolume(active);
+
+  let html = "";
+  if(mt){
+    html += `<div class="music-current">
+      <span>\u{1F3B5}</span>
+      <div><div style="font-weight:600;font-size:12px">${esc(mt.name)}</div>
+      <div style="font-size:11px;color:var(--text2)">${mt.size||""} \u00b7 ${mt.type==="custom"?"Custom upload":"Pixabay"}</div></div>
+      <button onclick="removeMusicFile()" style="margin-left:auto;font-size:11px;color:var(--danger);background:none;border:none;cursor:pointer">Remove</button>
+    </div>`;
+  } else {
+    html += `<div style="font-size:12px;color:var(--text3);margin-bottom:10px">No music selected \u2014 reels will be silent.</div>`;
+  }
+
+  html += `<div class="music-btns">
+    <button class="music-btn" onclick="document.getElementById('mu-file').click()">\u2191 Upload MP3</button>
+    <input type="file" id="mu-file" accept=".mp3,.m4a,.aac,.wav,.ogg" style="display:none" onchange="uploadMusic(this)">
+    <button class="music-btn" onclick="loadPixabay()">${pixLoading?"\u25CC Loading...":"\u{1F3B5} Browse free tracks"}</button>
+  </div>`;
+
+  if(pixTracks.length){
+    html += `<div class="pix-list">
+      ${pixTracks.map(t => {
+        const fname = "pixabay_"+t.id+".mp3";
+        const isSel = mt && mt.filename === fname;
+        return `<div class="pix-item${isSel?" sel":""}" onclick="selectPixabay('${t.id}')">
+          <span style="font-size:12px;font-weight:600;min-width:90px">${t.name}</span>
+          <span style="font-size:11px;color:var(--text2)">${t.mood}</span>
+          <span style="font-size:10px;padding:1px 6px;border-radius:8px;background:var(--bg2);color:var(--text3)">${t.bpm} BPM</span>
+          <span style="margin-left:auto;font-size:10px;color:${isSel?"var(--success)":"var(--info)"}">${isSel?"\u2713 Selected":"\u2193 Select"}</span>
+        </div>`;
+      }).join("")}
+    </div>`;
+  }
+
+  html += `<div class="vol-row">
+    <span style="font-size:11px;color:var(--text2)">Volume:</span>
+    <input type="range" min="10" max="100" value="${Math.round(vol*100)}" step="5"
+      oninput="setMusicVolume(active,this.value/100);this.nextElementSibling.textContent=this.value+'%'">
+    <span style="font-size:11px;min-width:32px">${Math.round(vol*100)}%</span>
+  </div>`;
+  return html;
+}
+
+async function loadPixabay(){
+  if(pixTracks.length){ renderMain(); return; }
+  pixLoading = true; renderMain();
+  try{
+    const r = await fetch("/api/music/tracks");
+    const j = await r.json();
+    pixTracks = j.tracks || [];
+  }catch(e){ console.error(e); }
+  pixLoading = false; renderMain();
+}
+
+async function selectPixabay(trackId){
+  const track = pixTracks.find(t=>t.id===trackId);
+  if(!track) return;
+  const fname = "pixabay_"+trackId+".mp3";
+  const mt = getMusicFile(active);
+  if(mt && mt.filename===fname){ removeMusicFile(); return; }
+  setStatus("\u23F3 Downloading track...");
+  try{
+    const r = await fetch("/api/music/download-pixabay",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({track_id:trackId})});
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error);
+    setMusicFile(active, {filename:j.filename, name:j.name, size:j.size, type:"pixabay"});
+    setStatus("\u2713 Track ready");
+    setTimeout(()=>setStatus(""),3000);
+  }catch(e){
+    alert("Download error: "+e.message);
+    setStatus("");
+  }
+  renderMain();
+}
+
+async function uploadMusic(input){
+  const file = input.files[0]; if(!file) return;
+  const fd = new FormData(); fd.append("file", file);
+  setStatus("\u23F3 Uploading music...");
+  try{
+    const r = await fetch("/api/music/upload",{method:"POST",body:fd});
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error);
+    setMusicFile(active, {filename:j.filename, name:j.name, size:j.size, type:"custom"});
+    setStatus("\u2713 Music uploaded");
+    setTimeout(()=>setStatus(""),3000);
+  }catch(e){
+    alert("Upload error: "+e.message);
+    setStatus("");
+  }
+  renderMain();
+}
+
+function removeMusicFile(){
+  setMusicFile(active, null);
+  saveState(active, {musicFile: null});
+  renderMain();
+}
+
+// ── Description ──────────────────────────────────────────────────────────────
+function renderDescSec(){
+  const desc = getDesc(active);
+  const locked = getDescLocked(active);
+
+  let html = `<textarea class="desc-area" id="desc-text" placeholder="YouTube description will appear here..."
+    ${locked?"readonly":""} oninput="setDesc(active,this.value)">${esc(desc)}</textarea>`;
+
+  html += `<div class="desc-actions">
+    <button class="desc-btn primary" onclick="generateDesc()" ${descLoading||locked?"disabled":""}>
+      ${descLoading?`<span class="spin">\u25CC</span> Generating...`:"\u{1F916} Generate with AI"}
+    </button>
+    <button class="desc-btn" onclick="toggleDescLock()">
+      ${locked?"\u{1F513} Unlock":"\u{1F512} Lock"}
+    </button>
+    ${locked?`<span class="lock-badge">Locked</span>`:""}
+  </div>`;
+  return html;
+}
+
+async function generateDesc(){
+  if(getDescLocked(active)) return;
+  const rows = visibleRows();
+  if(!rows.length){ alert("Fetch data first."); return; }
+
+  descLoading = true; renderMain();
+  try{
+    const r = await fetch("/api/channel/description",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({channel_id: active, rows})
+    });
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error);
+    setDesc(active, j.description);
+  }catch(e){
+    alert("Description error: "+e.message);
+  }
+  descLoading = false; renderMain();
+}
+
+function toggleDescLock(){
+  setDescLocked(active, !getDescLocked(active));
+  renderMain();
+}
+
+// ── Make Reel ────────────────────────────────────────────────────────────────
+async function makeReel(){
+  const rows = visibleRows();
+  if(!rows.length) return;
+
+  reelLoading = true;
+  downloadUrl = null;
+  renderMain();
+  setStatus("\u23F3 Generating reel...");
+
+  // Group rows by league
+  const groupMap = {};
+  for(const r of rows){
+    const lg = r.league || "OTHER";
+    if(!groupMap[lg]) groupMap[lg] = {league:lg, display_name:r.category&&r.category!==r.continent?r.category+" \u00b7 "+lg:lg, continent:r.continent||r.category||"OTHER", matches:[]};
+    groupMap[lg].matches.push(r);
+  }
+  const groups = Object.values(groupMap);
+
+  const ch = CHANNELS.find(c=>c.id===active);
+  const pal = getSelectedPalette();
+  const mt = getMusicFile(active);
+  const vol = getMusicVolume(active);
+
+  const body = {
+    sport_id: ch.theme,
+    sport_name: ch.name,
+    channel_name: ch.channel,
+    bg_filename: null,
+    music_filename: mt?.filename || null,
+    music_volume: vol,
+    groups,
+    custom_theme: {bg:pal.bg, accent:pal.accent, dim:pal.dim},
+  };
+
+  try{
+    const res = await fetch("/api/make-reel",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const j = await res.json();
+    if(!j.ok) throw new Error(j.error);
+    downloadUrl = j.download_url;
+    setStatus("\u2713 Reel ready!");
+    setTimeout(()=>setStatus(""),5000);
+  }catch(e){
+    alert("Reel error: "+e.message);
+    setStatus("");
+  }
+  reelLoading = false;
+  renderMain();
+}
+
+// ── Main render ──────────────────────────────────────────────────────────────
+function renderMain(){
+  const ch = CHANNELS.find(c=>c.id===active);
+  const pal = getSelectedPalette();
+  const mt = getMusicFile(active);
+  const vis = visibleRows();
+  const hiddenCount = fetchedRows.length - vis.length;
+
+  document.getElementById("main").innerHTML = `
+    <div class="m-hdr">
+      <div class="m-title">
+        <span style="font-size:18px">${ch.icon}</span> ${ch.name}
+        ${vis.length?`<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:var(--success-bg);color:var(--success);font-weight:600">${vis.length} rows</span>`:""}
+      </div>
+      <span style="font-size:11px;color:var(--text3)">@${ch.channel}</span>
+    </div>
+
+    <!-- THEME -->
+    <div class="sec">
+      <div class="sec-hdr" onclick="toggleSec('theme')">
+        <span class="sec-arrow${openSections.theme?" open":""}">&#9656;</span>
+        <span class="sec-title">Theme</span>
+        <span class="sec-badge" style="display:flex;align-items:center;gap:4px">
+          <span style="width:8px;height:8px;border-radius:50%;background:${rgbStr(pal.accent)}"></span>
+          ${pal.name}
+        </span>
+      </div>
+      <div class="sec-body${openSections.theme?" open":""}">
+        ${renderPalettes()}
+      </div>
+    </div>
+
+    <!-- MUSIC -->
+    <div class="sec">
+      <div class="sec-hdr" onclick="toggleSec('music')">
+        <span class="sec-arrow${openSections.music?" open":""}">&#9656;</span>
+        <span class="sec-title">Music</span>
+        <span class="sec-badge">${mt?mt.name:"None"}</span>
+      </div>
+      <div class="sec-body${openSections.music?" open":""}">
+        ${renderMusicSec()}
+      </div>
+    </div>
+
+    <!-- DATA -->
+    <div class="sec">
+      <div class="sec-hdr" onclick="toggleSec('data')">
+        <span class="sec-arrow${openSections.data?" open":""}">&#9656;</span>
+        <span class="sec-title">Data</span>
+        <span class="sec-badge">${fetchedRows.length?fetchedRows.length+" fetched":"empty"}</span>
+      </div>
+      <div class="sec-body${openSections.data?" open":""}">
+        ${renderDataTabs()}
+        <div style="margin-bottom:10px">
+          <button class="fbtn" onclick="doFetch()" ${fetchLoading?"disabled":""}>
+            ${fetchLoading?`<span class="spin">\u25CC</span> Fetching...`:"\u2193 Fetch Data"}
+          </button>
+        </div>
+        ${fetchError?`<div class="errbox">\u26A0 ${esc(fetchError)}</div>`:""}
+        ${renderDataRows()}
+      </div>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="sec">
+      <div class="sec-hdr" onclick="toggleSec('desc')">
+        <span class="sec-arrow${openSections.desc?" open":""}">&#9656;</span>
+        <span class="sec-title">Description</span>
+        <span class="sec-badge">${getDesc(active)?"written":"empty"}</span>
+      </div>
+      <div class="sec-body${openSections.desc?" open":""}">
+        ${renderDescSec()}
+      </div>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="action-bar">
+      <div class="action-meta">
+        Channel: <strong>@${ch.channel}</strong><br>
+        Data: <strong>${vis.length} rows</strong>${hiddenCount?` (${hiddenCount} hidden)`:""}
+        &nbsp;\u00b7&nbsp; Music: <strong>${mt?mt.name:"none"}</strong>
+        &nbsp;\u00b7&nbsp; Color: <strong>${pal.name}</strong>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <button class="rbtn" onclick="makeReel()" ${vis.length&&!reelLoading?"":"disabled"}>
+          ${reelLoading?`<span class="spin">\u25CC</span> Generating...`:"\u{1F3AC} Reel \u00DCret"}
+        </button>
+        ${downloadUrl?`<div class="dl-box">
+          <span style="font-size:12px;color:var(--success)">\u2713 Reel ready!</span>
+          <a class="dl-btn" href="${downloadUrl}" download>\u2B07 Download MP4</a>
+        </div>`:""}
+      </div>
+    </div>
+  `;
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+function setStatus(msg){ document.getElementById("api-status").textContent = msg; }
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+renderSidebar();
+renderMain();
+</script>
+</body>
+</html>

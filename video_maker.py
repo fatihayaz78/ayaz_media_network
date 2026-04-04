@@ -264,6 +264,24 @@ def draw_text_shadow(draw, xy, text, font, fill, shadow=(0, 0, 0), offset=2):
     draw.text(xy, text, font=font, fill=fill)
 
 
+def auto_text_colors(accent: tuple) -> dict:
+    """Given accent color, return appropriate text colors based on luminance."""
+    r, g, b = accent[:3]
+    luminance = 0.299*r + 0.587*g + 0.114*b
+    if luminance > 160:  # light accent
+        return {
+            "title":    (20, 20, 20),
+            "subtitle": (60, 60, 60),
+            "content":  (40, 40, 40),
+        }
+    else:  # dark accent (most cases)
+        return {
+            "title":    (255, 255, 255),
+            "subtitle": (195, 195, 210),
+            "content":  (160, 160, 180),
+        }
+
+
 def get_week_num(date_str: str) -> int:
     """dd.mm.yyyy → ISO hafta numarası"""
     try:
@@ -544,7 +562,7 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
 # ── MAKE REEL (ana fonksiyon) ─────────────────────────────────────────────────
 def make_reel(config: dict, output_path: str, bg_path: str = None,
               music_path: str = None, music_volume: float = 0.4,
-              sport_id: str = "futbol"):
+              sport_id: str = "futbol", custom_theme: dict = None):
     """
     3 katmanlı video üretimi:
       1. Sabit header  (y=0, yükseklik=HEADER_H)
@@ -552,7 +570,20 @@ def make_reel(config: dict, output_path: str, bg_path: str = None,
       3. Sabit footer  (y=H-FOOTER_H, yükseklik=FOOTER_H)
 
     Kayma: içeriğin tamamı üstten çıkınca video kapanır.
+    custom_theme: {"bg": [r,g,b], "accent": [r,g,b], "dim": [r,g,b]}
     """
+    # If custom_theme provided, inject temporarily into SPORT_IDENTITY
+    _custom_key = None
+    if custom_theme:
+        _custom_key = f"_custom_{id(config)}"
+        SPORT_IDENTITY[_custom_key] = {
+            "name":   SPORT_IDENTITY.get(sport_id, SPORT_IDENTITY["diger"])["name"],
+            "bg":     tuple(custom_theme["bg"]),
+            "accent": tuple(custom_theme["accent"]),
+            "dim":    tuple(custom_theme["dim"]),
+        }
+        sport_id = _custom_key
+
     ident    = SPORT_IDENTITY.get(sport_id, SPORT_IDENTITY["diger"])
     bg_rgb   = ident["bg"]
     date_str = config.get("date", datetime.now().strftime("%d.%m.%Y"))
@@ -685,6 +716,10 @@ def make_reel(config: dict, output_path: str, bg_path: str = None,
             os.remove(p)
         except Exception:
             pass
+
+    # Clean up custom theme from SPORT_IDENTITY
+    if _custom_key and _custom_key in SPORT_IDENTITY:
+        del SPORT_IDENTITY[_custom_key]
 
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg failed:\n{result.stderr[-2000:]}")

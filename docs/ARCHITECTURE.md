@@ -173,6 +173,7 @@ Enable in config.json: "enabled": true
 
 ```
 GET  /                            → index.html (Studio UI)
+GET  /channel                     → channel.html (Channel Manager)
 GET  /scheduler                   → scheduler.html (Scheduler UI)
 
 # Sports (legacy)
@@ -192,7 +193,8 @@ GET  /api/fetch/channel
      ?channel_id=transfer         → TransferFetcher
      ?channel_id=fixtures         → FixturesFetcher
 
-POST /api/make-reel               → Generate MP4
+POST /api/channel/description     → Claude AI YouTube description
+POST /api/make-reel               → Generate MP4 (supports custom_theme)
 GET  /api/download/{filename}     → Download MP4
 POST /api/upload-media            → Upload BG image/video
 POST /api/music/upload            → Upload music file

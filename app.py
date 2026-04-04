@@ -145,6 +145,63 @@ def api_fetch_channel():
         return jsonify({"ok": False, "error": str(ex)}), 500
 
 
+@app.route("/channel")
+def channel_page():
+    return app.send_static_file("channel.html")
+
+
+@app.route("/api/channel/description", methods=["POST"])
+def generate_description():
+    data = request.json or {}
+    channel_id = data.get("channel_id", "")
+    rows = data.get("rows", [])
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return jsonify({"ok": False, "error": "ANTHROPIC_API_KEY not set"})
+
+    # Build context from rows
+    summary_lines = []
+    for r in rows[:30]:
+        parts = [r.get("home", ""), r.get("score", ""),
+                 r.get("away", ""), r.get("status", "")]
+        summary_lines.append(" | ".join(p for p in parts if p))
+
+    channel_labels = {
+        "finance":  "stock market, crypto, and commodities",
+        "music":    "music charts",
+        "techai":   "AI and technology news",
+        "news":     "world news",
+        "transfer": "football transfer news",
+        "games":    "gaming and esports",
+        "sports":   "sports scores",
+        "fixtures": "upcoming football fixtures",
+    }
+    topic = channel_labels.get(channel_id, channel_id)
+
+    prompt = (
+        f"You are writing a YouTube Shorts description for a {topic} video.\n"
+        f"Based on this data, write ONE engaging paragraph (max 3 sentences) in English.\n"
+        f"Be specific — mention actual names, numbers, or trends from the data.\n"
+        f"End with relevant hashtags on a new line (max 8 hashtags).\n\n"
+        f"Data:\n{chr(10).join(summary_lines[:20])}\n\n"
+        f"Write only the description + hashtags. No preamble."
+    )
+
+    try:
+        from anthropic import Anthropic
+        client = Anthropic(api_key=api_key)
+        resp = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=300,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        description = resp.content[0].text.strip()
+        return jsonify({"ok": True, "description": description})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)})
+
+
 @app.route("/api/upload-media", methods=["POST"])
 def api_upload_media():
     if "file" not in request.files:
@@ -231,17 +288,23 @@ def api_make_reel():
     for g in groups:
         league   = g.get("league", "")
         info     = league_display.get(league, {})
-        continent = info.get("continent", "OTHER")
-        display  = info.get("display", league)
+        # Check group-level continent, then first match's continent field
+        matches  = g.get("matches", [])
+        continent = (g.get("continent")
+                     or info.get("continent")
+                     or (matches[0].get("continent") if matches else None)
+                     or "OTHER")
+        display  = g.get("display_name") or info.get("display") or league
         if continent not in cont_map:
             cont_map[continent] = []
         cont_map[continent].append({
             "league":       league,
             "display_name": display,
-            "matches":      g.get("matches", []),
+            "matches":      matches,
         })
 
-    CONTINENT_ORDER = ["EUROPE", "AMERICAS", "ASIA-PACIFIC", "MOTORSPORT", "OTHER"]
+    CONTINENT_ORDER = ["EUROPE", "AMERICAS", "ASIA-PACIFIC", "ASIA",
+                       "MOTORSPORT", "COMMODITIES", "CRYPTO", "OTHER"]
     continents = []
     for cont_name in CONTINENT_ORDER:
         if cont_name in cont_map:
@@ -260,8 +323,11 @@ def api_make_reel():
         "continents":   continents,
     }
 
+    custom_theme = body.get("custom_theme")
+
     try:
-        make_reel(reel_cfg, out_path, bg_path, music_path, music_volume, sport_id=sport_id)
+        make_reel(reel_cfg, out_path, bg_path, music_path, music_volume,
+                  sport_id=sport_id, custom_theme=custom_theme)
         return jsonify({"ok": True, "filename": out_name,
                         "download_url": f"/api/download/{out_name}"})
     except Exception as ex:
@@ -354,7 +420,8 @@ def api_scheduler_daemon():
 
 if __name__ == "__main__":
     print("=" * 50)
-    print("Sports Reel Studio  →  http://localhost:5050")
-    print("Scheduler UI        →  http://localhost:5050/scheduler")
+    print("Sports Reel Studio  →  http://localhost:5052")
+    print("Channel Manager     →  http://localhost:5052/channel")
+    print("Scheduler UI        →  http://localhost:5052/scheduler")
     print("=" * 50)
     app.run(debug=True, port=5052, use_reloader=False)
