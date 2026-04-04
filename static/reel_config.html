@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reel Config — Ayaz Media Network</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f5f4f0;--bg3:#eeedea;--text:#1a1a18;--text2:#6b6b67;--text3:#9c9a96;--border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.18);--accent:#1a1a18;--acc-inv:#fff;--success:#3b6d11;--success-bg:#eaf3de;--danger:#a32d2d;--danger-bg:#fcebeb;--radius:8px;--radius-lg:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;background:var(--bg2);color:var(--text);min-height:100vh}
+a{color:#185fa5;text-decoration:none}a:hover{text-decoration:underline}
+.topbar{display:flex;align-items:center;gap:12px;padding:9px 16px;background:var(--bg);border-bottom:0.5px solid var(--border)}
+.brand{font-size:15px;font-weight:600}
+.nav-links{display:flex;gap:16px;margin-left:auto;font-size:12px}
+.nav-links a{color:var(--text2);padding:4px 8px;border-radius:var(--radius)}
+.nav-links a:hover{background:var(--bg2);text-decoration:none}
+.nav-links a.active{color:var(--accent);font-weight:600}
+.container{max-width:720px;margin:24px auto;padding:0 16px}
+h1{font-size:18px;margin-bottom:16px}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px}
+.card h2{font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.field input[type=text],.field select{width:100%;height:32px;padding:0 10px;font-size:13px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text)}
+.field input[type=color]{width:48px;height:32px;border:0.5px solid var(--border2);border-radius:var(--radius);cursor:pointer;padding:2px}
+.field-row{display:flex;gap:12px;align-items:flex-end}
+.field-row .field{flex:1}
+.btn{height:34px;padding:0 18px;font-size:12px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:var(--acc-inv)}
+.btn-primary:hover{opacity:.85}
+.btn-secondary{background:transparent;border:0.5px solid var(--border2);color:var(--text)}
+.btn-secondary:hover{background:var(--bg2)}
+.msg{padding:8px 12px;border-radius:var(--radius);font-size:12px;margin-top:8px}
+.msg-ok{background:var(--success-bg);color:var(--success)}
+.msg-err{background:var(--danger-bg);color:var(--danger)}
+#status{font-size:11px;color:var(--text3)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">Ayaz Media Network</div>
+  <div class="nav-links">
+    <a href="/channel">Channels</a>
+    <a href="/reel-config" class="active">Reel Config</a>
+    <a href="/scheduler">Scheduler</a>
+  </div>
+  <span id="status"></span>
+</div>
+
+<div class="container">
+  <h1>Reel Configuration</h1>
+
+  <div class="card">
+    <div class="field">
+      <label>Channel</label>
+      <select id="ch" onchange="loadConfig()">
+        <option value="finance">Finance</option>
+        <option value="music">Music</option>
+        <option value="techai">Tech & AI</option>
+        <option value="news">World News</option>
+        <option value="transfer">Transfer</option>
+        <option value="games">Games</option>
+        <option value="futbol">Football</option>
+        <option value="basket">Basketball</option>
+        <option value="fixtures">Fixtures</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card" id="config-form">
+    <h2><span id="ch-icon"></span> <span id="ch-label"></span> Config</h2>
+
+    <div class="field">
+      <label>Header Text</label>
+      <input type="text" id="header_text" placeholder="WEEKLY MARKETS">
+    </div>
+
+    <div class="field">
+      <label>Footer Text (channel handle)</label>
+      <input type="text" id="footer_text" placeholder="@ayaz_finance">
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Background Color</label>
+        <input type="color" id="bg_color" value="#040C04">
+      </div>
+      <div class="field">
+        <label>Accent Color</label>
+        <input type="color" id="accent_color" value="#00C853">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Reel Speed</label>
+        <select id="reel_speed">
+          <option value="1.0">1.0x (40 px/s)</option>
+          <option value="1.5" selected>1.5x (60 px/s)</option>
+          <option value="2.0">2.0x (80 px/s)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Frequency</label>
+        <select id="frequency">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-primary" onclick="saveConfig()">Save Config</button>
+      <button class="btn btn-secondary" onclick="resetConfig()">Reset to Default</button>
+    </div>
+    <div id="msg"></div>
+  </div>
+</div>
+
+<script>
+const DEFAULTS = {
+  finance:  {header_text:"WEEKLY MARKETS",      footer_text:"@ayaz_finance",  bg_color:"#040C04", accent_color:"#00C853", reel_speed:"1.5", frequency:"weekly"},
+  music:    {header_text:"WEEKLY WORLD TOP 5",  footer_text:"@ayaz_musics",   bg_color:"#0E0412", accent_color:"#E040FB", reel_speed:"1.5", frequency:"weekly"},
+  techai:   {header_text:"AI & TECH WEEKLY",    footer_text:"@ayaz_techai",   bg_color:"#040814", accent_color:"#60A5FA", reel_speed:"1.5", frequency:"weekly"},
+  news:     {header_text:"WEEKLY WORLD NEWS",   footer_text:"@ayaz_news",     bg_color:"#06060E", accent_color:"#818CF8", reel_speed:"1.5", frequency:"daily"},
+  transfer: {header_text:"WEEKLY TRANSFER NEWS",footer_text:"@ayaz_transfer", bg_color:"#120800", accent_color:"#FF8C00", reel_speed:"1.5", frequency:"daily"},
+  games:    {header_text:"WEEKLY GAME NEWS",    footer_text:"@ayaz_gamezs",   bg_color:"#080414", accent_color:"#A855F7", reel_speed:"1.5", frequency:"daily"},
+  futbol:   {header_text:"WEEKLY SCORES",       footer_text:"@ayaz_sports",   bg_color:"#0D0F1A", accent_color:"#4F96FF", reel_speed:"1.5", frequency:"daily"},
+  basket:   {header_text:"WEEKLY SCORES",       footer_text:"@ayaz_sports",   bg_color:"#120808", accent_color:"#E04030", reel_speed:"1.5", frequency:"daily"},
+  fixtures: {header_text:"UPCOMING FIXTURES",   footer_text:"@ayaz_fixtures", bg_color:"#061008", accent_color:"#40C870", reel_speed:"1.5", frequency:"weekly"},
+};
+const ICONS = {finance:"\u{1F4C8}",music:"\u{1F3B5}",techai:"\u{1F916}",news:"\u{1F4F0}",transfer:"\u26BD",games:"\u{1F3AE}",futbol:"\u26BD",basket:"\u{1F3C0}",fixtures:"\u{1F4C5}"};
+
+function getCh(){ return document.getElementById("ch").value; }
+
+async function loadConfig(){
+  const ch = getCh();
+  const def = DEFAULTS[ch] || {};
+  document.getElementById("ch-icon").textContent = ICONS[ch]||"";
+  document.getElementById("ch-label").textContent = ch.charAt(0).toUpperCase()+ch.slice(1);
+  document.getElementById("msg").innerHTML = "";
+
+  try{
+    const r = await fetch(`/api/reel-config/${ch}`);
+    const j = await r.json();
+    const cfg = {...def, ...(j.config||{})};
+    document.getElementById("header_text").value  = cfg.header_text || "";
+    document.getElementById("footer_text").value  = cfg.footer_text || "";
+    document.getElementById("bg_color").value     = cfg.bg_color || "#000000";
+    document.getElementById("accent_color").value = cfg.accent_color || "#4F96FF";
+    document.getElementById("reel_speed").value   = String(cfg.reel_speed || "1.5");
+    document.getElementById("frequency").value    = cfg.frequency || "weekly";
+  }catch(e){
+    console.error(e);
+  }
+}
+
+async function saveConfig(){
+  const ch = getCh();
+  const body = {
+    header_text:  document.getElementById("header_text").value,
+    footer_text:  document.getElementById("footer_text").value,
+    bg_color:     document.getElementById("bg_color").value,
+    accent_color: document.getElementById("accent_color").value,
+    reel_speed:   parseFloat(document.getElementById("reel_speed").value),
+    frequency:    document.getElementById("frequency").value,
+  };
+  try{
+    const r = await fetch(`/api/reel-config/${ch}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const j = await r.json();
+    if(j.ok) document.getElementById("msg").innerHTML = `<div class="msg msg-ok">Saved for ${ch}</div>`;
+    else throw new Error("Save failed");
+  }catch(e){
+    document.getElementById("msg").innerHTML = `<div class="msg msg-err">Error: ${e.message}</div>`;
+  }
+}
+
+function resetConfig(){
+  const ch = getCh();
+  const def = DEFAULTS[ch] || {};
+  document.getElementById("header_text").value  = def.header_text || "";
+  document.getElementById("footer_text").value  = def.footer_text || "";
+  document.getElementById("bg_color").value     = def.bg_color || "#000000";
+  document.getElementById("accent_color").value = def.accent_color || "#4F96FF";
+  document.getElementById("reel_speed").value   = String(def.reel_speed || "1.5");
+  document.getElementById("frequency").value    = def.frequency || "weekly";
+  document.getElementById("msg").innerHTML = `<div class="msg msg-ok">Reset to defaults</div>`;
+}
+
+loadConfig();
+</script>
+</body>
+</html>

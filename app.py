@@ -460,10 +460,49 @@ def api_scheduler_daemon():
     import time; time.sleep(1)
     return jsonify({"ok": True, "daemon": daemon_status()})
 
+# ── Reel Config ──────────────────────────────────────────────────────────────
+REEL_CONFIG_DIR = os.path.join(BASE_DIR, "channels")
+
+def _reel_config_path(channel_id: str) -> str:
+    d = os.path.join(REEL_CONFIG_DIR, channel_id)
+    os.makedirs(d, exist_ok=True)
+    return os.path.join(d, "reel_config.json")
+
+def _load_reel_config(channel_id: str) -> dict:
+    path = _reel_config_path(channel_id)
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def _save_reel_config(channel_id: str, cfg: dict):
+    with open(_reel_config_path(channel_id), "w", encoding="utf-8") as f:
+        json.dump(cfg, f, ensure_ascii=False, indent=2)
+
+
+@app.route("/reel-config")
+def reel_config_page():
+    return app.send_static_file("reel_config.html")
+
+
+@app.route("/api/reel-config/<channel_id>")
+def api_get_reel_config(channel_id):
+    cfg = _load_reel_config(channel_id)
+    return jsonify({"ok": True, "config": cfg})
+
+
+@app.route("/api/reel-config/<channel_id>", methods=["POST"])
+def api_set_reel_config(channel_id):
+    body = request.get_json(force=True) or {}
+    _save_reel_config(channel_id, body)
+    return jsonify({"ok": True})
+
+
 if __name__ == "__main__":
     print("=" * 50)
     print("Sports Reel Studio  →  http://localhost:5052")
     print("Channel Manager     →  http://localhost:5052/channel")
+    print("Reel Config         →  http://localhost:5052/reel-config")
     print("Scheduler UI        →  http://localhost:5052/scheduler")
     print("=" * 50)
     app.run(debug=True, port=5052, use_reloader=False)

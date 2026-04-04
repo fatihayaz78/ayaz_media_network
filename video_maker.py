@@ -5,6 +5,7 @@ Mimarisi: sabit header + kayan içerik şeridi + sabit footer (3 katman, ffmpeg 
 """
 
 import os
+import json
 import subprocess
 import urllib.request
 from datetime import datetime
@@ -113,7 +114,7 @@ SPORT_IDENTITY = {
     },
     "music": {
         "name":         "MUSIC CHARTS",
-        "header_title": "WEEKLY WORLD BILLBOARD",
+        "header_title": "WEEKLY WORLD TOP 5",
         "bg":     (14, 4, 18),
         "accent": (224, 64, 251),
         "dim":    (40, 14, 52),
@@ -269,6 +270,19 @@ def centered_x(draw: ImageDraw.ImageDraw, text: str, font, width: int = W) -> in
     return (width - (bb[2] - bb[0])) // 2
 
 
+def truncate_text(draw: ImageDraw.ImageDraw, text: str, font, max_w: int) -> str:
+    """Truncate text to fit within max_w pixels, appending '...' if needed."""
+    bb = draw.textbbox((0, 0), text, font=font)
+    if (bb[2] - bb[0]) <= max_w:
+        return text
+    for i in range(len(text), 0, -1):
+        t = text[:i] + "..."
+        bb = draw.textbbox((0, 0), t, font=font)
+        if (bb[2] - bb[0]) <= max_w:
+            return t
+    return "..."
+
+
 def text_height(draw: ImageDraw.ImageDraw, text: str, font) -> int:
     bb = draw.textbbox((0, 0), text, font=font)
     return bb[3] - bb[1]
@@ -326,26 +340,26 @@ def generate_header(sport_id: str, date_str: str) -> Image.Image:
     f_title = get_font(82, bold=True)
     f_date  = get_font(48)
 
-    y = 72
-
-    # Header title — beyaz, bold
+    # Title — centered vertically in upper portion
     title = ident.get("header_title", "WEEKLY SCORES")
+    title_h = text_height(draw, title, f_title)
+    title_y = 72
     x = centered_x(draw, title, f_title)
-    draw_text_shadow(draw, (x, y), title, f_title, (255, 255, 255, 255))
-    y += text_height(draw, title, f_title) + 24
+    draw.text((x, title_y), title, font=f_title, fill=(255, 255, 255, 255))
 
-    # Aksent çubuğu
+    # Aksent çubuğu — anchored well below title
+    bar_y = title_y + title_h + 28
     bar_w = 74
     draw.rectangle(
-        [(W - bar_w) // 2, y, (W + bar_w) // 2, y + 4],
+        [(W - bar_w) // 2, bar_y, (W + bar_w) // 2, bar_y + 4],
         fill=accent + (255,)
     )
-    y += 4 + 24
 
-    # Tarih + Hafta — tek satır, larger font
+    # Tarih + Hafta — below bar
+    date_y = bar_y + 4 + 24
     date_text = f"{date_str}  \u00b7  Week {week:02d}"
     x = centered_x(draw, date_text, f_date)
-    draw.text((x, y), date_text, font=f_date, fill=(220, 220, 235, 255))
+    draw.text((x, date_y), date_text, font=f_date, fill=(220, 220, 235, 255))
 
     # Alt ayırıcı çizgi
     draw.line(
@@ -394,11 +408,11 @@ def generate_footer(sport_id: str, channel_name: str) -> Image.Image:
         (tri_x + tri_w,  tri_y + tri_h // 2),
     ], fill=accent + (255,))
 
-    # Metin bloğu
+    # Metin bloğu — no shadows, bright colors
     tx = tri_x + tri_w + 20
     draw.text((tx, tri_y + 2),               "SUBSCRIBE FOR MORE",
               font=f_sub, fill=(210, 210, 225, 255))
-    bright_accent = tuple(min(c + 40, 255) for c in accent) + (255,)
+    bright_accent = tuple(min(c + 50, 255) for c in accent) + (255,)
     draw.text((tx, tri_y + 2 + 30 + 8),      f"@{channel_name}",
               font=f_hdl, fill=bright_accent)
 
@@ -534,7 +548,9 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
                     y += ROW_H
                     continue
 
-                # Skor kutusu
+                # Skor kutusu — truncate if too wide
+                max_score_w = W - 2*MARGIN - 120
+                score = truncate_text(draw, score, f_score, max_score_w)
                 sb    = draw.textbbox((0, 0), score, font=f_score)
                 sw    = sb[2] - sb[0]
                 box_w = sw + 28
@@ -603,6 +619,46 @@ def make_reel(config: dict, output_path: str, bg_path: str = None,
     date_str = config.get("date", datetime.now().strftime("%d.%m.%Y"))
     channel  = config.get("channel_name", "DailyScoreBoard")
 
+    # ── Load per-channel reel_config.json overrides ─────────────────────
+    reel_cfg_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "channels", sport_id, "reel_config.json"
+    )
+    reel_cfg = {}
+    if os.path.exists(reel_cfg_path):
+        try:
+            with open(reel_cfg_path, "r", encoding="utf-8") as f:
+                reel_cfg = json.load(f)
+        except Exception:
+            pass
+
+    # Apply overrides from reel_config
+    if reel_cfg.get("header_text"):
+        ident = {**ident, "header_title": reel_cfg["header_text"]}
+        if _custom_key and _custom_key in SPORT_IDENTITY:
+            SPORT_IDENTITY[_custom_key]["header_title"] = reel_cfg["header_text"]
+        else:
+            SPORT_IDENTITY[sport_id] = {**SPORT_IDENTITY.get(sport_id, SPORT_IDENTITY["diger"]), "header_title": reel_cfg["header_text"]}
+    if reel_cfg.get("footer_text"):
+        channel = reel_cfg["footer_text"]
+    if reel_cfg.get("bg_color"):
+        try:
+            h = reel_cfg["bg_color"].lstrip("#")
+            bg_rgb = (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+        except Exception:
+            pass
+    if reel_cfg.get("accent_color"):
+        try:
+            h = reel_cfg["accent_color"].lstrip("#")
+            new_accent = (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+            ident = {**ident, "accent": new_accent}
+        except Exception:
+            pass
+
+    # Speed multiplier: 1.0→40, 1.5→60, 2.0→80
+    speed_mult = float(reel_cfg.get("reel_speed", 1.5))
+    base_scroll_spd = speed_mult * 40.0
+
     # ── Katmanları oluştur ────────────────────────────────────────────────
     header_img  = generate_header(sport_id, date_str)
     footer_img  = generate_footer(sport_id, channel)
@@ -613,7 +669,7 @@ def make_reel(config: dict, output_path: str, bg_path: str = None,
     # ── Süre hesapla ──────────────────────────────────────────────────────
     # İçerik tamamen üstten çıkana kadar kaydır
     scroll_dist = content_h
-    scroll_spd  = 60.0   # px/s (1.5x from Phase 14)
+    scroll_spd  = base_scroll_spd
     pause_top   = 3.0    # başlangıç duraklaması (sn)
     PAUSE_BOTTOM = 2.0   # son satır çıktıktan sonra bekleme
     scroll_dur  = scroll_dist / scroll_spd if scroll_dist > 0 else 0

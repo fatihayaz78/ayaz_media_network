@@ -58,7 +58,8 @@ Phase 11:   ✅ COMPLETE (bug fixes: tickers, toggles, persistence, date presets
 Phase 12:   ✅ COMPLETE (music all-continents, news geo, games combined, redirect)
 Phase 13:   ✅ COMPLETE (per-channel header titles, test reels generated)
 Phase 14:   ✅ COMPLETE (visual QA fixes, 1.5x speed, font visibility)
-Phase 15:   📋 PLANNED  (Fatih visual review → final layout polish)
+Phase 15A:  ✅ COMPLETE (bug fixes, reel config UI, music TOP 5)
+Phase 15B:  📋 PLANNED  (news source overhaul, transfer fix, sport quota)
 See CHANGELOG.md for details.
 ```
 

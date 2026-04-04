@@ -90,3 +90,35 @@ def test_channel_description_api(client):
     assert "ok" in j
     if not j["ok"]:
         assert "error" in j
+
+
+def test_reel_config_page(client):
+    r = client.get("/reel-config")
+    assert r.status_code == 200
+    assert b"Reel Config" in r.data
+
+
+def test_reel_config_api(client):
+    # GET should return empty or existing config
+    r = client.get("/api/reel-config/finance")
+    j = r.get_json()
+    assert j["ok"] is True
+    assert "config" in j
+
+    # POST should save config
+    r = client.post("/api/reel-config/finance",
+                    json={"header_text": "TEST", "reel_speed": 1.5})
+    j = r.get_json()
+    assert j["ok"] is True
+
+    # GET again should return saved config
+    r = client.get("/api/reel-config/finance")
+    j = r.get_json()
+    assert j["config"]["header_text"] == "TEST"
+
+    # Cleanup: remove test config
+    import os
+    path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                        "channels", "finance", "reel_config.json")
+    if os.path.exists(path):
+        os.remove(path)

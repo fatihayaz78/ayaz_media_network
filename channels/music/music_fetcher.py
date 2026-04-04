@@ -132,14 +132,14 @@ class MusicFetcher(BaseFetcher):
     def _calc_trend(self, key: str, current_rank: int,
                     prev: List[Dict]) -> str:
         if not prev:
-            return "NEW"
+            return "\u2605"  # star for new entries
         prev_entry = next(
             (x for x in prev
              if f"{x.get('score', '')}::{x.get('away', '')}" == key),
             None
         )
         if not prev_entry:
-            return "NEW"
+            return "\u2605"  # star for new entries
         prev_rank = int(prev_entry["home"].split()[0])
         if current_rank < prev_rank:
             return "\u2191"

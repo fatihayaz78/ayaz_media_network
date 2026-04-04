@@ -4,6 +4,38 @@
 
 ---
 
+## [Sprint 15A] April 2026 — Bug Fixes + Reel Config UI
+**Phase:** 15A | **Status:** ✅ Complete
+
+### What was built
+- Fixed: header accent underline artifact — removed draw_text_shadow, explicit bar positioning
+- Fixed: footer channel name dark overlay — brighter accent (+50), no shadow calls
+- Added: /reel-config UI — per-channel header, footer, colors, speed, frequency
+  - Config saved to channels/{channel}/reel_config.json
+  - make_reel() auto-reads config overrides (header_text, footer_text, colors, speed)
+  - reel_speed multiplier: 1.0x=40px/s, 1.5x=60px/s, 2.0x=80px/s
+- Music: renamed to WEEKLY WORLD TOP 5, "NEW" label replaced with star symbol
+- Text truncation: score/song titles auto-truncated with "..." if too wide
+- Added truncate_text() helper to video_maker.py
+
+### Test results
+```
+tests/test_app_routes.py        13/13 passed (2 new: reel_config_page, reel_config_api)
+tests/channels/test_fixtures.py  5/5 passed
+Total: 18/18 passed
+```
+
+### Files changed
+- video_maker.py — header/footer fixes, reel_config override, truncate_text, json import
+- app.py — /reel-config route, GET/POST /api/reel-config/{channel}
+- static/reel_config.html — new file (Reel Config UI)
+- channels/music/music_fetcher.py — NEW→star symbol
+- tests/test_app_routes.py — 2 new tests
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 14] April 2026 — Visual QA Fixes + Sport Reels
 **Phase:** 14 | **Status:** ✅ Complete
 
