@@ -42,7 +42,8 @@ Fetch data → generate 1080×1920 MP4 → upload to YouTube.
 
 **Owner:** Fatih Ayaz
 **Path:** `/Users/fatihayaz/Documents/Projects/ayaz_media_network`
-**Stack:** Python 3.11, Flask, Pillow, ffmpeg, APScheduler, Anthropic SDK
+**Stack:** Python 3.14.3, Flask 3.1.3, Pillow 12.2.0, ffmpeg, APScheduler 3.11.2, Anthropic SDK 0.89.0
+**venv:** amn (source amn/bin/activate)
 
 ---
 
@@ -51,8 +52,8 @@ Fetch data → generate 1080×1920 MP4 → upload to YouTube.
 ```
 Phase 1–5: ✅ COMPLETE
 Phase 6:   ✅ COMPLETE (6/7 reels, 9 tests, fonts+env+git+YouTube)
-Phase 7:   ✅ COMPLETE (12/13 schedules, 6/7 reels, AI channels live, datetime fixed)
-Phase 8:   📋 PLANNED  (YouTube upload, rate limit strategy, esports/releases keys)
+Phase 7:   ✅ COMPLETE (12/13 schedules, AI channels live, datetime fixed)
+Phase 8:   📋 PLANNED  (YouTube upload, visual QA, content quality)
 See CHANGELOG.md for details.
 ```
 
@@ -73,16 +74,15 @@ See CHANGELOG.md for details.
 
 ---
 
-## Known Issues (Phase 7 targets)
+## Known Issues (Phase 8 targets)
 
 | Issue | File | Priority |
 |---|---|---|
-| ANTHROPIC_API_KEY not set | .env | High |
-| YouTube credentials.json missing | youtube.py | High |
-| SportAPI rate limits on repeated calls | fetcher.py | Medium |
-| PANDASCORE_KEY not set (esports) | games_fetcher.py | Medium |
-| RAWG_KEY not set (game releases) | games_fetcher.py | Medium |
-| CoinGecko SSL (some networks) | finance_fetcher.py | Low |
+| YouTube credentials.json missing | youtube.py | 🔴 High |
+| fixtures SportAPI rate limit | fixtures_fetcher.py | 🟡 Medium |
+| PANDASCORE_KEY not set (esports) | games_fetcher.py | 🟡 Medium |
+| RAWG_KEY not set (game releases) | games_fetcher.py | 🟡 Medium |
+| CoinGecko SSL (some networks) | finance_fetcher.py | 🟢 Low |
 
 ---
 
@@ -143,13 +143,10 @@ echo "=== READY — paste this report to Claude.ai ==="
 
 ---
 
-## Known Issues (Phase 6 targets)
+## Resolved Issues (Phase 6–7)
 
-| Issue | File | Priority |
-|---|---|---|
-| Roboto fonts 404 | video_maker.py | 🔴 High |
-| TransferMarkt 404 | transfer_fetcher.py | 🔴 High |
-| YouTube OAuth2 not configured | youtube.py | 🔴 High |
-| CoinGecko SSL (some networks) | finance_fetcher.py | 🟡 Medium |
-| Apple Music timeouts | music_fetcher.py | 🟡 Medium |
-| Transfer needs Claude API key | transfer_fetcher.py | 🟡 Medium |
+- ~~Roboto fonts 404~~ — fixed Sprint 6 (multi-source download)
+- ~~TransferMarkt 404~~ — removed, RSS+Claude only (Sprint 6)
+- ~~ANTHROPIC_API_KEY not set~~ — configured, AI channels live (Sprint 7)
+- ~~datetime.utcnow() deprecation~~ — fixed across 10 files (Sprint 7)
+- ~~Schedules disabled~~ — 12/13 enabled (Sprint 7)

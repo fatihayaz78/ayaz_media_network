@@ -8,46 +8,32 @@
 **Phase:** 7 | **Status:** ✅ Complete
 
 ### What was built
-- Task 7.1: datetime.utcnow() deprecation fixed across 10 files (11 occurrences)
-  Also fixed 2x datetime.utcfromtimestamp() in fetcher.py and fixtures_fetcher.py
-  All use datetime.now(timezone.utc).replace(tzinfo=None) — Python 3.14 clean
-- Task 7.2: 12/13 schedules enabled in config.json (asiapac paused)
-  youtube_enabled remains false (pending credentials.json)
-- Task 7.3: Production smoke test — 6/7 channels producing reels:
+- Task 7.1: datetime.utcnow() deprecation fixed — 10 files, 13 occurrences
+  (utcnow + utcfromtimestamp → datetime.now(timezone.utc))
+- Task 7.2: All schedules enabled — 12/13 (asiapac paused)
+- Task 7.3: Production smoke test passed — 6/7 channels, 0 crashes
   finance 1,416KB · music 406KB · techai 328KB · news 282KB ·
-  games 145KB · transfer 118KB · fixtures skipped (SportAPI rate limit)
-- Task 7.4: AI channels verified with Claude API:
-  techai 8 rows (BIG TECH, TOOLS categories) · news 8 rows (POLITICS, ECONOMY)
-  transfer 2 rows (Claude-extracted rumours with player/club data)
-- Task 7.5: scripts/start_daemon.sh — production-ready with venv, .env, key checks
+  games 145KB · transfer 118KB · fixtures ⚠️ (SportAPI rate limit)
+- Task 7.4: AI channels verified with live ANTHROPIC_API_KEY
+  techai → BIG TECH categories ✅ | news → POLITICS categories ✅
+- Task 7.5: scripts/start_daemon.sh finalized (venv + .env + key checks)
 
 ### Test results
-```
 tests/test_app_routes.py    9/9 passed (0 deprecation warnings)
-```
 
 ### Files changed
-- channels/finance/finance_fetcher.py    — datetime fix
-- channels/music/music_fetcher.py        — datetime fix
-- channels/techai/techai_fetcher.py      — datetime fix
-- channels/news/news_fetcher.py          — datetime fix
-- channels/transfer/transfer_fetcher.py  ��� datetime fix
-- channels/games/games_fetcher.py        — datetime fix
-- channels/fixtures/fixtures_fetcher.py  — datetime fix + utcfromtimestamp fix
-- fetcher.py                             — datetime fix + utcfromtimestamp fix
-- youtube.py                             — datetime fix
-- tests/channels/test_fixtures.py        — datetime fix
-- config.json                            — 12/13 schedules enabled
-- scripts/start_daemon.sh                — production version
-- docs/CHANGELOG.md                      — this entry
-- docs/CLAUDE.md                         — phase status updated
+- channels/*/  — datetime.utcnow() fixed (10 files)
+- config.json  — 12/13 schedules enabled
+- scripts/start_daemon.sh — production-ready version
+- CHANGELOG.md — this entry
+- CLAUDE.md    — phase status updated
 
 ### Pending (Phase 8)
-- YouTube credentials.json → automated uploads
-- SportAPI rate limits → caching strategy or plan upgrade
-- PANDASCORE_KEY → esports data
+- YouTube credentials.json → automated uploads (Fatih to configure)
+- PANDASCORE_KEY → esports live data
 - RAWG_KEY → game releases
-- CoinGecko SSL fix (low priority)
+- fixtures channel → SportAPI rate limit issue
+- Visual QA of generated reels (open MP4s, check layout)
 
 ---
 
