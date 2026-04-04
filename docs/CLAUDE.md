@@ -50,7 +50,8 @@ Fetch data → generate 1080×1920 MP4 → upload to YouTube.
 
 ```
 Phase 1–5: ✅ COMPLETE
-Phase 6:   ✅ COMPLETE — fonts fixed, env setup, git init, YouTube guide
+Phase 6:   ✅ COMPLETE (6/7 reels, 9 tests, fonts+env+git+YouTube)
+Phase 7:   📋 PLANNED  (API keys, YouTube upload, production go-live)
 See CHANGELOG.md for details.
 ```
 
@@ -65,9 +66,22 @@ See CHANGELOG.md for details.
 | @ayaz_finance | modules/FINANCE.md | ✅ Built |
 | @ayaz_musics | modules/MUSIC.md | ✅ Built |
 | @ayaz_techai | modules/TECHAI.md | ✅ Built |
-| @ayaz_transfer | modules/TRANSFER.md | ⚠️ RSS only |
+| @ayaz_transfer | modules/TRANSFER.md | ✅ RSS+Claude |
 | @ayaz_news | modules/NEWS.md | ✅ Built |
 | @ayaz_gamezs | modules/GAMES.md | ✅ Built |
+
+---
+
+## Known Issues (Phase 7 targets)
+
+| Issue | File | Priority |
+|---|---|---|
+| ANTHROPIC_API_KEY not set | .env | High |
+| YouTube credentials.json missing | youtube.py | High |
+| SportAPI rate limits on repeated calls | fetcher.py | Medium |
+| PANDASCORE_KEY not set (esports) | games_fetcher.py | Medium |
+| RAWG_KEY not set (game releases) | games_fetcher.py | Medium |
+| CoinGecko SSL (some networks) | finance_fetcher.py | Low |
 
 ---
 

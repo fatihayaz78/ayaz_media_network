@@ -8,43 +8,45 @@
 **Phase:** 6 | **Status:** ✅ Complete
 
 ### What was built
-- **Fonts fixed**: `ensure_fonts()` now tries 3 URL sources per font in sequence. All 3 Roboto fonts download from googlefonts/roboto (503KB+502KB+520KB).
-- **Transfer cleaned up**: Removed broken TransferMarkt API calls. `_fetch_confirmed()` returns [] cleanly. Channel works RSS+Claude only.
-- **Hardcoded API keys removed**: 3 files (fetcher.py, fixtures_fetcher.py, transfer_fetcher.py) now use `os.environ.get("RAPIDAPI_KEY", "")` + python-dotenv.
-- **Environment setup**: `.env.example` template, `.env` with RAPIDAPI_KEY, `.gitignore` created.
-- **Git initialized**: First commit with all Phase 1-6 work.
-- **YouTube guide**: `docs/YOUTUBE_SETUP.md` with step-by-step OAuth2 setup. `youtube.py` now supports `--auth` and `--test-upload` CLI flags.
-- **Font download script**: `scripts/download_fonts.py` for manual font recovery.
+- Task 6.1: Roboto fonts fixed — multi-source ensure_fonts() with 3 fallback URLs
+  (googlefonts/roboto source works: Regular 503KB, Bold 502KB, Italic 520KB)
+- Task 6.2: TransferMarkt (broken RapidAPI) removed — RSS+Claude only pipeline
+  scripts/download_fonts.py standalone font checker added
+- Task 6.3: Hardcoded API keys removed from fetcher.py, fixtures_fetcher.py,
+  transfer_fetcher.py — all now use os.environ + .env
+  .env.example created, .gitignore created
+- Task 6.4: Git repository initialized — commit 098a870 (52 files)
+- Task 6.5: docs/YOUTUBE_SETUP.md created — step-by-step OAuth2 guide
+  youtube.py updated with --auth and --test-upload flags
+- Task 6.6: 6/7 channels producing reels:
+  finance 1,830KB · music 412KB · news 550KB · techai 329KB ·
+  games 146KB · transfer 132KB · fixtures skipped (SportAPI rate limit)
 
 ### Test results
 ```
-tests/test_app_routes.py        9 passed
-tests/channels/test_transfer.py 6 passed (up from 4+2skip)
-```
-
-### Production reel check
-```
-Channel      Size     Rows  Status
-finance      1,830KB  36    ✅ Roboto fonts
-music        412KB    10    ✅ Roboto fonts
-news         550KB    8     ✅ wide rows
-techai       329KB    8     ✅ wide rows
-games        146KB    3     ✅ deals format
-transfer     132KB    2     ✅ RSS fallback
-fixtures     —        0     ⚠️ API rate limited
+tests/test_app_routes.py        9/9 passed
+tests/channels/test_transfer.py 6/6 passed (RSS+Claude)
 ```
 
 ### Files changed
-- `video_maker.py` — multi-source font download
-- `fetcher.py` — env var for RAPIDAPI_KEY
-- `channels/fixtures/fixtures_fetcher.py` — env var for RAPIDAPI_KEY
-- `channels/transfer/transfer_fetcher.py` — removed broken API, env var
-- `youtube.py` — added --auth and --test-upload CLI
-- `scripts/download_fonts.py` — new file
-- `.env.example` — new file
-- `.env` — new file (gitignored)
-- `.gitignore` — new file
-- `docs/YOUTUBE_SETUP.md` — new file
+- video_maker.py         — multi-source font download
+- fetcher.py             — hardcoded key removed
+- fixtures_fetcher.py    — hardcoded key removed
+- transfer_fetcher.py    — TransferMarkt removed, hardcoded key removed
+- youtube.py             — --auth / --test-upload flags
+- .env.example           — new
+- .gitignore             — new
+- docs/YOUTUBE_SETUP.md  — new
+- scripts/download_fonts.py — new
+- CHANGELOG.md           — this entry
+- CLAUDE.md              — phase status updated
+
+### Pending (Phase 7)
+- Set ANTHROPIC_API_KEY → enables Claude-curated techai/news/transfer
+- Set PANDASCORE_KEY → esports data
+- Set RAWG_KEY → game releases
+- YouTube credentials.json → automated uploads
+- SportAPI rate limits → caching strategy or plan upgrade
 
 ---
 
