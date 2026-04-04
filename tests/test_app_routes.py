@@ -122,3 +122,29 @@ def test_reel_config_api(client):
                         "channels", "finance", "reel_config.json")
     if os.path.exists(path):
         os.remove(path)
+
+
+def test_techai_editor_page(client):
+    r = client.get("/techai-editor")
+    assert r.status_code == 200
+    assert b"Techai Editor" in r.data
+
+
+def test_techai_items_api(client):
+    # GET items
+    r = client.get("/api/techai/items")
+    j = r.get_json()
+    assert j["ok"] is True
+    assert isinstance(j["items"], list)
+
+    # POST new item
+    r = client.post("/api/techai/items",
+                    json={"title": "Test Item", "category": "LLM", "source": "Test"})
+    j = r.get_json()
+    assert j["ok"] is True
+    item_id = j["item"]["id"]
+
+    # DELETE item
+    r = client.delete(f"/api/techai/items/{item_id}")
+    j = r.get_json()
+    assert j["ok"] is True

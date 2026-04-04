@@ -1,0 +1,74 @@
+[
+  {
+    "id": "1",
+    "title": "OpenAI Releases GPT-5 with 2M Token Context",
+    "summary": "OpenAI announced GPT-5, featuring a 2 million token context window and significantly improved reasoning capabilities across math and coding benchmarks.",
+    "source": "OpenAI Blog",
+    "category": "LLM",
+    "date": "2026-04-04",
+    "featured": true
+  },
+  {
+    "id": "2",
+    "title": "NVIDIA Blackwell Ultra GPU Benchmark Results",
+    "summary": "Early benchmarks show NVIDIA Blackwell Ultra delivering 3x inference throughput compared to H100, with power efficiency gains of 40%.",
+    "source": "AnandTech",
+    "category": "Hardware",
+    "date": "2026-04-03",
+    "featured": false
+  },
+  {
+    "id": "3",
+    "title": "EU AI Act Enforcement Begins for High-Risk Systems",
+    "summary": "The European Union began enforcing the AI Act's provisions for high-risk AI systems, requiring conformity assessments and registration.",
+    "source": "Reuters",
+    "category": "Policy",
+    "date": "2026-04-02",
+    "featured": true
+  },
+  {
+    "id": "4",
+    "title": "Google DeepMind AlphaFold 3 Protein Design Update",
+    "summary": "DeepMind released an update to AlphaFold 3 improving accuracy on multi-chain protein complex predictions by 18%.",
+    "source": "Nature",
+    "category": "LLM",
+    "date": "2026-04-01",
+    "featured": false
+  },
+  {
+    "id": "5",
+    "title": "Tesla Optimus Gen 3 Factory Deployment",
+    "summary": "Tesla deployed 1,000 Optimus Gen 3 humanoid robots across its Fremont factory for assembly line tasks.",
+    "source": "TechCrunch",
+    "category": "Robotics",
+    "date": "2026-03-31",
+    "featured": false
+  },
+  {
+    "id": "6",
+    "title": "Anthropic Claude 4 Scores 92% on SWE-Bench",
+    "summary": "Anthropic's Claude 4 achieved 92% on the SWE-Bench software engineering benchmark, setting a new state-of-the-art record.",
+    "source": "Anthropic",
+    "category": "LLM",
+    "date": "2026-03-30",
+    "featured": false
+  },
+  {
+    "id": "7",
+    "title": "Apple M5 Chip Announced with Neural Engine Upgrade",
+    "summary": "Apple unveiled the M5 chip with a 40-core Neural Engine, targeting on-device AI inference for the upcoming MacBook Pro lineup.",
+    "source": "9to5Mac",
+    "category": "Hardware",
+    "date": "2026-03-29",
+    "featured": false
+  },
+  {
+    "id": "8",
+    "title": "China Releases Open Source LLM Matching GPT-4",
+    "summary": "Chinese research consortium released an open source LLM with performance matching GPT-4 on standard benchmarks.",
+    "source": "MIT Tech Review",
+    "category": "LLM",
+    "date": "2026-03-28",
+    "featured": false
+  }
+]

@@ -115,8 +115,13 @@ def api_fetch_channel():
                 data = MusicFetcher().fetch_all()
 
         elif channel_id == "techai":
-            from channels.techai.techai_fetcher import TechAIFetcher
-            data = TechAIFetcher().fetch(date_from, date_to)
+            # Prefer manual items.json if it has data
+            manual_items = _load_techai_items() if os.path.exists(TECHAI_ITEMS_PATH) else []
+            if manual_items:
+                data = _techai_items_to_rows(manual_items)
+            else:
+                from channels.techai.techai_fetcher import TechAIFetcher
+                data = TechAIFetcher().fetch(date_from, date_to)
 
         elif channel_id == "transfer":
             from channels.transfer.transfer_fetcher import TransferFetcher
@@ -498,10 +503,107 @@ def api_set_reel_config(channel_id):
     return jsonify({"ok": True})
 
 
+# ── Techai Editor ────────────────────────────────────────────────────────────
+TECHAI_ITEMS_PATH = os.path.join(BASE_DIR, "channels", "techai", "items.json")
+
+TECHAI_CATEGORY_EMOJI = {
+    "LLM": "\U0001f916", "Hardware": "\U0001f4bb", "Policy": "\U0001f3db",
+    "Robotics": "\U0001f9be", "Other": "\U0001f4a1",
+}
+
+
+def _techai_items_to_rows(items: list) -> list:
+    """Convert manual techai items to standard row format."""
+    # Featured first, then by date
+    sorted_items = sorted(items, key=lambda x: (not x.get("featured", False), x.get("date", "")), reverse=False)
+    sorted_items = sorted(sorted_items, key=lambda x: x.get("featured", False), reverse=True)
+    rows = []
+    for i, it in enumerate(sorted_items):
+        cat = it.get("category", "Other")
+        emoji = TECHAI_CATEGORY_EMOJI.get(cat, "\U0001f4a1")
+        title = it.get("title", "")
+        if it.get("featured"):
+            title = "\u2B50 " + title
+        rows.append({
+            "id":        f"techai-manual-{it.get('id', i)}",
+            "home":      f"{emoji} {cat}",
+            "score":     "",
+            "away":      title[:60],
+            "league":    cat,
+            "category":  cat,
+            "continent": "AI & TECH",
+            "time":      it.get("summary", "")[:100],
+            "status":    it.get("source", "")[:20],
+        })
+    return rows
+
+
+def _load_techai_items() -> list:
+    os.makedirs(os.path.dirname(TECHAI_ITEMS_PATH), exist_ok=True)
+    if os.path.exists(TECHAI_ITEMS_PATH):
+        with open(TECHAI_ITEMS_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+
+def _save_techai_items(items: list):
+    os.makedirs(os.path.dirname(TECHAI_ITEMS_PATH), exist_ok=True)
+    with open(TECHAI_ITEMS_PATH, "w", encoding="utf-8") as f:
+        json.dump(items[:20], f, ensure_ascii=False, indent=2)
+
+
+@app.route("/techai-editor")
+def techai_editor_page():
+    return app.send_static_file("techai_editor.html")
+
+
+@app.route("/api/techai/items")
+def api_techai_list():
+    return jsonify({"ok": True, "items": _load_techai_items()})
+
+
+@app.route("/api/techai/items", methods=["POST"])
+def api_techai_add():
+    body = request.get_json(force=True) or {}
+    items = _load_techai_items()
+    item = {
+        "id":       body.get("id") or uuid.uuid4().hex[:8],
+        "title":    (body.get("title") or "")[:80],
+        "summary":  (body.get("summary") or "")[:300],
+        "source":   (body.get("source") or "")[:40],
+        "category": body.get("category", "Other"),
+        "date":     body.get("date", datetime.now().strftime("%Y-%m-%d")),
+        "featured": bool(body.get("featured", False)),
+    }
+    items.insert(0, item)
+    _save_techai_items(items)
+    return jsonify({"ok": True, "item": item})
+
+
+@app.route("/api/techai/items/<item_id>", methods=["DELETE"])
+def api_techai_delete(item_id):
+    items = _load_techai_items()
+    items = [i for i in items if i.get("id") != item_id]
+    _save_techai_items(items)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/techai/items/<item_id>/feature", methods=["POST"])
+def api_techai_feature(item_id):
+    items = _load_techai_items()
+    for i in items:
+        if i.get("id") == item_id:
+            i["featured"] = not i.get("featured", False)
+            break
+    _save_techai_items(items)
+    return jsonify({"ok": True})
+
+
 if __name__ == "__main__":
     print("=" * 50)
     print("Sports Reel Studio  →  http://localhost:5052")
     print("Channel Manager     →  http://localhost:5052/channel")
+    print("Techai Editor       →  http://localhost:5052/techai-editor")
     print("Reel Config         →  http://localhost:5052/reel-config")
     print("Scheduler UI        →  http://localhost:5052/scheduler")
     print("=" * 50)

@@ -4,6 +4,37 @@
 
 ---
 
+## [Sprint 15C] April 2026 — Techai Manual Editor UI
+**Phase:** 15C | **Status:** ✅ Complete
+
+### What was built
+- New route: /techai-editor — add/edit/delete/feature AI & Tech news items
+- Storage: channels/techai/items.json (max 20 items, newest first)
+- Editor UI: title/summary/source/category/date/featured form + items list
+- Delete/feature toggle per item, Generate Reel button
+- Techai fetcher reads items.json when available (priority over RSS)
+- Manual items converted to standard row format with category emoji + grouping
+- Featured items: star prefix, sorted to top
+- Category emoji: LLM=robot, Hardware=laptop, Policy=building, Robotics=arm, Other=bulb
+- Seeded 8 sample items, test reel: output/phase15c/techai.mp4 (8 rows, 61KB, 11.7s)
+
+### Test results
+```
+tests/test_app_routes.py        15/15 passed (2 new: techai_editor_page, techai_items_api)
+tests/channels/test_fixtures.py  5/5 passed
+Total: 20/20 passed
+```
+
+### Files changed
+- app.py — /techai-editor route, /api/techai/items CRUD, _techai_items_to_rows()
+- static/techai_editor.html — new file (editor UI)
+- channels/techai/items.json — seeded 8 sample items
+- tests/test_app_routes.py — 2 new tests
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 15B] April 2026 — News Overhaul + Transfer Fix + Sport Mocks
 **Phase:** 15B | **Status:** ✅ Complete
 

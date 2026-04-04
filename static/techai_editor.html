@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Techai Editor — Ayaz Media Network</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f5f4f0;--bg3:#eeedea;--text:#1a1a18;--text2:#6b6b67;--text3:#9c9a96;--border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.18);--accent:#1a1a18;--acc-inv:#fff;--success:#3b6d11;--success-bg:#eaf3de;--danger:#a32d2d;--danger-bg:#fcebeb;--info:#185fa5;--info-bg:#e6f1fb;--radius:8px;--radius-lg:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;background:var(--bg2);color:var(--text);min-height:100vh}
+a{color:var(--info);text-decoration:none}a:hover{text-decoration:underline}
+.topbar{display:flex;align-items:center;gap:12px;padding:9px 16px;background:var(--bg);border-bottom:0.5px solid var(--border)}
+.brand{font-size:15px;font-weight:600}
+.nav-links{display:flex;gap:16px;margin-left:auto;font-size:12px}
+.nav-links a{color:var(--text2);padding:4px 8px;border-radius:var(--radius)}
+.nav-links a:hover{background:var(--bg2);text-decoration:none}
+.nav-links a.active{color:var(--accent);font-weight:600}
+#status{font-size:11px;color:var(--text3)}
+.layout{display:grid;grid-template-columns:2fr 3fr;gap:16px;max-width:1200px;margin:20px auto;padding:0 16px}
+.panel{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px}
+h2{font-size:14px;margin-bottom:12px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.field input[type=text],.field select,.field input[type=date]{width:100%;height:30px;padding:0 8px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text)}
+.field textarea{width:100%;min-height:80px;padding:8px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);resize:vertical;font-family:inherit;color:var(--text);background:var(--bg)}
+.field .counter{font-size:10px;color:var(--text3);text-align:right;margin-top:2px}
+.check-row{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.check-row input{width:16px;height:16px}
+.check-row label{font-size:12px}
+.btn{height:32px;padding:0 16px;font-size:12px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--accent);color:var(--acc-inv)}
+.btn-primary:hover{opacity:.85}
+.btn-secondary{background:transparent;border:0.5px solid var(--border2);color:var(--text)}
+.btn-secondary:hover{background:var(--bg2)}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border:0.5px solid #f7c1c1}
+.btn-danger:hover{opacity:.85}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{opacity:.85}
+.btn-row{display:flex;gap:8px;margin-top:12px}
+.item{border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;position:relative}
+.item.featured{border-left:3px solid var(--info)}
+.item-title{font-weight:600;font-size:13px;margin-bottom:4px}
+.item-meta{font-size:11px;color:var(--text2);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.item-summary{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5}
+.badge{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:600;color:#fff}
+.badge-llm{background:#185fa5}
+.badge-hardware{background:#b45309}
+.badge-policy{background:#7c3aed}
+.badge-robotics{background:#0d9488}
+.badge-other{background:#6b7280}
+.item-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px}
+.ibtn{width:24px;height:24px;border:0.5px solid var(--border);border-radius:4px;cursor:pointer;background:transparent;display:flex;align-items:center;justify-content:center;font-size:11px}
+.ibtn:hover{background:var(--bg2)}
+.ibtn.del:hover{background:var(--danger-bg);color:var(--danger)}
+.dl-box{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--success-bg);border:0.5px solid #c0dd97;border-radius:var(--radius);margin-top:10px}
+.dl-btn{height:28px;padding:0 12px;font-size:12px;font-weight:600;background:var(--success);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.empty{text-align:center;padding:24px;color:var(--text3);font-size:12px}
+.spin{display:inline-block;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">Ayaz Media Network</div>
+  <div class="nav-links">
+    <a href="/channel">Channels</a>
+    <a href="/techai-editor" class="active">Techai Editor</a>
+    <a href="/reel-config">Reel Config</a>
+    <a href="/scheduler">Scheduler</a>
+  </div>
+  <span id="status"></span>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <h2>Add AI & Tech News Item</h2>
+    <div class="field">
+      <label>Title</label>
+      <input type="text" id="f-title" maxlength="80" oninput="updateCounter('f-title',80)">
+      <div class="counter" id="f-title-c">0/80</div>
+    </div>
+    <div class="field">
+      <label>Summary</label>
+      <textarea id="f-summary" maxlength="300" oninput="updateCounter('f-summary',300)"></textarea>
+      <div class="counter" id="f-summary-c">0/300</div>
+    </div>
+    <div class="field">
+      <label>Source</label>
+      <input type="text" id="f-source" maxlength="40" placeholder="TechCrunch, OpenAI, etc.">
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="f-category">
+        <option value="LLM">LLM</option>
+        <option value="Hardware">Hardware</option>
+        <option value="Policy">Policy</option>
+        <option value="Robotics">Robotics</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="f-date">
+    </div>
+    <div class="check-row">
+      <input type="checkbox" id="f-featured">
+      <label for="f-featured">Featured (pin to top of reel)</label>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="addItem()">Add Item</button>
+      <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h2 style="margin:0">Current Items (<span id="count">0</span>)</h2>
+      <button class="btn btn-success" id="gen-btn" onclick="generateReel()">Generate Reel</button>
+    </div>
+    <div id="dl-area"></div>
+    <div id="items-list"></div>
+  </div>
+</div>
+
+<script>
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('f-date').value = today;
+
+function updateCounter(id, max){
+  const el = document.getElementById(id);
+  document.getElementById(id+'-c').textContent = `${el.value.length}/${max}`;
+}
+
+async function loadItems(){
+  const r = await fetch('/api/techai/items');
+  const j = await r.json();
+  const items = j.items || [];
+  document.getElementById('count').textContent = items.length;
+  if(!items.length){
+    document.getElementById('items-list').innerHTML = '<div class="empty">No items yet. Add your first AI news item.</div>';
+    return;
+  }
+  document.getElementById('items-list').innerHTML = items.map(it => {
+    const cat = (it.category||'Other').toLowerCase();
+    const bc = {llm:'badge-llm',hardware:'badge-hardware',policy:'badge-policy',robotics:'badge-robotics'}[cat]||'badge-other';
+    return `<div class="item${it.featured?' featured':''}">
+      <div class="item-actions">
+        <button class="ibtn" onclick="toggleFeat('${it.id}')" title="Toggle featured">${it.featured?'\u2B50':'\u2606'}</button>
+        <button class="ibtn del" onclick="delItem('${it.id}')" title="Delete">\u2715</button>
+      </div>
+      <div class="item-title">${it.featured?'\u2B50 ':''}${esc(it.title)}</div>
+      <div class="item-meta">
+        <span class="badge ${bc}">${esc(it.category)}</span>
+        <span>${esc(it.source)}</span>
+        <span>${it.date}</span>
+      </div>
+      ${it.summary?`<div class="item-summary">${esc(it.summary)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function addItem(){
+  const body = {
+    title:    document.getElementById('f-title').value,
+    summary:  document.getElementById('f-summary').value,
+    source:   document.getElementById('f-source').value,
+    category: document.getElementById('f-category').value,
+    date:     document.getElementById('f-date').value,
+    featured: document.getElementById('f-featured').checked,
+  };
+  if(!body.title){ alert('Title is required'); return; }
+  await fetch('/api/techai/items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  clearForm();
+  loadItems();
+}
+
+function clearForm(){
+  document.getElementById('f-title').value='';
+  document.getElementById('f-summary').value='';
+  document.getElementById('f-source').value='';
+  document.getElementById('f-category').value='LLM';
+  document.getElementById('f-date').value=today;
+  document.getElementById('f-featured').checked=false;
+  updateCounter('f-title',80);
+  updateCounter('f-summary',300);
+}
+
+async function delItem(id){
+  await fetch(`/api/techai/items/${id}`,{method:'DELETE'});
+  loadItems();
+}
+
+async function toggleFeat(id){
+  await fetch(`/api/techai/items/${id}/feature`,{method:'POST'});
+  loadItems();
+}
+
+async function generateReel(){
+  const btn=document.getElementById('gen-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spin">\u25CC</span> Generating...';
+  document.getElementById('dl-area').innerHTML='';
+  try{
+    // Fetch techai data through channel endpoint
+    const fr=await fetch('/api/fetch/channel?channel_id=techai&from='+today+'&to='+today);
+    const fj=await fr.json();
+    if(!fj.ok) throw new Error(fj.error);
+    const rows=fj.data||[];
+    if(!rows.length) throw new Error('No items to generate reel from');
+    // Group and make reel
+    const groupMap={};
+    for(const r of rows){
+      const lg=r.league||'OTHER';
+      if(!groupMap[lg]) groupMap[lg]={league:lg,display_name:lg,continent:r.continent||'AI & TECH',matches:[]};
+      groupMap[lg].matches.push(r);
+    }
+    const rr=await fetch('/api/make-reel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      sport_id:'techai',sport_name:'AI & Tech',channel_name:'ayaz_techai',
+      groups:Object.values(groupMap),custom_theme:null,
+    })});
+    const rj=await rr.json();
+    if(!rj.ok) throw new Error(rj.error);
+    document.getElementById('dl-area').innerHTML=`<div class="dl-box">
+      <span style="font-size:12px;color:var(--success)">\u2713 Reel ready!</span>
+      <a class="dl-btn" href="${rj.download_url}" download>\u2B07 Download MP4</a>
+    </div>`;
+  }catch(e){
+    alert('Reel error: '+e.message);
+  }
+  btn.disabled=false; btn.innerHTML='Generate Reel';
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+loadItems();
+</script>
+</body>
+</html>
