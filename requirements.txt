@@ -1,0 +1,13 @@
+flask>=3.0
+flask-cors
+pillow>=10.0
+requests
+python-dotenv
+apscheduler>=3.10
+feedparser>=6.0
+yfinance>=0.2
+anthropic>=0.25
+google-api-python-client>=2.0
+google-auth-oauthlib>=1.0
+google-auth>=2.0
+pytest>=8.0
