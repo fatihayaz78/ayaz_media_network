@@ -35,6 +35,7 @@ RSS_FEEDS = [
     "https://www.skysports.com/rss/12040",
     "https://feeds.bbci.co.uk/sport/football/rss.xml",
     "https://www.goal.com/feeds/en/news",
+    "https://theathletic.com/rss/news/",
 ]
 
 SOURCE_RELIABILITY = {
@@ -168,7 +169,9 @@ class TransferFetcher(BaseFetcher):
         for i, item in enumerate(items[:6]):
             hl = item["headline"]
             if not any(w in hl.lower() for w in
-                       ["transfer", "sign", "join", "move", "deal", "fee", "bid"]):
+                       ["transfer", "sign", "join", "move", "deal", "fee", "bid",
+                        "loan", "contract", "agree", "complete", "medical",
+                        "swap", "release", "free agent", "extend"]):
                 continue
             rows.append({
                 "id":       f"tx-fallback-{i}",

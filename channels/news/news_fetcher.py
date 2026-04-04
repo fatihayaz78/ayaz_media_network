@@ -31,6 +31,16 @@ RSS_SOURCES = [
     "https://techcrunch.com/feed/",
 ]
 
+SOURCE_GEO = {
+    "BBC":          ("EUROPE",   "\U0001f1ec\U0001f1e7 UK"),
+    "BBC News":     ("EUROPE",   "\U0001f1ec\U0001f1e7 UK"),
+    "Reuters":      ("EUROPE",   "\U0001f1ec\U0001f1e7 UK"),
+    "The Guardian": ("EUROPE",   "\U0001f1ec\U0001f1e7 UK"),
+    "TechCrunch":   ("AMERICAS", "\U0001f1fa\U0001f1f8 USA"),
+    "AP News":      ("GLOBAL",   "\U0001f30d Global"),
+    "Al Jazeera":   ("GLOBAL",   "\U0001f30d Global"),
+}
+
 CATEGORY_EMOJI = {
     "POLITICS":   "🌍",
     "TECHNOLOGY": "💻",
@@ -145,7 +155,8 @@ class NewsFetcher(BaseFetcher):
                 "category":   categories[i % len(categories)],
                 "emoji":      list(CATEGORY_EMOJI.values())[i % len(CATEGORY_EMOJI)],
                 "line1":      item["title"][:50],
-                "line2":      item["source"][:50],
+                "line2":      (item.get("summary") or item["source"])[:80],
+                "source":     item["source"],
                 "region":     "GLOBAL",
                 "importance": 5,
             })
@@ -155,16 +166,28 @@ class NewsFetcher(BaseFetcher):
         rows = []
         for i, item in enumerate(processed):
             cat   = item.get("category", "POLITICS")
-            emoji = item.get("emoji", CATEGORY_EMOJI.get(cat, "📰"))
+            emoji = item.get("emoji", CATEGORY_EMOJI.get(cat, "\U0001f4f0"))
+            source = item.get("source", "")
+            # Geo lookup from source
+            geo = None
+            for src_key, geo_val in SOURCE_GEO.items():
+                if src_key.lower() in source.lower():
+                    geo = geo_val
+                    break
+            continent = (geo[0] if geo else
+                        item.get("region", "GLOBAL"))
+            country = geo[1] if geo else "\U0001f30d Global"
+
             rows.append({
-                "id":       f"news-{i}-{cat}",
-                "home":     f"{emoji} {cat}",
-                "score":    "",
-                "away":     item.get("line1", "")[:50],
-                "league":   cat,
-                "category": cat,
-                "time":     item.get("line2", "")[:50],
-                "status":   "TODAY",
+                "id":        f"news-{i}-{cat}",
+                "home":      f"{emoji} {cat}",
+                "score":     "",
+                "away":      item.get("line1", "")[:50],
+                "league":    cat,
+                "category":  country,
+                "continent": continent,
+                "time":      item.get("line2", "")[:80],
+                "status":    "TODAY",
             })
         return rows
 
@@ -180,6 +203,7 @@ class NewsFetcher(BaseFetcher):
                 groups.append({
                     "league":       cat,
                     "display_name": cat,
+                    "continent":    "NEWS",
                     "matches":      cat_map[cat],
                 })
         return groups

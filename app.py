@@ -108,8 +108,11 @@ def api_fetch_channel():
 
         elif channel_id == "music":
             from channels.music.music_fetcher import MusicFetcher
-            continent = request.args.get("continent", "EUROPE")
-            data = MusicFetcher().fetch(continent=continent)
+            continent = request.args.get("continent", "")
+            if continent:
+                data = MusicFetcher().fetch(continent=continent)
+            else:
+                data = MusicFetcher().fetch_all()
 
         elif channel_id == "techai":
             from channels.techai.techai_fetcher import TechAIFetcher
@@ -125,8 +128,10 @@ def api_fetch_channel():
 
         elif channel_id == "games":
             from channels.games.games_fetcher import GamesFetcher
-            game_fmt = fmt or "game_deals"
-            data = GamesFetcher().fetch(date_from, date_to, fmt=game_fmt)
+            if fmt:
+                data = GamesFetcher().fetch(date_from, date_to, fmt=fmt)
+            else:
+                data = GamesFetcher().fetch_combined(date_from, date_to)
 
         else:
             cfg = load_config()

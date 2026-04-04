@@ -20,21 +20,28 @@ APPLE_BASE = "https://rss.applemarketingtools.com/api/v2/{cc}/music/most-played/
 
 COUNTRIES = {
     "EUROPE": [
-        {"code": "gb", "name": "UK",      "flag": "\U0001f1ec\U0001f1e7", "weight": 30},
-        {"code": "de", "name": "Germany", "flag": "\U0001f1e9\U0001f1ea", "weight": 20},
-        {"code": "fr", "name": "France",  "flag": "\U0001f1eb\U0001f1f7", "weight": 20},
-        {"code": "es", "name": "Spain",   "flag": "\U0001f1ea\U0001f1f8", "weight": 15},
-        {"code": "tr", "name": "Turkey",  "flag": "\U0001f1f9\U0001f1f7", "weight": 15},
+        {"code": "gb", "name": "UK",          "flag": "\U0001f1ec\U0001f1e7", "weight": 25},
+        {"code": "de", "name": "Germany",      "flag": "\U0001f1e9\U0001f1ea", "weight": 20},
+        {"code": "fr", "name": "France",       "flag": "\U0001f1eb\U0001f1f7", "weight": 20},
+        {"code": "es", "name": "Spain",        "flag": "\U0001f1ea\U0001f1f8", "weight": 15},
+        {"code": "tr", "name": "Turkey",       "flag": "\U0001f1f9\U0001f1f7", "weight": 15},
+        {"code": "it", "name": "Italy",        "flag": "\U0001f1ee\U0001f1f9", "weight": 15},
+        {"code": "nl", "name": "Netherlands",  "flag": "\U0001f1f3\U0001f1f1", "weight": 10},
+        {"code": "se", "name": "Sweden",       "flag": "\U0001f1f8\U0001f1ea", "weight": 10},
     ],
     "AMERICAS": [
-        {"code": "us", "name": "USA",    "flag": "\U0001f1fa\U0001f1f8", "weight": 50},
-        {"code": "br", "name": "Brazil", "flag": "\U0001f1e7\U0001f1f7", "weight": 30},
-        {"code": "mx", "name": "Mexico", "flag": "\U0001f1f2\U0001f1fd", "weight": 20},
+        {"code": "us", "name": "USA",          "flag": "\U0001f1fa\U0001f1f8", "weight": 50},
+        {"code": "br", "name": "Brazil",       "flag": "\U0001f1e7\U0001f1f7", "weight": 30},
+        {"code": "mx", "name": "Mexico",       "flag": "\U0001f1f2\U0001f1fd", "weight": 20},
+        {"code": "ar", "name": "Argentina",    "flag": "\U0001f1e6\U0001f1f7", "weight": 15},
+        {"code": "cl", "name": "Chile",        "flag": "\U0001f1e8\U0001f1f1", "weight": 10},
     ],
     "ASIA": [
-        {"code": "jp", "name": "Japan",       "flag": "\U0001f1ef\U0001f1f5", "weight": 40},
-        {"code": "kr", "name": "South Korea", "flag": "\U0001f1f0\U0001f1f7", "weight": 40},
-        {"code": "in", "name": "India",       "flag": "\U0001f1ee\U0001f1f3", "weight": 20},
+        {"code": "jp", "name": "Japan",        "flag": "\U0001f1ef\U0001f1f5", "weight": 40},
+        {"code": "kr", "name": "South Korea",  "flag": "\U0001f1f0\U0001f1f7", "weight": 40},
+        {"code": "in", "name": "India",        "flag": "\U0001f1ee\U0001f1f3", "weight": 20},
+        {"code": "ph", "name": "Philippines",  "flag": "\U0001f1f5\U0001f1ed", "weight": 10},
+        {"code": "id", "name": "Indonesia",    "flag": "\U0001f1ee\U0001f1e9", "weight": 10},
     ],
 }
 
@@ -99,6 +106,14 @@ class MusicFetcher(BaseFetcher):
         self._save_prev(continent, rows)
         self._save_cache(cache_key, rows)
         return rows
+
+    def fetch_all(self) -> List[Dict]:
+        """Fetch all continents at once. Returns rows with continent field."""
+        all_rows = []
+        for continent in COUNTRIES.keys():
+            rows = self.fetch(continent=continent)
+            all_rows.extend(rows)
+        return all_rows
 
     def _fetch_country(self, cc: str) -> List[Dict]:
         """Fetch Apple Music top 10 for one country."""

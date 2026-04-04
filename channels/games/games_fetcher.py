@@ -92,9 +92,17 @@ class GamesFetcher(BaseFetcher):
             })
         return rows
 
+    def fetch_combined(self, date_from: str, date_to: str) -> List[Dict]:
+        """Fetch Steam Charts + Game Deals in one call."""
+        rows = []
+        rows.extend(self._fetch_steam())
+        rows.extend(self._fetch_deals())
+        if os.environ.get("PANDASCORE_KEY"):
+            rows.extend(self._fetch_esports(date_from))
+        return rows
+
     def _is_real_game(self, name: str) -> bool:
-        skip_keywords = ["upgrade", "dlc", "pack", "bundle",
-                         "edition", "soundtrack", "artbook", "pass"]
+        skip_keywords = ["soundtrack", "artbook", "dlc"]
         name_lower = name.lower()
         return not any(kw in name_lower for kw in skip_keywords)
 

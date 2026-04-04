@@ -4,6 +4,58 @@
 
 ---
 
+## [Sprint 12] April 2026 — Channel Manager Overhaul
+**Phase:** 12 | **Status:** ✅ Complete
+
+### What was built
+- 12.1: Old Studio UI (index.html) replaced with redirect to /channel
+- 12.2: Date range fetch fix — presets read fresh at click time
+- 12.3: Music all-continents fetch + 18 countries (was 11)
+  - fetch_all() returns all continents in one call
+  - Added: Italy, Netherlands, Sweden, Argentina, Chile, Philippines, Indonesia
+  - Removed continent tabs — single Fetch Data button
+- 12.4: Delisted finance tickers replaced
+  - DPW.DE → DHL.DE, STM.PA → STM (NYSE), KOZAL.IS → KOZAA.IS
+  - BOVESPA: removed BRFS3/NTCO3/JBSS3, added UGPA3/CPLE6/VIVT3
+- 12.5: Finance/league filter chips in channel.html
+- 12.6: News continent/country geo + highlights
+  - SOURCE_GEO mapping (BBC→UK, TechCrunch→USA, etc.)
+  - Highlights in time field (80 chars of summary)
+  - to_reel_groups includes continent field
+- 12.7: Games combined fetch (Steam+Deals in one call)
+  - fetch_combined() method, relaxed Steam filter (10 games now)
+  - Removed games format tabs — single Fetch Data button
+- 12.8: Transfer RSS expanded + more fallback keywords
+  - Added The Athletic RSS feed
+  - 18 transfer keywords (was 7)
+
+### Test results
+```
+tests/test_app_routes.py        11/11 passed
+tests/channels/test_fixtures.py  5/5 passed
+Total: 16/16 passed
+```
+
+### Verified outputs
+- Music fetch_all: 45 rows, 8 countries
+- Games combined: 13 rows (10 Steam + 3 Deals)
+- News: 8 rows with continent geo
+- Finance: delisted tickers replaced
+
+### Files changed
+- static/index.html — redirect to /channel
+- static/channel.html — date fix, removed tabs, combined fetches
+- channels/music/music_fetcher.py — fetch_all(), 18 countries
+- channels/finance/finance_fetcher.py — ticker replacements
+- channels/news/news_fetcher.py — SOURCE_GEO, highlights, continent
+- channels/games/games_fetcher.py — fetch_combined(), relaxed filter
+- channels/transfer/transfer_fetcher.py — +1 RSS, +11 keywords
+- app.py — music fetch_all, games combined routing
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 11] April 2026 — Channel Manager Bug Fixes
 **Phase:** 11 | **Status:** ✅ Complete
 

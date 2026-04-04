@@ -191,9 +191,6 @@ const DEFAULT_PALETTES = {
   transfer:"dark-orange", games:"dark-pink", sports:"dark-blue", fixtures:"dark-green",
 };
 
-const MUSIC_CONTINENTS = ["EUROPE","AMERICAS","ASIA"];
-const GAMES_FORMATS = [{id:"steam_charts",label:"Steam Charts"},{id:"game_deals",label:"Game Deals"},{id:"esports",label:"Esports"}];
-
 // Smart date defaults per channel
 const DATE_DEFAULTS = {
   finance:"today", music:"week", techai:"week", news:"today",
@@ -202,8 +199,8 @@ const DATE_DEFAULTS = {
 
 // ── State ────────────────────────────────────────────────────────────────────
 let active = "finance";
-const CHANNEL_DATA = {};    // BUG 4: persist data across channel switches
-const CHANNEL_TS = {};      // timestamps for cache badges
+const CHANNEL_DATA = {};
+const CHANNEL_TS = {};
 let fetchLoading = false;
 let fetchError = null;
 let downloadUrl = null;
@@ -213,8 +210,6 @@ let pixLoading = false;
 let descLoading = false;
 let descError = null;
 let openSections = {theme:false, music:false, data:true, desc:false, action:true};
-let musicContinent = "EUROPE";
-let gamesFormat = "game_deals";
 let datePreset = "today";
 let customDateFrom = "";
 let customDateTo = "";
@@ -321,12 +316,7 @@ function getSelectedPalette(){ return PALETTES.find(p=>p.id===getPalette(active)
 
 // ── Data section ─────────────────────────────────────────────────────────────
 function renderDataTabs(){
-  if(active==="music") return `<div class="data-tabs">${MUSIC_CONTINENTS.map(c=>
-    `<button class="data-tab${c===musicContinent?" on":""}" onclick="musicContinent='${c}';renderMain()">${c}</button>`
-  ).join("")}</div>`;
-  if(active==="games") return `<div class="data-tabs">${GAMES_FORMATS.map(f=>
-    `<button class="data-tab${f.id===gamesFormat?" on":""}" onclick="gamesFormat='${f.id}';renderMain()">${f.label}</button>`
-  ).join("")}</div>`;
+  // Music and Games now do combined fetches — no tabs needed
   return "";
 }
 
@@ -360,10 +350,19 @@ async function doFetch(){
   fetchLoading=true; fetchError=null; downloadUrl=null;
   renderSidebar(); renderMain();
 
-  const range = getDateRange();
-  let url = `/api/fetch/channel?channel_id=${active}&from=${range.from}&to=${range.to}`;
-  if(active==="music") url+=`&continent=${musicContinent}`;
-  if(active==="games") url+=`&fmt=${gamesFormat}`;
+  // Read date range fresh at click time
+  const today = new Date();
+  const fmt = d => d.toISOString().split('T')[0];
+  let fromDate, toDate;
+
+  if(datePreset==="today"){ fromDate=fmt(today); toDate=fmt(today); }
+  else if(datePreset==="week"){ const w=new Date(today); w.setDate(w.getDate()-7); fromDate=fmt(w); toDate=fmt(today); }
+  else if(datePreset==="month"){ const m=new Date(today); m.setDate(m.getDate()-30); fromDate=fmt(m); toDate=fmt(today); }
+  else if(datePreset==="next7"){ const n=new Date(today); n.setDate(n.getDate()+7); fromDate=fmt(today); toDate=fmt(n); }
+  else { fromDate=document.getElementById('df')?.value||fmt(today); toDate=document.getElementById('dt')?.value||fmt(today); }
+
+  // Build URL — music and games use combined fetch (no extra params)
+  let url = `/api/fetch/channel?channel_id=${active}&from=${fromDate}&to=${toDate}`;
 
   try{
     const res = await fetch(url);

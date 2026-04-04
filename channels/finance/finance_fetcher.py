@@ -28,7 +28,7 @@ MARKETS = {
             "tickers": ["SAP.DE","SIE.DE","ALV.DE","MRK.DE","DTE.DE",
                         "MBG.DE","BMW.DE","BAS.DE","BAYN.DE","ADS.DE",
                         "RWE.DE","VOW3.DE","IFX.DE","ENR.DE","HEN3.DE",
-                        "SHL.DE","DPW.DE","BEI.DE","ZAL.DE","CON.DE"],
+                        "SHL.DE","DHL.DE","BEI.DE","ZAL.DE","CON.DE"],
         },
         "FTSE100": {
             "country": "UK", "flag": "\U0001f1ec\U0001f1e7",
@@ -42,14 +42,14 @@ MARKETS = {
             "tickers": ["MC.PA","TTE.PA","SAN.PA","BNP.PA","OR.PA",
                         "AIR.PA","RI.PA","CS.PA","SU.PA","SGO.PA",
                         "ACA.PA","GLE.PA","BN.PA","KER.PA","CAP.PA",
-                        "PUB.PA","STM.PA","VIE.PA","LR.PA","RNO.PA"],
+                        "PUB.PA","STM","VIE.PA","LR.PA","RNO.PA"],
         },
         "BIST100": {
             "country": "Turkey", "flag": "\U0001f1f9\U0001f1f7",
             "tickers": ["GARAN.IS","AKBNK.IS","EREGL.IS","KCHOL.IS","THYAO.IS",
                         "ASELS.IS","BIMAS.IS","FROTO.IS","SAHOL.IS","SISE.IS",
                         "ARCLK.IS","ENKAI.IS","ISCTR.IS","TUPRS.IS","VAKBN.IS",
-                        "YKBNK.IS","PETKM.IS","TCELL.IS","KOZAL.IS","DOHOL.IS"],
+                        "YKBNK.IS","PETKM.IS","TCELL.IS","KOZAA.IS","DOHOL.IS"],
         },
     },
     "AMERICAS": {
@@ -71,7 +71,7 @@ MARKETS = {
             "country": "Brazil", "flag": "\U0001f1e7\U0001f1f7",
             "tickers": ["PETR4.SA","VALE3.SA","ITUB4.SA","BBDC4.SA","BBAS3.SA",
                         "ABEV3.SA","WEGE3.SA","RENT3.SA","MGLU3.SA","SUZB3.SA",
-                        "JBSS3.SA","LREN3.SA","RADL3.SA","NTCO3.SA","BRFS3.SA",
+                        "UGPA3.SA","LREN3.SA","RADL3.SA","CPLE6.SA","VIVT3.SA",
                         "HAPV3.SA","RAIL3.SA","CSAN3.SA","GGBR4.SA","KLBN11.SA"],
         },
     },
@@ -141,16 +141,16 @@ TICKER_NAMES = {
     "ISCTR.IS":  "Is Bankasi",    "TUPRS.IS":  "Tupras",
     "VAKBN.IS":  "Vakifbank",     "YKBNK.IS":  "Yapi Kredi",
     "PETKM.IS":  "Petkim",        "TCELL.IS":  "Turkcell",
-    "KOZAL.IS":  "Koza Altin",    "DOHOL.IS":  "Dogan Hold",
+    "KOZAA.IS":  "Koza Anadolu",  "DOHOL.IS":  "Dogan Hold",
     # Brazil BOVESPA
     "PETR4.SA":  "Petrobras",     "VALE3.SA":  "Vale",
     "ITUB4.SA":  "Itau Unibanco", "BBDC4.SA":  "Bradesco",
     "BBAS3.SA":  "Banco do Brasil","ABEV3.SA": "Ambev",
     "WEGE3.SA":  "WEG",           "RENT3.SA":  "Localiza",
     "MGLU3.SA":  "Magalu",        "SUZB3.SA":  "Suzano",
-    "JBSS3.SA":  "JBS",           "LREN3.SA":  "Lojas Renner",
-    "RADL3.SA":  "Raia Drogasil", "NTCO3.SA":  "Grupo Boticario",
-    "BRFS3.SA":  "BRF",           "HAPV3.SA":  "Hapvida",
+    "UGPA3.SA":  "Ultrapar",      "LREN3.SA":  "Lojas Renner",
+    "RADL3.SA":  "Raia Drogasil", "CPLE6.SA":  "Copel",
+    "VIVT3.SA":  "Vivo/Telefonica","HAPV3.SA": "Hapvida",
     "RAIL3.SA":  "Rumo",          "CSAN3.SA":  "Cosan",
     "GGBR4.SA":  "Gerdau",        "KLBN11.SA": "Klabin",
     # Germany DAX
@@ -162,7 +162,7 @@ TICKER_NAMES = {
     "RWE.DE":    "RWE",           "VOW3.DE":   "Volkswagen",
     "IFX.DE":    "Infineon",      "ENR.DE":    "Siemens Energy",
     "HEN3.DE":   "Henkel",        "SHL.DE":    "Siemens Health",
-    "DPW.DE":    "DHL Group",     "BEI.DE":    "Beiersdorf",
+    "DHL.DE":    "DHL Group",     "BEI.DE":    "Beiersdorf",
     "ZAL.DE":    "Zalando",       "CON.DE":    "Continental",
     # UK FTSE100
     "AZN.L":     "AstraZeneca",   "SHEL.L":    "Shell",
@@ -184,7 +184,7 @@ TICKER_NAMES = {
     "ACA.PA":    "Credit Agricole","GLE.PA":   "Societe Generale",
     "BN.PA":     "Danone",        "KER.PA":    "Kering",
     "CAP.PA":    "Capgemini",     "PUB.PA":    "Publicis",
-    "STM.PA":    "STMicro",       "VIE.PA":    "Veolia",
+    "STM":       "STMicro",       "VIE.PA":    "Veolia",
     "LR.PA":     "Legrand",       "RNO.PA":    "Renault",
 }
 
