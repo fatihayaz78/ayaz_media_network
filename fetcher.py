@@ -217,8 +217,56 @@ def filter_by_leagues(rows: List[Dict], leagues_filter: List[str]) -> List[Dict]
     return [r for r in rows if r["league"].lower() in filter_lower]
 
 
+MOCK_DATA = {
+    "futbol": [
+        {"id":"m-f1","home":"Manchester City","score":"3 - 1","away":"Arsenal","league":"Premier League","category":"EUROPE","time":"FT","status":"FT"},
+        {"id":"m-f2","home":"Real Madrid","score":"2 - 0","away":"Barcelona","league":"LaLiga","category":"EUROPE","time":"FT","status":"FT"},
+        {"id":"m-f3","home":"Bayern Munich","score":"4 - 2","away":"Dortmund","league":"Bundesliga","category":"EUROPE","time":"FT","status":"FT"},
+        {"id":"m-f4","home":"PSG","score":"1 - 0","away":"Lyon","league":"Ligue 1","category":"EUROPE","time":"FT","status":"FT"},
+        {"id":"m-f5","home":"Inter","score":"2 - 2","away":"Juventus","league":"Serie A","category":"EUROPE","time":"FT","status":"FT"},
+        {"id":"m-f6","home":"Galatasaray","score":"3 - 0","away":"Fenerbahce","league":"Trendyol S\u00fcper Lig","category":"EUROPE","time":"FT","status":"FT"},
+        {"id":"m-f7","home":"Flamengo","score":"2 - 1","away":"Palmeiras","league":"Brasileir\u00e3o Betano","category":"AMERICAS","time":"FT","status":"FT"},
+    ],
+    "basket": [
+        {"id":"m-b1","home":"Lakers","score":"112 - 108","away":"Celtics","league":"NBA","category":"AMERICAS","time":"FT","status":"FT"},
+        {"id":"m-b2","home":"Warriors","score":"124 - 115","away":"Nets","league":"NBA","category":"AMERICAS","time":"FT","status":"FT"},
+        {"id":"m-b3","home":"Anadolu Efes","score":"85 - 79","away":"CSKA Moscow","league":"EuroLeague","category":"EUROPE","time":"FT","status":"FT"},
+        {"id":"m-b4","home":"Real Madrid","score":"92 - 88","away":"Barcelona","league":"EuroLeague","category":"EUROPE","time":"FT","status":"FT"},
+    ],
+    "tenis": [
+        {"id":"m-t1","home":"Djokovic","score":"6-3 6-4","away":"Alcaraz","league":"ATP","category":"EUROPE","time":"FT","status":"FT"},
+        {"id":"m-t2","home":"Sinner","score":"7-6 6-2","away":"Medvedev","league":"ATP","category":"EUROPE","time":"FT","status":"FT"},
+        {"id":"m-t3","home":"Swiatek","score":"6-1 6-3","away":"Sabalenka","league":"WTA","category":"EUROPE","time":"FT","status":"FT"},
+    ],
+    "motor": [
+        {"id":"m-m1","home":"Verstappen","score":"1st","away":"Norris 2nd","league":"Formula 1","category":"MOTORSPORT","time":"FT","status":"FT"},
+        {"id":"m-m2","home":"Leclerc","score":"3rd","away":"Hamilton 4th","league":"Formula 1","category":"MOTORSPORT","time":"FT","status":"FT"},
+        {"id":"m-m3","home":"Bagnaia","score":"1st","away":"Martin 2nd","league":"MotoGP","category":"MOTORSPORT","time":"FT","status":"FT"},
+    ],
+    "dovus": [
+        {"id":"m-d1","home":"Jon Jones","score":"KO R2","away":"Stipe Miocic","league":"UFC","category":"AMERICAS","time":"FT","status":"FT"},
+        {"id":"m-d2","home":"Islam Makhachev","score":"SUB R3","away":"Dustin Poirier","league":"UFC","category":"AMERICAS","time":"FT","status":"FT"},
+    ],
+    "amerikan": [
+        {"id":"m-a1","home":"Kansas City Chiefs","score":"27 - 24","away":"Philadelphia Eagles","league":"NFL","category":"AMERICAS","time":"FT","status":"FT"},
+        {"id":"m-a2","home":"San Francisco 49ers","score":"31 - 17","away":"Dallas Cowboys","league":"NFL","category":"AMERICAS","time":"FT","status":"FT"},
+    ],
+    "voley": [
+        {"id":"m-v1","home":"Brazil","score":"3 - 1","away":"Poland","league":"VNL","category":"AMERICAS","time":"FT","status":"FT"},
+        {"id":"m-v2","home":"Italy","score":"3 - 0","away":"France","league":"VNL","category":"EUROPE","time":"FT","status":"FT"},
+    ],
+}
+
+
 def fetch_sport(sport_id: str, date_from: str, date_to: str,
                 leagues_filter: Optional[List[str]] = None) -> List[Dict]:
+    # When MOCK_DATA=1, skip API entirely and return mock data
+    if os.environ.get("MOCK_DATA") == "1":
+        mock = MOCK_DATA.get(sport_id, [])
+        if mock:
+            print(f"[fetcher] Using mock data for {sport_id}: {len(mock)} rows")
+            return mock
+
     dates      = get_dates(date_from, date_to)
     sport_slug = SPORT_SLUGS.get(sport_id, "football")
     all_rows: List[Dict] = []

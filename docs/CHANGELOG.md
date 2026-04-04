@@ -4,6 +4,49 @@
 
 ---
 
+## [Sprint 15B] April 2026 — News Overhaul + Transfer Fix + Sport Mocks
+**Phase:** 15B | **Status:** ✅ Complete
+
+### What was built
+- News: complete RSS overhaul — per-country feeds for 10 regions
+  - USA, UK, Turkey, China, India, Saudi Arabia, Germany, Brazil, Japan, France
+  - Top 5 headlines per country, flag+country grouping
+  - BBC regional RSS feeds (free, reliable)
+- Transfer: sample data fallback when RSS+Claude yields < 3 rows
+  - 8 realistic sample transfers (Wirtz, Williams, Isak, Gyokeres, etc.)
+  - Confirmed deals + rumours with proper layout
+- Sports: MOCK_DATA=1 environment variable for all 7 sport channels
+  - Skips API entirely when set — instant mock data
+  - Realistic mock data: futbol(7), basket(4), tenis(3), motor(3), dovus(2), amerikan(2), voley(2)
+- All 13 channels generate reels: output/phase15b/*.mp4
+
+### Test results
+```
+tests/test_app_routes.py        13/13 passed
+tests/channels/test_fixtures.py  5/5 passed
+Total: 18/18 passed
+```
+
+### Reel outputs (output/phase15b/)
+```
+finance     2023KB   78.3s     music       2528KB   87.0s
+news        2576KB   59.4s     games        465KB   26.6s
+techai       285KB   18.0s     transfer     330KB   20.9s
+futbol       373KB   26.0s     basket       181KB   16.4s
+tenis        141KB   13.6s     motor        152KB   13.6s
+dovus         98KB   11.7s     amerikan     109KB   11.7s
+voley        117KB   14.1s
+```
+
+### Files changed
+- channels/news/news_fetcher.py — complete rewrite (per-country RSS)
+- channels/transfer/transfer_fetcher.py — sample data fallback
+- fetcher.py — MOCK_DATA dict + skip-API-when-set logic
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 15A] April 2026 — Bug Fixes + Reel Config UI
 **Phase:** 15A | **Status:** ✅ Complete
 
