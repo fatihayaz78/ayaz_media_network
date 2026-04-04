@@ -74,6 +74,7 @@ def upload_video(
     title: str,
     description: str,
     tags: list,
+    category_id: str = CATEGORY_SPORTS,
     privacy: str = PRIVACY_PUBLIC,
     made_for_kids: bool = False,
     retry_count: int = 3,
@@ -102,7 +103,7 @@ def upload_video(
             "title":       title[:100],
             "description": description[:5000],
             "tags":        tags[:500],
-            "categoryId":  CATEGORY_SPORTS,
+            "categoryId":  category_id,
         },
         "status": {
             "privacyStatus":           privacy,

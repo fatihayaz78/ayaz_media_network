@@ -61,7 +61,8 @@ Phase 14:   ✅ COMPLETE (visual QA fixes, 1.5x speed, font visibility)
 Phase 15A:  ✅ COMPLETE (bug fixes, reel config UI, music TOP 5)
 Phase 15B:  ✅ COMPLETE (news RSS overhaul, transfer fix, sport mock data)
 Phase 15C:  ✅ COMPLETE (techai editor UI + manual items + reel layout)
-Phase 16:   📋 PLANNED  (YouTube upload integration + scheduling)
+Phase 16:   ✅ COMPLETE (YouTube upload + per-channel config + upload UI)
+Phase 17:   📋 PLANNED  (thumbnail generation + channel branding)
 See CHANGELOG.md for details.
 ```
 

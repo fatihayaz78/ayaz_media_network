@@ -109,6 +109,53 @@ h1{font-size:18px;margin-bottom:16px}
       </div>
     </div>
 
+    <h2 style="margin-top:16px">YouTube Upload Settings</h2>
+
+    <div class="field">
+      <label>YouTube Title Template</label>
+      <input type="text" id="yt_title" placeholder="{header_title} · {date}">
+    </div>
+
+    <div class="field">
+      <label>YouTube Description</label>
+      <textarea id="yt_description" rows="3" style="width:100%;padding:6px 8px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);resize:vertical;font-family:inherit"></textarea>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>YouTube Tags (comma separated)</label>
+        <input type="text" id="yt_tags">
+      </div>
+      <div class="field">
+        <label>YouTube Category</label>
+        <select id="yt_category">
+          <option value="17">Sports (17)</option>
+          <option value="25">News & Politics (25)</option>
+          <option value="10">Music (10)</option>
+          <option value="20">Gaming (20)</option>
+          <option value="28">Science & Tech (28)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Privacy</label>
+        <select id="yt_privacy">
+          <option value="public">Public</option>
+          <option value="unlisted">Unlisted</option>
+          <option value="private">Private</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Auto Upload</label>
+        <select id="auto_upload">
+          <option value="false">Disabled</option>
+          <option value="true">Enabled</option>
+        </select>
+      </div>
+    </div>
+
     <div style="display:flex;gap:8px;margin-top:16px">
       <button class="btn btn-primary" onclick="saveConfig()">Save Config</button>
       <button class="btn btn-secondary" onclick="resetConfig()">Reset to Default</button>
@@ -150,6 +197,12 @@ async function loadConfig(){
     document.getElementById("accent_color").value = cfg.accent_color || "#4F96FF";
     document.getElementById("reel_speed").value   = String(cfg.reel_speed || "1.5");
     document.getElementById("frequency").value    = cfg.frequency || "weekly";
+    document.getElementById("yt_title").value     = cfg.yt_title || "{header_title} \u00b7 {date}";
+    document.getElementById("yt_description").value = cfg.yt_description || "";
+    document.getElementById("yt_tags").value      = cfg.yt_tags || "";
+    document.getElementById("yt_category").value  = cfg.yt_category || "17";
+    document.getElementById("yt_privacy").value   = cfg.yt_privacy || "public";
+    document.getElementById("auto_upload").value  = String(cfg.auto_upload || "false");
   }catch(e){
     console.error(e);
   }
@@ -158,12 +211,18 @@ async function loadConfig(){
 async function saveConfig(){
   const ch = getCh();
   const body = {
-    header_text:  document.getElementById("header_text").value,
-    footer_text:  document.getElementById("footer_text").value,
-    bg_color:     document.getElementById("bg_color").value,
-    accent_color: document.getElementById("accent_color").value,
-    reel_speed:   parseFloat(document.getElementById("reel_speed").value),
-    frequency:    document.getElementById("frequency").value,
+    header_text:    document.getElementById("header_text").value,
+    footer_text:    document.getElementById("footer_text").value,
+    bg_color:       document.getElementById("bg_color").value,
+    accent_color:   document.getElementById("accent_color").value,
+    reel_speed:      parseFloat(document.getElementById("reel_speed").value),
+    frequency:       document.getElementById("frequency").value,
+    yt_title:        document.getElementById("yt_title").value,
+    yt_description:  document.getElementById("yt_description").value,
+    yt_tags:         document.getElementById("yt_tags").value,
+    yt_category:     document.getElementById("yt_category").value,
+    yt_privacy:      document.getElementById("yt_privacy").value,
+    auto_upload:     document.getElementById("auto_upload").value === "true",
   };
   try{
     const r = await fetch(`/api/reel-config/${ch}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});

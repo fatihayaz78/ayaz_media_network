@@ -23,6 +23,8 @@ SPORT_IDENTITY = {
     "futbol": {
         "name":         "FOOTBALL",
         "header_title": "WEEKLY SCORES",
+        "yt_category":  "17",
+        "yt_tags":      ["football","soccer","weekly scores","highlights"],
         "bg":     (13, 15, 26),
         "accent": (79, 150, 255),
         "dim":    (30, 42, 74),
@@ -30,6 +32,8 @@ SPORT_IDENTITY = {
     "basket": {
         "name":         "BASKETBALL",
         "header_title": "WEEKLY SCORES",
+        "yt_category":  "17",
+        "yt_tags":      ["basketball","NBA","weekly scores"],
         "bg":     (18, 8, 8),
         "accent": (224, 64, 48),
         "dim":    (50, 20, 18),
@@ -37,6 +41,8 @@ SPORT_IDENTITY = {
     "tenis": {
         "name":         "TENNIS",
         "header_title": "WEEKLY SCORES",
+        "yt_category":  "17",
+        "yt_tags":      ["tennis","ATP","WTA","weekly results"],
         "bg":     (8, 16, 8),
         "accent": (88, 192, 48),
         "dim":    (24, 40, 14),
@@ -44,6 +50,8 @@ SPORT_IDENTITY = {
     "motor": {
         "name":         "MOTORSPORT",
         "header_title": "WEEKLY SCORES",
+        "yt_category":  "17",
+        "yt_tags":      ["motorsport","F1","MotoGP","race results"],
         "bg":     (18, 9, 0),
         "accent": (240, 120, 32),
         "dim":    (48, 28, 10),
@@ -51,6 +59,8 @@ SPORT_IDENTITY = {
     "dovus": {
         "name":         "COMBAT SPORTS",
         "header_title": "WEEKLY SCORES",
+        "yt_category":  "17",
+        "yt_tags":      ["UFC","MMA","combat sports","fight results"],
         "bg":     (14, 8, 20),
         "accent": (144, 80, 208),
         "dim":    (40, 22, 62),
@@ -58,6 +68,8 @@ SPORT_IDENTITY = {
     "amerikan": {
         "name":         "AMERICAN FOOTBALL",
         "header_title": "WEEKLY SCORES",
+        "yt_category":  "17",
+        "yt_tags":      ["NFL","american football","weekly scores"],
         "bg":     (6, 12, 22),
         "accent": (56, 112, 224),
         "dim":    (18, 30, 58),
@@ -65,6 +77,8 @@ SPORT_IDENTITY = {
     "voley": {
         "name":         "VOLLEYBALL",
         "header_title": "WEEKLY SCORES",
+        "yt_category":  "17",
+        "yt_tags":      ["volleyball","VNL","weekly results"],
         "bg":     (7, 14, 14),
         "accent": (42, 184, 160),
         "dim":    (14, 36, 32),
@@ -72,6 +86,8 @@ SPORT_IDENTITY = {
     "diger": {
         "name":         "OTHER SPORTS",
         "header_title": "WEEKLY SCORES",
+        "yt_category":  "17",
+        "yt_tags":      ["sports","weekly scores"],
         "bg":     (12, 12, 18),
         "accent": (140, 140, 180),
         "dim":    (30, 30, 48),
@@ -80,6 +96,8 @@ SPORT_IDENTITY = {
     "fixtures": {
         "name":         "UPCOMING FIXTURES",
         "header_title": "UPCOMING FIXTURES",
+        "yt_category":  "17",
+        "yt_tags":      ["fixtures","upcoming matches","football schedule"],
         "bg":     (6, 16, 8),
         "accent": (64, 200, 112),
         "dim":    (18, 44, 24),
@@ -87,6 +105,8 @@ SPORT_IDENTITY = {
     "transfer": {
         "name":         "TRANSFERS",
         "header_title": "WEEKLY TRANSFER NEWS",
+        "yt_category":  "17",
+        "yt_tags":      ["transfer news","football transfers","weekly transfers"],
         "bg":     (18, 8, 0),
         "accent": (255, 140, 0),
         "dim":    (46, 26, 4),
@@ -94,6 +114,8 @@ SPORT_IDENTITY = {
     "finance": {
         "name":         "MARKETS",
         "header_title": "WEEKLY MARKETS",
+        "yt_category":  "25",
+        "yt_tags":      ["finance","markets","stocks","weekly markets"],
         "bg":     (4, 12, 4),
         "accent": (0, 200, 83),
         "dim":    (10, 38, 16),
@@ -101,6 +123,8 @@ SPORT_IDENTITY = {
     "news": {
         "name":         "WORLD NEWS",
         "header_title": "WEEKLY WORLD NEWS",
+        "yt_category":  "25",
+        "yt_tags":      ["world news","breaking news","weekly news"],
         "bg":     (6, 6, 14),
         "accent": (129, 140, 248),
         "dim":    (22, 22, 52),
@@ -108,6 +132,8 @@ SPORT_IDENTITY = {
     "games": {
         "name":         "GAMING",
         "header_title": "WEEKLY GAME NEWS",
+        "yt_category":  "20",
+        "yt_tags":      ["gaming","game news","weekly gaming"],
         "bg":     (8, 4, 20),
         "accent": (168, 85, 247),
         "dim":    (28, 14, 58),
@@ -115,6 +141,8 @@ SPORT_IDENTITY = {
     "music": {
         "name":         "MUSIC CHARTS",
         "header_title": "WEEKLY WORLD TOP 5",
+        "yt_category":  "10",
+        "yt_tags":      ["music","charts","billboard","top5","weekly"],
         "bg":     (14, 4, 18),
         "accent": (224, 64, 251),
         "dim":    (40, 14, 52),
@@ -122,6 +150,8 @@ SPORT_IDENTITY = {
     "techai": {
         "name":         "AI & TECH",
         "header_title": "AI & TECH WEEKLY",
+        "yt_category":  "28",
+        "yt_tags":      ["AI","tech","artificial intelligence","weekly tech"],
         "bg":     (4, 8, 20),
         "accent": (96, 165, 250),
         "dim":    (14, 26, 58),

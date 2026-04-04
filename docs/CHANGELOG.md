@@ -4,6 +4,42 @@
 
 ---
 
+## [Sprint 16] April 2026 — YouTube Upload + Scheduling
+**Phase:** 16 | **Status:** ✅ Complete
+
+### What was built
+- youtube.py audit: OAuth2 flow, token refresh, resumable upload all working
+  - Added `category_id` parameter (was hardcoded to "17")
+  - Per-channel category IDs: Sports(17), News(25), Music(10), Gaming(20), SciTech(28)
+- SPORT_IDENTITY: added `yt_tags` and `yt_category` to all 15 channel entries
+- /reel-config: added YouTube fields (title template, description, tags, category, privacy, auto_upload)
+- /upload page: manual upload UI with channel select, reel file picker, metadata editor
+  - Upload history table (data/upload_log.json)
+  - Per-channel description templates with hashtags
+- Upload API: POST /api/upload/youtube → calls youtube.py upload_video()
+  - Logs all uploads (success/failed) to upload_log.json
+  - GET /api/upload/list-reels lists available MP4 files
+  - GET /api/upload/log returns upload history
+
+### Test results
+```
+tests/test_app_routes.py        18/18 passed (3 new: upload_page, list_reels, upload_log)
+tests/channels/test_fixtures.py  5/5 passed
+Total: 23/23 passed
+```
+
+### Files changed
+- youtube.py — category_id parameter
+- video_maker.py — yt_tags + yt_category in all SPORT_IDENTITY entries
+- app.py — /upload route, upload APIs, upload log
+- static/upload.html — new file (YouTube upload UI)
+- static/reel_config.html — YouTube fields (title, desc, tags, category, privacy, auto_upload)
+- tests/test_app_routes.py — 3 new tests
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 15C] April 2026 — Techai Manual Editor UI
 **Phase:** 15C | **Status:** ✅ Complete
 

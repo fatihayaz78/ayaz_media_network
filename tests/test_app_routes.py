@@ -148,3 +148,23 @@ def test_techai_items_api(client):
     r = client.delete(f"/api/techai/items/{item_id}")
     j = r.get_json()
     assert j["ok"] is True
+
+
+def test_upload_page(client):
+    r = client.get("/upload")
+    assert r.status_code == 200
+    assert b"YouTube Upload" in r.data
+
+
+def test_upload_list_reels(client):
+    r = client.get("/api/upload/list-reels")
+    j = r.get_json()
+    assert j["ok"] is True
+    assert isinstance(j["reels"], list)
+
+
+def test_upload_log(client):
+    r = client.get("/api/upload/log")
+    j = r.get_json()
+    assert j["ok"] is True
+    assert isinstance(j["log"], list)

@@ -503,6 +503,92 @@ def api_set_reel_config(channel_id):
     return jsonify({"ok": True})
 
 
+# ── Upload ───────────────────────────────────────────────────────────────────
+UPLOAD_LOG_PATH = os.path.join(BASE_DIR, "data", "upload_log.json")
+
+
+def _load_upload_log() -> list:
+    os.makedirs(os.path.dirname(UPLOAD_LOG_PATH), exist_ok=True)
+    if os.path.exists(UPLOAD_LOG_PATH):
+        with open(UPLOAD_LOG_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+
+def _save_upload_log(log: list):
+    os.makedirs(os.path.dirname(UPLOAD_LOG_PATH), exist_ok=True)
+    with open(UPLOAD_LOG_PATH, "w", encoding="utf-8") as f:
+        json.dump(log[:100], f, ensure_ascii=False, indent=2)
+
+
+@app.route("/upload")
+def upload_page():
+    return app.send_static_file("upload.html")
+
+
+@app.route("/api/upload/list-reels")
+def api_upload_list_reels():
+    """List available reel files for upload."""
+    reels = []
+    for d in ["output", "output/phase15b", "output/phase15c", "output/phase14", "output/phase13"]:
+        dp = os.path.join(BASE_DIR, d)
+        if os.path.isdir(dp):
+            for f in sorted(os.listdir(dp)):
+                if f.endswith(".mp4"):
+                    fp = os.path.join(dp, f)
+                    kb = os.path.getsize(fp) // 1024
+                    reels.append({"path": os.path.join(d, f), "name": f"{d}/{f}", "size_kb": kb})
+    return jsonify({"ok": True, "reels": reels})
+
+
+@app.route("/api/upload/youtube", methods=["POST"])
+def api_upload_youtube():
+    body = request.get_json(force=True) or {}
+    channel_id = body.get("channel", "")
+    file_path  = body.get("file_path", "")
+    title      = body.get("title", "")
+    description = body.get("description", "")
+    tags       = body.get("tags", [])
+    category_id = body.get("category_id", "17")
+    privacy    = body.get("privacy", "public")
+
+    full_path = os.path.join(BASE_DIR, file_path)
+    if not os.path.exists(full_path):
+        return jsonify({"ok": False, "error": f"File not found: {file_path}"})
+
+    try:
+        from youtube import upload_video
+        result = upload_video(
+            full_path, title, description, tags,
+            category_id=category_id, privacy=privacy,
+        )
+    except Exception as e:
+        result = {"ok": False, "error": str(e)}
+
+    # Log the upload
+    log = _load_upload_log()
+    log.insert(0, {
+        "id":          uuid.uuid4().hex[:8],
+        "channel":     channel_id,
+        "file_path":   file_path,
+        "title":       title,
+        "video_id":    result.get("video_id", ""),
+        "url":         result.get("url", ""),
+        "privacy":     privacy,
+        "uploaded_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "status":      "success" if result.get("ok") else "failed",
+        "error":       result.get("error", ""),
+    })
+    _save_upload_log(log)
+
+    return jsonify(result)
+
+
+@app.route("/api/upload/log")
+def api_upload_log():
+    return jsonify({"ok": True, "log": _load_upload_log()})
+
+
 # ── Techai Editor ────────────────────────────────────────────────────────────
 TECHAI_ITEMS_PATH = os.path.join(BASE_DIR, "channels", "techai", "items.json")
 

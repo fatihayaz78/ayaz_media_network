@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Upload — Ayaz Media Network</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f5f4f0;--bg3:#eeedea;--text:#1a1a18;--text2:#6b6b67;--text3:#9c9a96;--border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.18);--accent:#1a1a18;--acc-inv:#fff;--success:#3b6d11;--success-bg:#eaf3de;--danger:#a32d2d;--danger-bg:#fcebeb;--info:#185fa5;--info-bg:#e6f1fb;--radius:8px;--radius-lg:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;background:var(--bg2);color:var(--text);min-height:100vh}
+a{color:var(--info);text-decoration:none}a:hover{text-decoration:underline}
+.topbar{display:flex;align-items:center;gap:12px;padding:9px 16px;background:var(--bg);border-bottom:0.5px solid var(--border)}
+.brand{font-size:15px;font-weight:600}
+.nav-links{display:flex;gap:16px;margin-left:auto;font-size:12px}
+.nav-links a{color:var(--text2);padding:4px 8px;border-radius:var(--radius)}
+.nav-links a:hover{background:var(--bg2);text-decoration:none}
+.nav-links a.active{color:var(--accent);font-weight:600}
+.container{max-width:800px;margin:20px auto;padding:0 16px}
+h1{font-size:18px;margin-bottom:16px}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px}
+.card h2{font-size:14px;margin-bottom:12px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.field input[type=text],.field select,.field textarea{width:100%;padding:6px 8px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit}
+.field input[type=text],.field select{height:30px}
+.field textarea{min-height:60px;resize:vertical}
+.field-row{display:flex;gap:12px}.field-row .field{flex:1}
+.btn{height:34px;padding:0 18px;font-size:12px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:var(--acc-inv)}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.msg{padding:8px 12px;border-radius:var(--radius);font-size:12px;margin-top:8px}
+.msg-ok{background:var(--success-bg);color:var(--success)}
+.msg-err{background:var(--danger-bg);color:var(--danger)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:6px 8px;text-align:left;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;background:var(--bg2);border-bottom:0.5px solid var(--border)}
+td{padding:6px 8px;border-bottom:0.5px solid var(--border)}
+.status-ok{color:var(--success);font-weight:600}
+.status-fail{color:var(--danger);font-weight:600}
+.spin{display:inline-block;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:20px;color:var(--text3);font-size:12px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">Ayaz Media Network</div>
+  <div class="nav-links">
+    <a href="/channel">Channels</a>
+    <a href="/techai-editor">Techai</a>
+    <a href="/upload" class="active">Upload</a>
+    <a href="/reel-config">Config</a>
+    <a href="/scheduler">Scheduler</a>
+  </div>
+</div>
+
+<div class="container">
+  <h1>YouTube Upload</h1>
+
+  <div class="card">
+    <h2>Manual Upload</h2>
+    <div class="field-row">
+      <div class="field">
+        <label>Channel</label>
+        <select id="u-channel" onchange="loadDefaults()">
+          <option value="finance">Finance</option>
+          <option value="music">Music</option>
+          <option value="techai">Tech & AI</option>
+          <option value="news">World News</option>
+          <option value="transfer">Transfer</option>
+          <option value="games">Games</option>
+          <option value="futbol">Football</option>
+          <option value="basket">Basketball</option>
+          <option value="fixtures">Fixtures</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Reel File</label>
+        <select id="u-file"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Title</label>
+      <input type="text" id="u-title">
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="u-desc"></textarea>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Tags (comma separated)</label>
+        <input type="text" id="u-tags">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <select id="u-cat">
+          <option value="17">Sports (17)</option>
+          <option value="25">News & Politics (25)</option>
+          <option value="10">Music (10)</option>
+          <option value="20">Gaming (20)</option>
+          <option value="28">Science & Tech (28)</option>
+          <option value="24">Entertainment (24)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Privacy</label>
+        <select id="u-privacy">
+          <option value="public">Public</option>
+          <option value="unlisted">Unlisted</option>
+          <option value="private">Private</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="upload-btn" onclick="doUpload()">Upload to YouTube</button>
+    <div id="upload-msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Upload History</h2>
+    <div id="log-area"></div>
+  </div>
+</div>
+
+<script>
+const CATS={finance:"25",music:"10",techai:"28",news:"25",transfer:"17",games:"20",futbol:"17",basket:"17",fixtures:"17"};
+const DESC_TEMPLATES={
+  finance:"\u{1F4CA} WEEKLY MARKETS \u2014 {date}\nTop market movements this week.\n#finance #markets #investing",
+  music:"\u{1F3B5} WEEKLY WORLD TOP 5 \u2014 {date}\nThis week's global chart toppers.\n#music #charts #billboard",
+  news:"\u{1F30D} WEEKLY WORLD NEWS \u2014 {date}\nTop stories from 10 countries.\n#worldnews #news #breaking",
+  games:"\u{1F3AE} WEEKLY GAME NEWS \u2014 {date}\nThis week in gaming.\n#gaming #gamenews #videogames",
+  techai:"\u{1F916} AI & TECH WEEKLY \u2014 {date}\nLatest in AI & Technology.\n#AI #tech #artificialintelligence",
+  transfer:"\u26BD WEEKLY TRANSFER NEWS \u2014 {date}\nThis week's transfer news.\n#transfers #football #soccer",
+  futbol:"\u{1F3C6} WEEKLY SCORES \u2014 {date}\nWeekly football scores & highlights.\n#football #soccer #sports",
+  basket:"\u{1F3C0} WEEKLY SCORES \u2014 {date}\nWeekly basketball scores.\n#basketball #NBA #sports",
+  fixtures:"\u{1F4C5} UPCOMING FIXTURES \u2014 {date}\nThis week's biggest matches.\n#fixtures #football #schedule",
+};
+const TAG_DEFAULTS={
+  finance:"finance,markets,stocks,weekly markets",
+  music:"music,charts,billboard,top5,weekly",
+  news:"world news,breaking news,weekly news",
+  games:"gaming,game news,weekly gaming",
+  techai:"AI,tech,artificial intelligence,weekly tech",
+  transfer:"transfer news,football transfers,weekly transfers",
+  futbol:"football,soccer,weekly scores,highlights",
+  basket:"basketball,NBA,weekly scores",
+  fixtures:"fixtures,upcoming matches,football schedule",
+};
+const today = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+
+async function loadReels(){
+  const r=await fetch('/api/upload/list-reels');
+  const j=await r.json();
+  const sel=document.getElementById('u-file');
+  sel.innerHTML=(j.reels||[]).map(r=>`<option value="${r.path}">${r.name} (${r.size_kb}KB)</option>`).join('');
+}
+
+function loadDefaults(){
+  const ch=document.getElementById('u-channel').value;
+  document.getElementById('u-cat').value=CATS[ch]||'17';
+  document.getElementById('u-tags').value=TAG_DEFAULTS[ch]||'';
+  const tmpl=DESC_TEMPLATES[ch]||'';
+  document.getElementById('u-desc').value=tmpl.replace('{date}',today);
+  document.getElementById('u-title').value=(DESC_TEMPLATES[ch]||'').split('\n')[0].replace('{date}',today);
+}
+
+async function doUpload(){
+  const btn=document.getElementById('upload-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spin">\u25CC</span> Uploading...';
+  document.getElementById('upload-msg').innerHTML='';
+  const body={
+    channel:document.getElementById('u-channel').value,
+    file_path:document.getElementById('u-file').value,
+    title:document.getElementById('u-title').value,
+    description:document.getElementById('u-desc').value,
+    tags:document.getElementById('u-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    category_id:document.getElementById('u-cat').value,
+    privacy:document.getElementById('u-privacy').value,
+  };
+  try{
+    const r=await fetch('/api/upload/youtube',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const j=await r.json();
+    if(j.ok){
+      document.getElementById('upload-msg').innerHTML=`<div class="msg msg-ok">\u2713 Uploaded! <a href="${j.url}" target="_blank">${j.url}</a></div>`;
+    } else {
+      document.getElementById('upload-msg').innerHTML=`<div class="msg msg-err">\u26A0 ${j.error||'Upload failed'}</div>`;
+    }
+  }catch(e){
+    document.getElementById('upload-msg').innerHTML=`<div class="msg msg-err">\u26A0 ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.innerHTML='Upload to YouTube';
+  loadLog();
+}
+
+async function loadLog(){
+  const r=await fetch('/api/upload/log');
+  const j=await r.json();
+  const log=j.log||[];
+  if(!log.length){
+    document.getElementById('log-area').innerHTML='<div class="empty">No uploads yet.</div>';
+    return;
+  }
+  document.getElementById('log-area').innerHTML=`<table>
+    <thead><tr><th>Channel</th><th>Title</th><th>Date</th><th>Status</th><th>URL</th></tr></thead>
+    <tbody>${log.slice(0,20).map(e=>`<tr>
+      <td>${e.channel}</td>
+      <td>${(e.title||'').substring(0,40)}</td>
+      <td>${(e.uploaded_at||'').substring(0,16)}</td>
+      <td class="${e.status==='success'?'status-ok':'status-fail'}">${e.status}</td>
+      <td>${e.url?`<a href="${e.url}" target="_blank">${e.video_id||'link'}</a>`:e.error||'-'}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+loadReels();
+loadDefaults();
+loadLog();
+</script>
+</body>
+</html>
