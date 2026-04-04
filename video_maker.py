@@ -20,92 +20,107 @@ FPS       = 30
 # ── Sport kimlik sistemi ──────────────────────────────────────────────────────
 SPORT_IDENTITY = {
     "futbol": {
-        "name":   "FOOTBALL",
+        "name":         "FOOTBALL",
+        "header_title": "WEEKLY SCORES",
         "bg":     (13, 15, 26),
         "accent": (79, 150, 255),
         "dim":    (30, 42, 74),
     },
     "basket": {
-        "name":   "BASKETBALL",
+        "name":         "BASKETBALL",
+        "header_title": "WEEKLY SCORES",
         "bg":     (18, 8, 8),
         "accent": (224, 64, 48),
         "dim":    (50, 20, 18),
     },
     "tenis": {
-        "name":   "TENNIS",
+        "name":         "TENNIS",
+        "header_title": "WEEKLY SCORES",
         "bg":     (8, 16, 8),
         "accent": (88, 192, 48),
         "dim":    (24, 40, 14),
     },
     "motor": {
-        "name":   "MOTORSPORT",
+        "name":         "MOTORSPORT",
+        "header_title": "WEEKLY SCORES",
         "bg":     (18, 9, 0),
         "accent": (240, 120, 32),
         "dim":    (48, 28, 10),
     },
     "dovus": {
-        "name":   "COMBAT SPORTS",
+        "name":         "COMBAT SPORTS",
+        "header_title": "WEEKLY SCORES",
         "bg":     (14, 8, 20),
         "accent": (144, 80, 208),
         "dim":    (40, 22, 62),
     },
     "amerikan": {
-        "name":   "AMERICAN FOOTBALL",
+        "name":         "AMERICAN FOOTBALL",
+        "header_title": "WEEKLY SCORES",
         "bg":     (6, 12, 22),
         "accent": (56, 112, 224),
         "dim":    (18, 30, 58),
     },
     "voley": {
-        "name":   "VOLLEYBALL",
+        "name":         "VOLLEYBALL",
+        "header_title": "WEEKLY SCORES",
         "bg":     (7, 14, 14),
         "accent": (42, 184, 160),
         "dim":    (14, 36, 32),
     },
     "diger": {
-        "name":   "OTHER SPORTS",
+        "name":         "OTHER SPORTS",
+        "header_title": "WEEKLY SCORES",
         "bg":     (12, 12, 18),
         "accent": (140, 140, 180),
         "dim":    (30, 30, 48),
     },
     # ── New channel themes ─────────────────────────────────────────────────────
     "fixtures": {
-        "name":   "UPCOMING FIXTURES",
+        "name":         "UPCOMING FIXTURES",
+        "header_title": "UPCOMING FIXTURES",
         "bg":     (6, 16, 8),
         "accent": (64, 200, 112),
         "dim":    (18, 44, 24),
     },
     "transfer": {
-        "name":   "TRANSFERS",
+        "name":         "TRANSFERS",
+        "header_title": "TRANSFERS",
         "bg":     (18, 8, 0),
         "accent": (255, 140, 0),
         "dim":    (46, 26, 4),
     },
     "finance": {
-        "name":   "MARKETS",
+        "name":         "MARKETS",
+        "header_title": "WEEKLY MARKETS",
         "bg":     (4, 12, 4),
         "accent": (0, 200, 83),
         "dim":    (10, 38, 16),
     },
     "news": {
-        "name":   "WORLD NEWS",
+        "name":         "WORLD NEWS",
+        "header_title": "WORLD NEWS",
         "bg":     (6, 6, 14),
         "accent": (129, 140, 248),
         "dim":    (22, 22, 52),
     },
     "games": {
-        "name":   "GAMING",
+        "name":         "GAMING",
+        "header_title": "GAMING WEEKLY",
         "bg":     (8, 4, 20),
         "accent": (168, 85, 247),
         "dim":    (28, 14, 58),
     },
     "music": {
-        "name":   "MUSIC CHARTS",
+        "name":         "MUSIC CHARTS",
+        "header_title": "WEEKLY CHARTS",
         "bg":     (14, 4, 18),
         "accent": (224, 64, 251),
         "dim":    (40, 14, 52),
     },
     "techai": {
-        "name":   "AI & TECH",
+        "name":         "AI & TECH",
+        "header_title": "AI & TECH WEEKLY",
         "bg":     (4, 8, 20),
         "accent": (96, 165, 250),
         "dim":    (14, 26, 58),
@@ -314,7 +329,7 @@ def generate_header(sport_id: str, date_str: str) -> Image.Image:
     y = 52
 
     # Satır 1: WEEKLY SCORES — beyaz, bold
-    title = "WEEKLY SCORES"
+    title = ident.get("header_title", "WEEKLY SCORES")
     x = centered_x(draw, title, f_title)
     draw_text_shadow(draw, (x, y), title, f_title, (255, 255, 255, 255))
     y += text_height(draw, title, f_title) + 8

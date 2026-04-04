@@ -4,6 +4,40 @@
 
 ---
 
+## [Sprint 13] April 2026 — Header Titles + Visual QA Reels
+**Phase:** 13 | **Status:** ✅ Complete
+
+### What was built
+- Per-channel header titles in video_maker.py SPORT_IDENTITY:
+  - Sports/basket/tenis/motor/dovus/amerikan/voley/diger: "WEEKLY SCORES"
+  - fixtures: "UPCOMING FIXTURES" | transfer: "TRANSFERS"
+  - finance: "WEEKLY MARKETS" | music: "WEEKLY CHARTS"
+  - techai: "AI & TECH WEEKLY" | news: "WORLD NEWS" | games: "GAMING WEEKLY"
+- generate_header() reads header_title dynamically via ident.get()
+- Fixed delisted tickers: KOZAA.IS -> TAVHL.IS, CPLE6.SA -> TOTS3.SA
+- Test reels generated in output/phase13/:
+  - finance:  47 rows, 2521KB, 115.0s
+  - music:    55 rows, 3231KB, 128.0s
+  - techai:    8 rows,  330KB,  24.6s
+  - news:      8 rows,  351KB,  25.8s
+  - games:    13 rows,  560KB,  37.4s
+  - transfer:  1 row,   105KB,  15.0s
+
+### Test results
+```
+tests/test_app_routes.py        11/11 passed
+tests/channels/test_fixtures.py  5/5 passed
+Total: 16/16 passed
+```
+
+### Files changed
+- video_maker.py — header_title in all 15 SPORT_IDENTITY entries, generate_header() dynamic
+- channels/finance/finance_fetcher.py — TAVHL.IS, TOTS3.SA ticker fixes
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 12] April 2026 — Channel Manager Overhaul
 **Phase:** 12 | **Status:** ✅ Complete
 
