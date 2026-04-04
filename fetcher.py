@@ -8,7 +8,7 @@ import os
 import json
 import time
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Optional
 
 try:
@@ -83,7 +83,7 @@ def _load_cache(sport_slug: str, date: str) -> Optional[List[Dict]]:
     if not os.path.exists(path):
         return None
     # Bugünün verisi için cache kullanma (henüz tamamlanmamış maç olabilir)
-    if date == datetime.utcnow().strftime("%Y-%m-%d"):
+    if date == datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%d"):
         return None
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -189,7 +189,7 @@ def fetch_by_date(sport_slug: str, date: str) -> List[Dict]:
         time_str = ""
         if ts:
             try:
-                time_str = datetime.utcfromtimestamp(ts).strftime("%H:%M")
+                time_str = datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%H:%M")
             except Exception:
                 pass
 

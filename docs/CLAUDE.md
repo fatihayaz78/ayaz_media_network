@@ -51,7 +51,8 @@ Fetch data → generate 1080×1920 MP4 → upload to YouTube.
 ```
 Phase 1–5: ✅ COMPLETE
 Phase 6:   ✅ COMPLETE (6/7 reels, 9 tests, fonts+env+git+YouTube)
-Phase 7:   📋 PLANNED  (API keys, YouTube upload, production go-live)
+Phase 7:   ✅ COMPLETE (12/13 schedules, 6/7 reels, AI channels live, datetime fixed)
+Phase 8:   📋 PLANNED  (YouTube upload, rate limit strategy, esports/releases keys)
 See CHANGELOG.md for details.
 ```
 

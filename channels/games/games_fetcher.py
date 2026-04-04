@@ -10,7 +10,7 @@ import json
 import time
 import requests
 from typing import List, Dict, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 from channels.base_fetcher import BaseFetcher
@@ -37,7 +37,7 @@ class GamesFetcher(BaseFetcher):
     def fetch(self, date_from: str, date_to: str,
               fmt: str = "steam_charts") -> List[Dict]:
         cache_key = f"games_{fmt}_{date_from}"
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%d")
         if date_from < today:
             cached = self._load_cache(cache_key)
             if cached is not None:

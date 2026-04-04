@@ -9,7 +9,7 @@ import json
 import time
 import pickle
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger("youtube")
 
@@ -147,7 +147,7 @@ def upload_video(
 
 
 def build_title(template: str, sport_name: str, channel: str) -> str:
-    date_str = datetime.utcnow().strftime("%d %b %Y")
+    date_str = datetime.now(timezone.utc).replace(tzinfo=None).strftime("%d %b %Y")
     return (
         template
         .replace("{sport}",   sport_name)

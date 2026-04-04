@@ -88,8 +88,9 @@ class TechAIFetcher(BaseFetcher):
         self.client = Anthropic(api_key=api_key) if api_key else None
 
     def fetch(self, date_from: str, date_to: str) -> List[Dict]:
-        week = datetime.utcnow().isocalendar()[1]
-        year = datetime.utcnow().year
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        week = now.isocalendar()[1]
+        year = now.year
         cache_key = f"techai_{year}_W{week:02d}"
 
         cached = self._load_cache(cache_key)

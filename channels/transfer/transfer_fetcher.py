@@ -10,7 +10,7 @@ import json
 import time
 import requests
 from typing import List, Dict, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 try:
     from dotenv import load_dotenv
@@ -83,7 +83,7 @@ class TransferFetcher(BaseFetcher):
 
     def fetch(self, date_from: str, date_to: str) -> List[Dict]:
         cache_key = f"transfer_{date_from}"
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%d")
         if date_from < today:
             cached = self._load_cache(cache_key)
             if cached is not None:

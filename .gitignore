@@ -15,7 +15,7 @@ build/
 output/
 cache/
 fonts/
-music/
+/music/
 uploads/
 
 # OS
@@ -30,3 +30,4 @@ Thumbs.db
 
 # Logs
 daemon.log
+amn/

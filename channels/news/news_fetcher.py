@@ -9,7 +9,7 @@ import sys
 import json
 import time
 from typing import List, Dict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 from channels.base_fetcher import BaseFetcher
@@ -82,7 +82,7 @@ class NewsFetcher(BaseFetcher):
         self.client = Anthropic(api_key=api_key) if api_key else None
 
     def fetch(self, date_from: str, date_to: str) -> List[Dict]:
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%d")
         cache_key = f"news_{date_from}"
         if date_from < today:
             cached = self._load_cache(cache_key)

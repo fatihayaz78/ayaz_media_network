@@ -5,12 +5,12 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from channels.fixtures.fixtures_fetcher import FixturesFetcher
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 
 def test_fetch_returns_list():
     f = FixturesFetcher()
-    today = datetime.utcnow()
+    today = datetime.now(timezone.utc).replace(tzinfo=None)
     next_week = (today + timedelta(days=7)).strftime("%Y-%m-%d")
     today_str = today.strftime("%Y-%m-%d")
     items = f.fetch(today_str, next_week)
@@ -19,7 +19,7 @@ def test_fetch_returns_list():
 
 def test_rows_have_required_fields():
     f = FixturesFetcher()
-    today = datetime.utcnow()
+    today = datetime.now(timezone.utc).replace(tzinfo=None)
     next_week = (today + timedelta(days=7)).strftime("%Y-%m-%d")
     today_str = today.strftime("%Y-%m-%d")
     items = f.fetch(today_str, next_week)
@@ -34,7 +34,7 @@ def test_rows_have_required_fields():
 
 def test_to_reel_groups_structure():
     f = FixturesFetcher()
-    today = datetime.utcnow()
+    today = datetime.now(timezone.utc).replace(tzinfo=None)
     next_week = (today + timedelta(days=7)).strftime("%Y-%m-%d")
     today_str = today.strftime("%Y-%m-%d")
     items = f.fetch(today_str, next_week)

@@ -8,7 +8,7 @@ import os
 import sys
 import time
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Optional
 
 try:
@@ -76,7 +76,7 @@ class FixturesFetcher(BaseFetcher):
         cache_key = f"fixtures_{date}"
 
         # Only cache future dates that have passed (skip today)
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%d")
         if date < today:
             cached = self._load_cache(cache_key)
             if cached is not None:
@@ -116,7 +116,7 @@ class FixturesFetcher(BaseFetcher):
             kickoff = ""
             if ts:
                 try:
-                    kickoff = datetime.utcfromtimestamp(ts).strftime("%H:%M")
+                    kickoff = datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%H:%M")
                 except Exception:
                     pass
 
