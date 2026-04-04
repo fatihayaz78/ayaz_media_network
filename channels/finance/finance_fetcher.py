@@ -108,6 +108,86 @@ CURRENCY_MAP = {
     ".SA": "R$", ".T": "\u00a5", ".KS": "\u20a9",
 }
 
+TICKER_NAMES = {
+    # Japan NIKKEI
+    "7203.T":  "Toyota",          "9984.T":  "SoftBank",
+    "6758.T":  "Sony",            "8306.T":  "Mitsubishi UFJ",
+    "9432.T":  "NTT",             "6861.T":  "Keyence",
+    "7974.T":  "Nintendo",        "9433.T":  "KDDI",
+    "4063.T":  "Shin-Etsu Chem",  "8035.T":  "Tokyo Electron",
+    "6501.T":  "Hitachi",         "7267.T":  "Honda",
+    "4519.T":  "Chugai Pharma",   "9983.T":  "Fast Retailing",
+    "6902.T":  "Denso",           "8604.T":  "Nomura",
+    "6367.T":  "Daikin",          "4568.T":  "Daiichi Sankyo",
+    "2914.T":  "Japan Tobacco",   "9022.T":  "JR Central",
+    # South Korea KOSPI
+    "005930.KS": "Samsung Elec",  "000660.KS": "SK Hynix",
+    "035420.KS": "Naver",         "005490.KS": "POSCO",
+    "051910.KS": "LG Chem",       "035720.KS": "Kakao",
+    "006400.KS": "Samsung SDI",   "028260.KS": "Samsung C&T",
+    "207940.KS": "Samsung Bio",   "003550.KS": "LG Corp",
+    "105560.KS": "KB Financial",  "055550.KS": "Shinhan Fin",
+    "012330.KS": "Hyundai Mobis", "066570.KS": "LG Electronics",
+    "034730.KS": "SK Inc",        "009150.KS": "Samsung EM",
+    "032830.KS": "Samsung Life",  "018260.KS": "Samsung SDS",
+    "003490.KS": "Korean Air",    "010130.KS": "Korea Zinc",
+    # Turkey BIST100
+    "GARAN.IS":  "Garanti BBVA",  "AKBNK.IS":  "Akbank",
+    "EREGL.IS":  "Eregli Demir",  "KCHOL.IS":  "Koc Holding",
+    "THYAO.IS":  "Turk Hava Yol", "ASELS.IS":  "Aselsan",
+    "BIMAS.IS":  "BIM",           "FROTO.IS":  "Ford Otosan",
+    "SAHOL.IS":  "Sabanci Hold",  "SISE.IS":   "Sise Cam",
+    "ARCLK.IS":  "Arcelik",       "ENKAI.IS":  "Enka Insaat",
+    "ISCTR.IS":  "Is Bankasi",    "TUPRS.IS":  "Tupras",
+    "VAKBN.IS":  "Vakifbank",     "YKBNK.IS":  "Yapi Kredi",
+    "PETKM.IS":  "Petkim",        "TCELL.IS":  "Turkcell",
+    "KOZAL.IS":  "Koza Altin",    "DOHOL.IS":  "Dogan Hold",
+    # Brazil BOVESPA
+    "PETR4.SA":  "Petrobras",     "VALE3.SA":  "Vale",
+    "ITUB4.SA":  "Itau Unibanco", "BBDC4.SA":  "Bradesco",
+    "BBAS3.SA":  "Banco do Brasil","ABEV3.SA": "Ambev",
+    "WEGE3.SA":  "WEG",           "RENT3.SA":  "Localiza",
+    "MGLU3.SA":  "Magalu",        "SUZB3.SA":  "Suzano",
+    "JBSS3.SA":  "JBS",           "LREN3.SA":  "Lojas Renner",
+    "RADL3.SA":  "Raia Drogasil", "NTCO3.SA":  "Grupo Boticario",
+    "BRFS3.SA":  "BRF",           "HAPV3.SA":  "Hapvida",
+    "RAIL3.SA":  "Rumo",          "CSAN3.SA":  "Cosan",
+    "GGBR4.SA":  "Gerdau",        "KLBN11.SA": "Klabin",
+    # Germany DAX
+    "SAP.DE":    "SAP",           "SIE.DE":    "Siemens",
+    "ALV.DE":    "Allianz",       "MRK.DE":    "Merck",
+    "DTE.DE":    "Deutsche Telekom","MBG.DE":  "Mercedes-Benz",
+    "BMW.DE":    "BMW",           "BAS.DE":    "BASF",
+    "BAYN.DE":   "Bayer",         "ADS.DE":    "Adidas",
+    "RWE.DE":    "RWE",           "VOW3.DE":   "Volkswagen",
+    "IFX.DE":    "Infineon",      "ENR.DE":    "Siemens Energy",
+    "HEN3.DE":   "Henkel",        "SHL.DE":    "Siemens Health",
+    "DPW.DE":    "DHL Group",     "BEI.DE":    "Beiersdorf",
+    "ZAL.DE":    "Zalando",       "CON.DE":    "Continental",
+    # UK FTSE100
+    "AZN.L":     "AstraZeneca",   "SHEL.L":    "Shell",
+    "HSBA.L":    "HSBC",          "ULVR.L":    "Unilever",
+    "BP.L":      "BP",            "RIO.L":     "Rio Tinto",
+    "GSK.L":     "GSK",           "REL.L":     "RELX",
+    "DGE.L":     "Diageo",        "VOD.L":     "Vodafone",
+    "BATS.L":    "BAT",           "LLOY.L":    "Lloyds",
+    "BARC.L":    "Barclays",      "NWG.L":     "NatWest",
+    "PRU.L":     "Prudential",    "BHP.L":     "BHP",
+    "GLEN.L":    "Glencore",      "AAL.L":     "Anglo American",
+    "IMB.L":     "Imperial Brands","MKS.L":    "M&S",
+    # France CAC40
+    "MC.PA":     "LVMH",          "TTE.PA":    "TotalEnergies",
+    "SAN.PA":    "Sanofi",        "BNP.PA":    "BNP Paribas",
+    "OR.PA":     "L'Oreal",       "AIR.PA":    "Airbus",
+    "RI.PA":     "Pernod Ricard", "CS.PA":     "AXA",
+    "SU.PA":     "Schneider Elec","SGO.PA":    "Saint-Gobain",
+    "ACA.PA":    "Credit Agricole","GLE.PA":   "Societe Generale",
+    "BN.PA":     "Danone",        "KER.PA":    "Kering",
+    "CAP.PA":    "Capgemini",     "PUB.PA":    "Publicis",
+    "STM.PA":    "STMicro",       "VIE.PA":    "Veolia",
+    "LR.PA":     "Legrand",       "RNO.PA":    "Renault",
+}
+
 CONTINENT_ORDER = ["EUROPE", "AMERICAS", "ASIA", "COMMODITIES", "CRYPTO"]
 
 
@@ -215,7 +295,7 @@ class FinanceFetcher(BaseFetcher):
                     ticker  = item["ticker"]
                     price   = item["price"]
                     change  = item["change"]
-                    name = ticker.split(".")[0]  # fallback: ticker without suffix
+                    name = TICKER_NAMES.get(ticker) or ticker.split(".")[0]
 
                     rows.append({
                         "id":        f"fin-{market_name}-{ticker}",
@@ -267,36 +347,46 @@ class FinanceFetcher(BaseFetcher):
         return rows
 
     def _fetch_crypto(self) -> List[Dict]:
+        print("[finance] Fetching crypto from CoinGecko...")
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {
+            "ids": ",".join(CRYPTO_IDS),
+            "vs_currencies": "usd",
+            "include_24hr_change": "true",
+        }
         try:
-            url = "https://api.coingecko.com/api/v3/simple/price"
-            params = {
-                "ids": ",".join(CRYPTO_IDS),
-                "vs_currencies": "usd",
-                "include_24hr_change": "true",
-            }
-            resp = requests.get(url, params=params, timeout=10)
-            resp.raise_for_status()
+            resp = requests.get(url, params=params, timeout=15)
+            print(f"[finance] CoinGecko status: {resp.status_code}")
+            if resp.status_code != 200:
+                print(f"[finance] CoinGecko error: {resp.text[:200]}")
+                return []
             data = resp.json()
+            print(f"[finance] CoinGecko data keys: {list(data.keys())}")
         except Exception as e:
-            print(f"[finance] crypto error: {e}")
+            print(f"[finance] CoinGecko exception: {e}")
             return []
 
         rows = []
         for coin_id in CRYPTO_IDS:
-            d = data.get(coin_id, {})
-            price  = d.get("usd", 0)
-            change = d.get("usd_24h_change", 0)
+            if coin_id not in data:
+                print(f"[finance] Missing: {coin_id}")
+                continue
+            price  = data[coin_id].get("usd", 0)
+            change = data[coin_id].get("usd_24h_change", 0) or 0
+            name   = CRYPTO_NAMES.get(coin_id, coin_id)
+            symbol = CRYPTO_SYMBOLS.get(coin_id, coin_id)
             rows.append({
                 "id":        f"fin-crypto-{coin_id}",
-                "home":      CRYPTO_NAMES[coin_id],
-                "score":     f"${price:,.0f}" if price >= 1000 else f"${price:.2f}",
+                "home":      name,
+                "score":     f"${price:,.2f}" if price >= 1 else f"${price:.4f}",
                 "away":      _format_change(change),
                 "league":    "CRYPTO",
-                "category":  "\U0001f4b0 Crypto",
+                "category":  "\U0001f310 Global",
                 "continent": "CRYPTO",
-                "time":      CRYPTO_SYMBOLS[coin_id],
+                "time":      symbol,
                 "status":    "\u25b2" if change >= 0 else "\u25bc",
             })
+        print(f"[finance] Crypto rows: {len(rows)}")
         return rows
 
     def to_reel_groups(self, items: List[Dict]) -> List[Dict]:

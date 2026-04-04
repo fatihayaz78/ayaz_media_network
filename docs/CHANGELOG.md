@@ -4,6 +4,58 @@
 
 ---
 
+## [Sprint 11] April 2026 — Channel Manager Bug Fixes
+**Phase:** 11 | **Status:** ✅ Complete
+
+### What was fixed
+- Bug 1: Stock names showing ticker codes instead of company names
+  - Added TICKER_NAMES dict with 180 entries (NIKKEI, KOSPI, BIST100, BOVESPA, DAX, FTSE100, CAC40)
+  - "6501.T" now shows "Hitachi", "005930.KS" shows "Samsung Elec", "GARAN.IS" shows "Garanti BBVA"
+
+- Bug 2: Crypto not showing in Finance
+  - Enhanced _fetch_crypto() with detailed logging (status code, data keys, per-coin checks)
+  - Fixed change=None crash with `or 0` fallback
+  - Changed price format: `$price:,.2f` for consistent decimal display
+  - Note: CoinGecko still fails on SSL-restricted networks (known infra issue)
+
+- Bug 3: Toggle on/off rendering + AI description
+  - Fixed row toggle onclick: uses JSON.stringify for safe ID escaping
+  - Fixed CSS: `.hidden-row` class with opacity+strikethrough on `.row-home`
+  - AI description button always visible, shows inline error on failure
+  - Added descError state for clear error display
+
+- Bug 4: Data lost when switching channels
+  - Added CHANNEL_DATA object: persists fetched rows across channel switches
+  - Added sessionStorage backup: survives page refresh within session
+  - Cache badge shows fetch timestamp per channel
+  - Sidebar shows row counts for all channels with data
+
+- Bug 5: Date range presets
+  - Added preset buttons: Today, This Week, This Month, Custom
+  - Fixtures gets "Next 7 Days" preset
+  - Smart defaults per channel: finance→Today, music→Week, fixtures→Next7
+  - Custom mode shows from/to date inputs
+
+- Improvement: Channel-specific AI description prompts
+  - 8 tailored prompts (finance=market analyst, music=journalist, etc.)
+  - Prompts include role, tone, and specific instructions per channel
+
+### Test results
+```
+tests/test_app_routes.py        11/11 passed
+tests/channels/test_fixtures.py  5/5 passed
+Total: 16/16 passed
+```
+
+### Files changed
+- channels/finance/finance_fetcher.py — TICKER_NAMES dict, name lookup, crypto logging
+- static/channel.html — data persistence, date presets, toggle fixes, description errors
+- app.py — DESCRIPTION_PROMPTS dict, channel-specific prompts
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status updated
+
+---
+
 ## [Sprint 10] April 2026 — Channel Manager UI
 **Phase:** 10 | **Status:** ✅ Complete
 

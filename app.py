@@ -150,6 +150,60 @@ def channel_page():
     return app.send_static_file("channel.html")
 
 
+DESCRIPTION_PROMPTS = {
+    "finance": """You are a Chief Market Analyst writing a YouTube Shorts description.
+Analyze the stock market data below showing top movers across global markets.
+Write ONE paragraph (2-3 sentences) highlighting the key market trends,
+biggest movers, and overall market sentiment.
+Then add 6-8 relevant hashtags on a new line.
+Be specific — mention company names and percentages.
+Data:
+{data}""",
+    "music": """You are a music journalist writing a YouTube Shorts description.
+Based on the chart data below, write ONE paragraph (2-3 sentences) about
+the current music trends, notable artists, and chart highlights.
+Then add 6-8 hashtags.
+Data:
+{data}""",
+    "techai": """You are a tech journalist covering AI and technology.
+Based on the news headlines below, write ONE paragraph (2-3 sentences)
+summarizing the week's biggest developments in AI and tech.
+Then add 6-8 hashtags.
+Data:
+{data}""",
+    "news": """You are a news anchor writing a YouTube Shorts description.
+Based on the headlines below, write ONE paragraph (2-3 sentences)
+summarizing today's most important world news stories.
+Then add 6-8 hashtags.
+Data:
+{data}""",
+    "transfer": """You are a football journalist covering transfer news.
+Based on the transfer data below, write ONE paragraph (2-3 sentences)
+about the latest transfer activity, notable moves, and rumors.
+Then add 6-8 hashtags.
+Data:
+{data}""",
+    "games": """You are a gaming journalist writing a YouTube Shorts description.
+Based on the gaming data below (charts/deals), write ONE paragraph (2-3 sentences)
+about top games, trends, or best deals right now.
+Then add 6-8 hashtags.
+Data:
+{data}""",
+    "sports": """You are a sports journalist writing a YouTube Shorts description.
+Based on the match results below, write ONE paragraph (2-3 sentences)
+summarizing the key results, standout performances, or league highlights.
+Then add 6-8 hashtags.
+Data:
+{data}""",
+    "fixtures": """You are a football journalist writing a YouTube Shorts description.
+Based on the upcoming fixtures below, write ONE paragraph (2-3 sentences)
+previewing the most exciting matches this week.
+Then add 6-8 hashtags.
+Data:
+{data}""",
+}
+
+
 @app.route("/api/channel/description", methods=["POST"])
 def generate_description():
     data = request.json or {}
@@ -167,26 +221,9 @@ def generate_description():
                  r.get("away", ""), r.get("status", "")]
         summary_lines.append(" | ".join(p for p in parts if p))
 
-    channel_labels = {
-        "finance":  "stock market, crypto, and commodities",
-        "music":    "music charts",
-        "techai":   "AI and technology news",
-        "news":     "world news",
-        "transfer": "football transfer news",
-        "games":    "gaming and esports",
-        "sports":   "sports scores",
-        "fixtures": "upcoming football fixtures",
-    }
-    topic = channel_labels.get(channel_id, channel_id)
-
-    prompt = (
-        f"You are writing a YouTube Shorts description for a {topic} video.\n"
-        f"Based on this data, write ONE engaging paragraph (max 3 sentences) in English.\n"
-        f"Be specific — mention actual names, numbers, or trends from the data.\n"
-        f"End with relevant hashtags on a new line (max 8 hashtags).\n\n"
-        f"Data:\n{chr(10).join(summary_lines[:20])}\n\n"
-        f"Write only the description + hashtags. No preamble."
-    )
+    data_text = "\n".join(summary_lines[:25])
+    prompt_template = DESCRIPTION_PROMPTS.get(channel_id, DESCRIPTION_PROMPTS["news"])
+    prompt = prompt_template.replace("{data}", data_text)
 
     try:
         from anthropic import Anthropic
