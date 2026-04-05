@@ -168,3 +168,28 @@ def test_upload_log(client):
     j = r.get_json()
     assert j["ok"] is True
     assert isinstance(j["log"], list)
+
+
+def test_thumbnail_generation():
+    from thumbnail_maker import generate_thumbnail
+    import tempfile
+    path = tempfile.mktemp(suffix=".jpg")
+    try:
+        generate_thumbnail("finance", "05.04.2026", ["Test item 1", "Test item 2"], path)
+        assert os.path.exists(path)
+        assert os.path.getsize(path) >= 10 * 1024  # at least 10KB
+    finally:
+        if os.path.exists(path):
+            os.remove(path)
+
+
+def test_thumbnail_route_exists(client):
+    # finance thumbnail was generated in Task 17.6
+    r = client.get("/thumbnail/finance")
+    assert r.status_code == 200
+    assert r.content_type == "image/jpeg"
+
+
+def test_thumbnail_route_404(client):
+    r = client.get("/thumbnail/nonexistent_channel_xyz")
+    assert r.status_code == 404

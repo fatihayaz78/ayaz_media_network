@@ -76,6 +76,7 @@ def upload_video(
     tags: list,
     category_id: str = CATEGORY_SPORTS,
     privacy: str = PRIVACY_PUBLIC,
+    thumbnail_path: str = None,
     made_for_kids: bool = False,
     retry_count: int = 3,
 ) -> dict:
@@ -137,6 +138,19 @@ def upload_video(
             video_id  = response["id"]
             video_url = f"https://www.youtube.com/shorts/{video_id}"
             logger.info(f"Upload tamamlandı: {video_url}")
+
+            # Upload thumbnail if provided
+            if thumbnail_path and os.path.exists(thumbnail_path):
+                try:
+                    thumb_media = MediaFileUpload(thumbnail_path, mimetype="image/jpeg")
+                    service.thumbnails().set(
+                        videoId=video_id,
+                        media_body=thumb_media,
+                    ).execute()
+                    logger.info(f"Thumbnail yüklendi: {thumbnail_path}")
+                except Exception as te:
+                    logger.warning(f"Thumbnail yüklenemedi: {te}")
+
             return {"ok": True, "video_id": video_id, "url": video_url}
 
         except Exception as e:

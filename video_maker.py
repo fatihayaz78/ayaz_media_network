@@ -824,4 +824,30 @@ def make_reel(config: dict, output_path: str, bg_path: str = None,
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg failed:\n{result.stderr[-2000:]}")
 
+    # Auto-generate thumbnail
+    try:
+        from thumbnail_maker import generate_thumbnail, thumbnail_path_for
+        top_items = []
+        for cont in config.get("continents", []):
+            for group in cont.get("groups", []):
+                for match in group.get("matches", []):
+                    if len(top_items) >= 3:
+                        break
+                    home  = match.get("home", "")
+                    score = match.get("score", "")
+                    away  = match.get("away", "")
+                    if score.strip():
+                        top_items.append(f"{home} {score} {away}".strip())
+                    else:
+                        top_items.append(home[:48])
+                if len(top_items) >= 3:
+                    break
+            if len(top_items) >= 3:
+                break
+        thumb_path = thumbnail_path_for(sport_id, date_str)
+        generate_thumbnail(sport_id, date_str, top_items, thumb_path)
+        print(f"[thumbnail] {thumb_path}")
+    except Exception as e:
+        print(f"[thumbnail] generation failed: {e}")
+
     return output_path

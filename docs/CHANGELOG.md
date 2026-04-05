@@ -4,6 +4,38 @@
 
 ---
 
+## [Sprint 17] April 2026 — Thumbnail Generation + Channel Branding
+**Phase:** 17 | **Status:** ✅ Complete
+
+### What was built
+- thumbnail_maker.py: 1280x720 JPEG, 3-zone layout
+  - Top band: accent gradient + channel emoji/logo + date
+  - Center: header title (86px bold) + top 3 items (36px accent)
+  - Bottom band: "AYAZ MEDIA NETWORK" + @channel handle
+  - Logo fallback chain: channels/{ch}/logo.png > static/logos/ > emoji
+- Auto-thumbnail generated after every make_reel() call
+- GET /thumbnail/<channel> route: serves latest thumbnail JPEG
+- youtube.py: thumbnail_path param + thumbnails().set() after upload
+- Test thumbnails generated: 13 channels, 73-103KB each
+
+### Test results
+```
+tests/test_app_routes.py        21/21 passed (3 new: thumbnail_generation, route_exists, route_404)
+tests/channels/test_fixtures.py  5/5 passed
+Total: 26/26 passed
+```
+
+### Files changed
+- thumbnail_maker.py — new file (thumbnail generator)
+- video_maker.py — auto-thumbnail at end of make_reel()
+- youtube.py — thumbnail_path param, thumbnails().set() upload
+- app.py — GET /thumbnail/<channel> route
+- tests/test_app_routes.py — 3 new tests
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 16] April 2026 — YouTube Upload + Scheduling
 **Phase:** 16 | **Status:** ✅ Complete
 

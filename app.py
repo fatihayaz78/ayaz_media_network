@@ -589,6 +589,21 @@ def api_upload_log():
     return jsonify({"ok": True, "log": _load_upload_log()})
 
 
+@app.route("/thumbnail/<channel>")
+def api_thumbnail(channel):
+    """Serve latest thumbnail for a channel."""
+    thumb_dir = os.path.join(BASE_DIR, "output", "thumbnails")
+    if not os.path.isdir(thumb_dir):
+        return jsonify({"error": "No thumbnails"}), 404
+    matches = sorted(
+        [f for f in os.listdir(thumb_dir) if f.startswith(channel + "_") and f.endswith(".jpg")],
+        reverse=True,
+    )
+    if not matches:
+        return jsonify({"error": "No thumbnail found"}), 404
+    return send_file(os.path.join(thumb_dir, matches[0]), mimetype="image/jpeg")
+
+
 # ── Techai Editor ────────────────────────────────────────────────────────────
 TECHAI_ITEMS_PATH = os.path.join(BASE_DIR, "channels", "techai", "items.json")
 
