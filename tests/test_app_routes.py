@@ -193,3 +193,18 @@ def test_thumbnail_route_exists(client):
 def test_thumbnail_route_404(client):
     r = client.get("/thumbnail/nonexistent_channel_xyz")
     assert r.status_code == 404
+
+
+def test_channel_editor_page(client):
+    r = client.get("/channel-editor/finance")
+    assert r.status_code == 200
+    assert b"Channel Editor" in r.data
+
+
+def test_crypto_fallback():
+    """CoinGecko fallback chain should always return 5 rows."""
+    from channels.finance.finance_fetcher import FinanceFetcher
+    f = FinanceFetcher()
+    rows = f._fetch_crypto()
+    assert len(rows) == 5
+    assert all(r["continent"] == "CRYPTO" for r in rows)

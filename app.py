@@ -701,11 +701,19 @@ def api_techai_feature(item_id):
     return jsonify({"ok": True})
 
 
+# ── Channel Editor ───────────────────────────────────────────────────────────
+@app.route("/channel-editor/<channel_id>")
+def channel_editor_page(channel_id):
+    return app.send_static_file("channel_editor.html")
+
+
 if __name__ == "__main__":
     print("=" * 50)
     print("Sports Reel Studio  →  http://localhost:5052")
     print("Channel Manager     →  http://localhost:5052/channel")
+    print("Channel Editor      →  http://localhost:5052/channel-editor/<ch>")
     print("Techai Editor       →  http://localhost:5052/techai-editor")
+    print("Upload              →  http://localhost:5052/upload")
     print("Reel Config         →  http://localhost:5052/reel-config")
     print("Scheduler UI        →  http://localhost:5052/scheduler")
     print("=" * 50)

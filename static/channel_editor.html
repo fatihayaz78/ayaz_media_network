@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Channel Editor — Ayaz Media Network</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f5f4f0;--bg3:#eeedea;--text:#1a1a18;--text2:#6b6b67;--text3:#9c9a96;--border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.18);--accent:#1a1a18;--acc-inv:#fff;--success:#3b6d11;--success-bg:#eaf3de;--danger:#a32d2d;--danger-bg:#fcebeb;--info:#185fa5;--info-bg:#e6f1fb;--radius:8px;--radius-lg:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;background:var(--bg2);color:var(--text);min-height:100vh}
+a{color:var(--info);text-decoration:none}a:hover{text-decoration:underline}
+.topbar{display:flex;align-items:center;gap:12px;padding:9px 16px;background:var(--bg);border-bottom:0.5px solid var(--border)}
+.brand{font-size:15px;font-weight:600}
+.nav-links{display:flex;gap:16px;margin-left:auto;font-size:12px}
+.nav-links a{color:var(--text2);padding:4px 8px;border-radius:var(--radius)}
+.nav-links a:hover{background:var(--bg2);text-decoration:none}
+.nav-links a.active{color:var(--accent);font-weight:600}
+#status{font-size:11px;color:var(--text3)}
+.layout{display:grid;grid-template-columns:45fr 55fr;gap:16px;max-width:1300px;margin:20px auto;padding:0 16px}
+.panel{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;overflow-y:auto;max-height:calc(100vh - 100px)}
+h2{font-size:14px;margin-bottom:10px;border-bottom:0.5px solid var(--border);padding-bottom:6px}
+h3{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 8px}
+.field{margin-bottom:8px}
+.field label{display:block;font-size:10px;font-weight:600;color:var(--text3);margin-bottom:2px}
+.field input[type=text],.field select,.field textarea,.field input[type=number]{width:100%;height:28px;padding:0 8px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit}
+.field textarea{height:60px;padding:6px 8px;resize:vertical}
+.field input[type=color]{width:40px;height:28px;border:0.5px solid var(--border2);border-radius:var(--radius);cursor:pointer;padding:1px}
+.field-row{display:flex;gap:10px}.field-row .field{flex:1}
+.check-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:12px}
+.check-row input{width:14px;height:14px}
+.btn{height:30px;padding:0 14px;font-size:11px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--accent);color:var(--acc-inv)}
+.btn-primary:hover{opacity:.85}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{opacity:.85}
+.btn-info{background:var(--info);color:#fff}
+.btn-info:hover{opacity:.85}
+.btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.msg{padding:6px 10px;border-radius:var(--radius);font-size:11px;margin-top:6px}
+.msg-ok{background:var(--success-bg);color:var(--success)}
+.msg-err{background:var(--danger-bg);color:var(--danger)}
+.data-row{padding:5px 8px;border-bottom:0.5px solid var(--border);font-size:11px;display:flex;gap:8px;align-items:center}
+.data-row:hover{background:var(--bg2)}
+.data-home{font-weight:600;min-width:100px}
+.data-score{font-family:monospace;font-weight:700;min-width:60px;text-align:center}
+.data-away{flex:1;color:var(--text2)}
+.empty{text-align:center;padding:20px;color:var(--text3);font-size:12px}
+.spin{display:inline-block;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dl-box{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--success-bg);border:0.5px solid #c0dd97;border-radius:var(--radius);margin-top:8px}
+.dl-btn{height:28px;padding:0 12px;font-size:11px;font-weight:600;background:var(--success);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">Ayaz Media Network</div>
+  <div class="nav-links">
+    <a href="/channel">Channels</a>
+    <a href="#" class="active" id="nav-title">Editor</a>
+    <a href="/upload">Upload</a>
+    <a href="/scheduler">Scheduler</a>
+  </div>
+  <span id="status"></span>
+</div>
+
+<div class="layout">
+  <div class="panel" id="config-panel">
+    <h2 id="editor-title">Channel Editor</h2>
+
+    <h3>Header</h3>
+    <div class="field"><label>Header Title</label><input type="text" id="header_text"></div>
+
+    <h3>Footer</h3>
+    <div class="field"><label>Channel Handle</label><input type="text" id="footer_text"></div>
+
+    <h3>Style</h3>
+    <div class="field-row">
+      <div class="field"><label>Background</label><input type="color" id="bg_color"></div>
+      <div class="field"><label>Accent</label><input type="color" id="accent_color"></div>
+      <div class="field"><label>Speed</label>
+        <select id="reel_speed"><option value="1.0">1.0x</option><option value="1.5" selected>1.5x</option><option value="2.0">2.0x</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Frequency</label>
+      <select id="frequency"><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
+    </div>
+
+    <h3>YouTube</h3>
+    <div class="field"><label>YT Title Template</label><input type="text" id="yt_title"></div>
+    <div class="field"><label>YT Description</label><textarea id="yt_description"></textarea></div>
+    <div class="field"><label>YT Tags (comma separated)</label><input type="text" id="yt_tags"></div>
+    <div class="field-row">
+      <div class="field"><label>Category</label>
+        <select id="yt_category"><option value="17">Sports</option><option value="25">News</option><option value="10">Music</option><option value="20">Gaming</option><option value="28">SciTech</option></select>
+      </div>
+      <div class="field"><label>Privacy</label>
+        <select id="yt_privacy"><option value="public">Public</option><option value="unlisted">Unlisted</option><option value="private">Private</option></select>
+      </div>
+    </div>
+    <div class="check-row"><input type="checkbox" id="auto_upload"><label for="auto_upload">Auto Upload after reel generation</label></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveConfig()">Save Config</button>
+      <button class="btn btn-success" id="reel-btn" onclick="generateReel()">Preview Reel</button>
+      <button class="btn btn-info" onclick="uploadToYT()">Upload to YT</button>
+    </div>
+    <div id="msg"></div>
+    <div id="dl-area"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Data Preview</h2>
+    <div style="display:flex;gap:4px;margin-bottom:10px">
+      <button class="btn btn-primary" onclick="fetchData('today')" style="font-size:10px;height:26px;padding:0 10px">Today</button>
+      <button class="btn btn-primary" onclick="fetchData('week')" style="font-size:10px;height:26px;padding:0 10px">This Week</button>
+      <button class="btn btn-primary" onclick="fetchData('month')" style="font-size:10px;height:26px;padding:0 10px">This Month</button>
+    </div>
+    <div id="data-area"><div class="empty">Click a period to fetch data.</div></div>
+  </div>
+</div>
+
+<script>
+const chId = window.location.pathname.split('/').pop();
+const CATS={finance:"25",music:"10",techai:"28",news:"25",transfer:"17",games:"20"};
+let fetchedRows = [];
+
+document.getElementById('editor-title').textContent = chId.charAt(0).toUpperCase()+chId.slice(1)+' \u2014 Reel Editor';
+document.getElementById('nav-title').textContent = chId.charAt(0).toUpperCase()+chId.slice(1)+' Editor';
+
+async function loadConfig(){
+  try{
+    const r=await fetch(`/api/reel-config/${chId}`);
+    const j=await r.json();
+    const c=j.config||{};
+    document.getElementById('header_text').value=c.header_text||'';
+    document.getElementById('footer_text').value=c.footer_text||'@ayaz_'+chId;
+    document.getElementById('bg_color').value=c.bg_color||'#0D0F1A';
+    document.getElementById('accent_color').value=c.accent_color||'#4F96FF';
+    document.getElementById('reel_speed').value=String(c.reel_speed||'1.5');
+    document.getElementById('frequency').value=c.frequency||'weekly';
+    document.getElementById('yt_title').value=c.yt_title||'';
+    document.getElementById('yt_description').value=c.yt_description||'';
+    document.getElementById('yt_tags').value=c.yt_tags||'';
+    document.getElementById('yt_category').value=c.yt_category||CATS[chId]||'17';
+    document.getElementById('yt_privacy').value=c.yt_privacy||'public';
+    document.getElementById('auto_upload').checked=!!c.auto_upload;
+  }catch(e){ console.error(e); }
+}
+
+async function saveConfig(){
+  const body={
+    header_text:document.getElementById('header_text').value,
+    footer_text:document.getElementById('footer_text').value,
+    bg_color:document.getElementById('bg_color').value,
+    accent_color:document.getElementById('accent_color').value,
+    reel_speed:parseFloat(document.getElementById('reel_speed').value),
+    frequency:document.getElementById('frequency').value,
+    yt_title:document.getElementById('yt_title').value,
+    yt_description:document.getElementById('yt_description').value,
+    yt_tags:document.getElementById('yt_tags').value,
+    yt_category:document.getElementById('yt_category').value,
+    yt_privacy:document.getElementById('yt_privacy').value,
+    auto_upload:document.getElementById('auto_upload').checked,
+  };
+  try{
+    await fetch(`/api/reel-config/${chId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    document.getElementById('msg').innerHTML='<div class="msg msg-ok">Config saved</div>';
+  }catch(e){
+    document.getElementById('msg').innerHTML='<div class="msg msg-err">Save failed</div>';
+  }
+}
+
+async function fetchData(period){
+  const today=new Date();const fmt=d=>d.toISOString().split('T')[0];
+  let f,t;
+  if(period==='today'){f=fmt(today);t=fmt(today);}
+  else if(period==='week'){const w=new Date(today);w.setDate(w.getDate()-7);f=fmt(w);t=fmt(today);}
+  else{const m=new Date(today);m.setDate(m.getDate()-30);f=fmt(m);t=fmt(today);}
+  document.getElementById('data-area').innerHTML='<div class="empty"><span class="spin">\u25CC</span> Fetching...</div>';
+  try{
+    const r=await fetch(`/api/fetch/channel?channel_id=${chId}&from=${f}&to=${t}`);
+    const j=await r.json();
+    fetchedRows=j.data||[];
+    if(!fetchedRows.length){document.getElementById('data-area').innerHTML='<div class="empty">No data.</div>';return;}
+    document.getElementById('data-area').innerHTML=`<div style="font-size:10px;color:var(--text3);margin-bottom:6px">${fetchedRows.length} rows \u00b7 ${f} \u2192 ${t}</div>`+
+      fetchedRows.map(r=>`<div class="data-row"><span class="data-home">${esc(r.home)}</span><span class="data-score">${esc(r.score)}</span><span class="data-away">${esc(r.away)}</span></div>`).join('');
+  }catch(e){
+    document.getElementById('data-area').innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
+  }
+}
+
+async function generateReel(){
+  if(!fetchedRows.length){alert('Fetch data first');return;}
+  const btn=document.getElementById('reel-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spin">\u25CC</span> Generating...';
+  document.getElementById('dl-area').innerHTML='';
+  try{
+    const gm={};
+    for(const r of fetchedRows){const lg=r.league||'OTHER';if(!gm[lg])gm[lg]={league:lg,display_name:r.category&&r.category!==r.continent?r.category+' \u00b7 '+lg:lg,continent:r.continent||r.category||'OTHER',matches:[]};gm[lg].matches.push(r);}
+    const bg=document.getElementById('bg_color').value;
+    const ac=document.getElementById('accent_color').value;
+    const hex2rgb=h=>{h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
+    const r=await fetch('/api/make-reel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      sport_id:chId,sport_name:chId,channel_name:document.getElementById('footer_text').value||'ayaz_'+chId,
+      groups:Object.values(gm),custom_theme:{bg:hex2rgb(bg),accent:hex2rgb(ac),dim:hex2rgb(bg).map(c=>Math.min(c+20,60))},
+    })});
+    const j=await r.json();
+    if(!j.ok)throw new Error(j.error);
+    document.getElementById('dl-area').innerHTML=`<div class="dl-box"><span style="color:var(--success)">\u2713 Ready</span><a class="dl-btn" href="${j.download_url}" download>\u2B07 Download</a></div>`;
+  }catch(e){alert('Error: '+e.message);}
+  btn.disabled=false;btn.innerHTML='Preview Reel';
+}
+
+async function uploadToYT(){alert('Configure YouTube credentials first (see docs/YOUTUBE_SETUP.md)');}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+loadConfig();
+</script>
+</body>
+</html>

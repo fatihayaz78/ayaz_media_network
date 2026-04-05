@@ -61,7 +61,8 @@ Phase 15C:  ✅ Techai manual editor (/techai-editor)
 Phase 16:   ✅ YouTube upload + /upload UI + per-channel YT config
 Phase 17:   ✅ COMPLETE (thumbnail generation, branding, auto-thumbnail)
 Phase 18.1: ✅ COMPLETE (date filter bug fixed, finance yf_period, all channels audited)
-Phase 18.2: 📋 PLANNED (reel visual polish)
+Phase 18.2: ✅ COMPLETE (channel editor, header/footer fixes, coin SSL fallback)
+Phase 18.3: 📋 PLANNED (visual polish — reel design upgrade)
 ```
 
 ---

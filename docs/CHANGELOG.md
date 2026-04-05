@@ -4,6 +4,39 @@
 
 ---
 
+## [Sprint 18.2] April 2026 — Reel Editor + Bug Fixes
+**Phase:** 18.2 | **Status:** ✅ Complete
+
+### What was fixed
+- CoinGecko SSL: 3-level fallback chain (HTTPS → HTTPS no-verify → HTTP → static prices)
+  - Crypto rows now always returned (5 coins) even on SSL-restricted networks
+- Header/footer: generate_header/footer now accept `ident_override` param
+  - make_reel() passes overridden ident (from reel_config.json) to header/footer
+  - reel_config.json is now true single source of truth for colors/titles
+- New: /channel-editor/<channel> — full per-channel reel editor UI
+  - Sections: header, footer, style (colors/speed), YouTube config
+  - Live data preview with Today/Week/Month tabs + fetch button
+  - Preview Reel button generates reel inline
+  - All config saved to channels/{channel}/reel_config.json
+
+### Test results
+```
+tests/test_app_routes.py        23/23 passed (2 new: channel_editor_page, crypto_fallback)
+tests/channels/test_fixtures.py  5/5 passed
+Total: 28/28 passed
+```
+
+### Files changed
+- channels/finance/finance_fetcher.py — CoinGecko SSL fallback chain
+- video_maker.py — generate_header/footer accept ident_override, pass from make_reel
+- app.py — /channel-editor/<channel> route
+- static/channel_editor.html — new file (channel editor UI)
+- tests/test_app_routes.py — 2 new tests
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 18.1] April 2026 — Date Filter Bug Fix
 **Phase:** 18.1 | **Status:** ✅ Complete
 

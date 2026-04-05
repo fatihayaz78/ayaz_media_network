@@ -351,13 +351,13 @@ def get_week_num(date_str: str) -> int:
 
 
 # ── HEADER (sabit) ────────────────────────────────────────────────────────────
-def generate_header(sport_id: str, date_str: str) -> Image.Image:
+def generate_header(sport_id: str, date_str: str, ident_override: dict = None) -> Image.Image:
     """
     Sabit header katmanı.
-    İçerik: WEEKLY SCORES (beyaz) + SPOR ADI (aksent rengi) + çubuk + tarih/hafta
+    İçerik: header_title (beyaz) + çubuk + tarih/hafta
     Döner: RGBA Image, W × HEADER_H
     """
-    ident  = SPORT_IDENTITY.get(sport_id, SPORT_IDENTITY["diger"])
+    ident  = ident_override or SPORT_IDENTITY.get(sport_id, SPORT_IDENTITY["diger"])
     bg     = ident["bg"]
     accent = ident["accent"]
     dim    = ident["dim"]
@@ -401,13 +401,13 @@ def generate_header(sport_id: str, date_str: str) -> Image.Image:
 
 
 # ── FOOTER (sabit) ────────────────────────────────────────────────────────────
-def generate_footer(sport_id: str, channel_name: str) -> Image.Image:
+def generate_footer(sport_id: str, channel_name: str, ident_override: dict = None) -> Image.Image:
     """
     Sabit footer katmanı.
     İçerik: abone çağrısı, @kanal, YOUTUBE — hepsi aksent renginde
     Döner: RGBA Image, W × FOOTER_H
     """
-    ident  = SPORT_IDENTITY.get(sport_id, SPORT_IDENTITY["diger"])
+    ident  = ident_override or SPORT_IDENTITY.get(sport_id, SPORT_IDENTITY["diger"])
     bg     = ident["bg"]
     accent = ident["accent"]
     dim    = ident["dim"]
@@ -690,8 +690,8 @@ def make_reel(config: dict, output_path: str, bg_path: str = None,
     base_scroll_spd = speed_mult * 40.0
 
     # ── Katmanları oluştur ────────────────────────────────────────────────
-    header_img  = generate_header(sport_id, date_str)
-    footer_img  = generate_footer(sport_id, channel)
+    header_img  = generate_header(sport_id, date_str, ident_override=ident)
+    footer_img  = generate_footer(sport_id, channel, ident_override=ident)
     content_img = generate_content_strip(config, sport_id)
 
     content_h = content_img.height
