@@ -234,11 +234,11 @@ class FinanceFetcher(BaseFetcher):
             delta = 0
 
         if delta <= 1:
-            yf_period = "5d"      # "Today" — need ≥2 days for % change
+            yf_period = "2d"      # "Today" — compare yesterday close vs today
         elif delta <= 7:
-            yf_period = "5d"      # "This Week"
+            yf_period = "5d"      # "This Week" — compare Mon open vs Fri close
         else:
-            yf_period = "1mo"     # "This Month"
+            yf_period = "1mo"     # "This Month" — compare month open vs today
 
         rows: List[Dict] = []
         rows.extend(self._fetch_stocks(yf_period))
@@ -268,25 +268,27 @@ class FinanceFetcher(BaseFetcher):
                         threads=True,
                     )
                     close = data["Close"]
+                    opn   = data["Open"]
                 except Exception as e:
                     print(f"[finance] Batch download failed {market_name}: {e}")
                     continue
 
-                # Calculate daily % change for each ticker
+                # Calculate % change: period start open vs latest close
                 ticker_changes = []
                 for ticker in tickers:
                     try:
-                        series = close[ticker].dropna()
-                        if len(series) < 2:
+                        c_series = close[ticker].dropna()
+                        o_series = opn[ticker].dropna()
+                        if len(c_series) < 1 or len(o_series) < 1:
                             continue
-                        prev = float(series.iloc[-2])
-                        curr = float(series.iloc[-1])
-                        if prev == 0:
+                        price_start = float(o_series.iloc[0])   # first day open
+                        price_now   = float(c_series.iloc[-1])  # latest close
+                        if price_start == 0:
                             continue
-                        change_pct = (curr - prev) / prev * 100
+                        change_pct = (price_now - price_start) / price_start * 100
                         ticker_changes.append({
                             "ticker": ticker,
-                            "price":  curr,
+                            "price":  price_now,
                             "change": change_pct,
                         })
                     except Exception:
@@ -336,14 +338,18 @@ class FinanceFetcher(BaseFetcher):
             data = yf.download(symbols, period=yf_period, interval="1d",
                               auto_adjust=True, progress=False)
             close = data["Close"]
+            opn   = data["Open"]
             for symbol, (name, ticker_display, cur) in commodities.items():
                 try:
-                    series = close[symbol].dropna()
-                    if len(series) < 2:
+                    c_series = close[symbol].dropna()
+                    o_series = opn[symbol].dropna()
+                    if len(c_series) < 1 or len(o_series) < 1:
                         continue
-                    prev   = float(series.iloc[-2])
-                    curr   = float(series.iloc[-1])
-                    change = (curr - prev) / prev * 100
+                    price_start = float(o_series.iloc[0])
+                    curr        = float(c_series.iloc[-1])
+                    if price_start == 0:
+                        continue
+                    change = (curr - price_start) / price_start * 100
                     rows.append({
                         "id":        f"fin-commodity-{symbol}",
                         "home":      name,
