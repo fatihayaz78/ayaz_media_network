@@ -4,6 +4,53 @@
 
 ---
 
+## [Sprint 18.5] April 2026 — Continent Tabs + Edit Reel Redesign
+**Phase:** 18.5 | **Status:** ✅ Complete
+
+### What was built
+- Channel page: continent tabs (Americas/Europe/Asia/Africa) for all channels
+  - Finance/music/news/sports/fixtures get 4-tab filtering
+  - Techai/transfer/games show "All" only (global)
+  - Tab row counts computed from fetched data
+  - Edit Reel link per continent → /channel-editor/{ch}/{cont}
+- Channel editor: continent-aware URL routing
+  - /channel-editor/finance/EUROPE, /channel-editor/music/AMERICAS etc.
+  - Per-continent config save → channels/{ch}_{CONTINENT}/reel_config.json
+  - Make Reel → POST /api/make-reel/{ch}/{CONTINENT}
+  - Make All 4 → POST /api/make-reel/{ch}/ALL
+- New API routes:
+  - GET/POST /api/reel-config/{ch}/{continent}
+  - POST /api/make-reel/{ch}/{continent|ALL}
+  - GET /api/download/{ch}/{filename}
+- Music split: 20 AMERICAS + 20 EUROPE + 15 ASIA (from Apple RSS)
+- Flask defaults= fix for optional continent URL parameter
+
+### curl verifications (raw)
+```
+/channel → 200, contains AMERICAS/EUROPE/ASIA/AFRICA
+/channel-editor/finance/EUROPE → 200
+Editor sections: Header/Footer/Style/YouTube
+POST /api/reel-config/finance/EUROPE → {"ok":true}
+channels/finance_EUROPE/reel_config.json → EXISTS
+/channel-editor/music/AMERICAS → 200
+```
+
+### Test results
+```
+31/31 passed (2 new: channel_editor_continent, reel_config_continent_api)
+```
+
+### Files changed
+- app.py — continent routes, make-reel/{ch}/{cont}, reel-config/{ch}/{cont}
+- static/channel.html — continent tabs, mapRowCont(), contCounts(), setContinent()
+- static/channel_editor.html — URL-based continent, continent-aware save/load/make
+- sports_daemon.py — split_by_continent forex fix, CONTINENT_ORDER expanded
+- tests/test_app_routes.py — 2 new tests
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 18.4] April 2026 — Finance 4-Section Continent Reels
 **Phase:** 18.4 | **Status:** ✅ Complete
 

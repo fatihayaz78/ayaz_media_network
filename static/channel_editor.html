@@ -131,13 +131,15 @@ h3{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;le
 </div>
 
 <script>
-const chId = window.location.pathname.split('/').pop();
+const pathParts = window.location.pathname.split('/').filter(Boolean);
+const chId = pathParts[1] || 'finance';
+const urlCont = pathParts[2] || null;
 const CONTS = ["AMERICAS","EUROPE","ASIA","AFRICA"];
 const CONT_FLAGS = {"AMERICAS":"\u{1F30E}","EUROPE":"\u{1F30D}","ASIA":"\u{1F30F}","AFRICA":"\u{1F30D}"};
 const CONT_COLORS = {"AMERICAS":"#DC2626","EUROPE":"#3B82F6","ASIA":"#EAB308","AFRICA":"#22C55E"};
 const CATS={finance:"25",music:"10",techai:"28",news:"25",transfer:"17",games:"20"};
 
-let activeCont = "EUROPE";
+let activeCont = (urlCont && CONTS.includes(urlCont)) ? urlCont : "EUROPE";
 let allRows = [];
 let contCounts = {};
 
@@ -162,16 +164,10 @@ function switchCont(c){
 }
 
 async function loadContConfig(){
-  // Try continent-specific config, fall back to base
   try{
-    let r = await fetch(`/api/reel-config/${chId}_${activeCont}`);
+    let r = await fetch(`/api/reel-config/${chId}/${activeCont}`);
     let j = await r.json();
     let c = j.config||{};
-    if(!c.header_text){
-      r = await fetch(`/api/reel-config/${chId}`);
-      j = await r.json();
-      c = j.config||{};
-    }
     const bg = CONT_COLORS[activeCont]||'#0D0F1A';
     document.getElementById('header_text').value = c.header_text||'';
     document.getElementById('footer_text').value = c.footer_text||'@ayaz_'+chId;
@@ -205,10 +201,7 @@ async function saveConfig(){
     continent:activeCont,
   };
   try{
-    // Save to continent-specific config
-    await fetch(`/api/reel-config/${chId}_${activeCont}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    // Also save base config
-    await fetch(`/api/reel-config/${chId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    await fetch(`/api/reel-config/${chId}/${activeCont}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     document.getElementById('msg').innerHTML='<div class="msg msg-ok">\u2705 Config saved for '+activeCont+'</div>';
   }catch(e){
     document.getElementById('msg').innerHTML='<div class="msg msg-err">Save failed</div>';
@@ -276,26 +269,26 @@ async function generateReel(){
     const ac=document.getElementById('accent_color').value;
     const hex2rgb=h=>{h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
     const hdr=document.getElementById('header_text').value||chId.toUpperCase();
-    const r=await fetch('/api/make-reel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      sport_id:chId,sport_name:chId+' '+activeCont,
-      channel_name:document.getElementById('footer_text').value||'ayaz_'+chId,
-      groups:Object.values(gm),
-      custom_theme:{bg:hex2rgb(bg),accent:hex2rgb(ac),dim:hex2rgb(bg).map(c=>Math.min(c+20,60))},
-    })});
+    const r=await fetch(`/api/make-reel/${chId}/${activeCont}`,{method:'POST',headers:{'Content-Type':'application/json'}});
     const j=await r.json();
     if(!j.ok)throw new Error(j.error);
-    document.getElementById('dl-area').innerHTML=`<div class="dl-box"><span style="color:var(--success)">\u2713 ${activeCont} ready</span><a class="dl-btn" href="${j.download_url}" download>\u2B07 Download</a></div>`;
+    const dlUrl=j.download_url||`/api/download/${chId}/${activeCont}_${new Date().toISOString().split('T')[0]}.mp4`;
+    document.getElementById('dl-area').innerHTML=`<div class="dl-box"><span style="color:var(--success)">\u2713 ${activeCont} ready (${j.kb||'?'}KB)</span><a class="dl-btn" href="${dlUrl}" download>\u2B07 Download</a></div>`;
   }catch(e){alert('Error: '+e.message);}
   btn.disabled=false;btn.innerHTML='Make Reel';
 }
 
 async function makeAll4(){
-  for(const c of CONTS){
-    activeCont=c;
-    renderContTabs();
-    await generateReel();
+  document.getElementById('msg').innerHTML='<div class="msg msg-ok">Generating all 4...</div>';
+  try{
+    const r=await fetch(`/api/make-reel/${chId}/ALL`,{method:'POST'});
+    const j=await r.json();
+    if(!j.ok)throw new Error(j.error);
+    const res=j.results||[];
+    document.getElementById('msg').innerHTML='<div class="msg msg-ok">\u2705 '+res.length+' continent reels generated</div>';
+  }catch(e){
+    document.getElementById('msg').innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
   }
-  document.getElementById('msg').innerHTML='<div class="msg msg-ok">\u2705 All 4 continent reels generated</div>';
 }
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}

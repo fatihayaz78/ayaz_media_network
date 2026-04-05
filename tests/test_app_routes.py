@@ -221,3 +221,26 @@ def test_split_by_continent():
     assert "EUROPE" in result
     assert "AMERICAS" in result
     assert "ASIA" in result
+
+
+def test_channel_editor_continent(client):
+    r = client.get("/channel-editor/finance/EUROPE")
+    assert r.status_code == 200
+    assert b"EUROPE" in r.data
+
+
+def test_reel_config_continent_api(client):
+    r = client.post("/api/reel-config/finance/EUROPE",
+                    json={"header_text": "TEST EUROPE", "reel_speed": 1.5})
+    j = r.get_json()
+    assert j["ok"] is True
+    # Verify it's readable
+    r = client.get("/api/reel-config/finance/EUROPE")
+    j = r.get_json()
+    assert j["config"]["header_text"] == "TEST EUROPE"
+    # Cleanup
+    import os
+    path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                        "channels", "finance_EUROPE", "reel_config.json")
+    if os.path.exists(path):
+        os.remove(path)

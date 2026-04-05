@@ -702,9 +702,97 @@ def api_techai_feature(item_id):
 
 
 # ── Channel Editor ───────────────────────────────────────────────────────────
-@app.route("/channel-editor/<channel_id>")
-def channel_editor_page(channel_id):
+@app.route("/channel-editor/<channel_id>", defaults={"continent": None})
+@app.route("/channel-editor/<channel_id>/<continent>")
+def channel_editor_page(channel_id, continent):
     return app.send_static_file("channel_editor.html")
+
+
+@app.route("/api/reel-config/<channel_id>/<continent>", methods=["GET"])
+def api_get_reel_config_continent(channel_id, continent):
+    """Load continent-specific config, fall back to base."""
+    cont_cfg = _load_reel_config(f"{channel_id}_{continent}")
+    base_cfg = _load_reel_config(channel_id)
+    merged = {**base_cfg, **cont_cfg, "continent": continent}
+    return jsonify({"ok": True, "config": merged})
+
+
+@app.route("/api/reel-config/<channel_id>/<continent>", methods=["POST"])
+def api_set_reel_config_continent(channel_id, continent):
+    body = request.get_json(force=True) or {}
+    _save_reel_config(f"{channel_id}_{continent}", body)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/make-reel/<channel_id>/<continent>", methods=["POST"])
+def api_make_reel_continent(channel_id, continent):
+    """Generate a reel for one channel + continent."""
+    from sports_daemon import group_by_continent, split_by_continent
+    from channels.finance.finance_fetcher import FinanceFetcher
+    from channels.music.music_fetcher import MusicFetcher
+    from channels.news.news_fetcher import NewsFetcher
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    week_ago = (datetime.now() - __import__("datetime").timedelta(days=7)).strftime("%Y-%m-%d")
+    today_fmt = datetime.now().strftime("%d.%m.%Y")
+
+    try:
+        # Fetch rows based on channel
+        if channel_id == "finance":
+            rows = FinanceFetcher().fetch(week_ago, today)
+        elif channel_id == "music":
+            rows = MusicFetcher().fetch_all()
+        elif channel_id == "news":
+            rows = NewsFetcher().fetch(today, today)
+        else:
+            from fetcher import fetch_sport
+            rows = fetch_sport(channel_id, week_ago, today)
+
+        if not rows:
+            return jsonify({"ok": False, "error": "No data"})
+
+        if continent == "ALL":
+            # Generate all 4
+            results = []
+            cont_data = split_by_continent(rows)
+            for cont_name, groups in cont_data.items():
+                out_dir = os.path.join(OUTPUT_DIR, channel_id)
+                os.makedirs(out_dir, exist_ok=True)
+                out = os.path.join(out_dir, f"{cont_name}_{today}.mp4")
+                config = {"continents": groups, "date": today_fmt,
+                          "channel_name": f"ayaz_{channel_id}"}
+                make_reel(config, out, sport_id=channel_id)
+                kb = os.path.getsize(out) // 1024
+                results.append({"continent": cont_name, "path": out, "kb": kb})
+            return jsonify({"ok": True, "results": results})
+        else:
+            cont_data = split_by_continent(rows)
+            groups = cont_data.get(continent, [])
+            if not groups:
+                return jsonify({"ok": False, "error": f"No data for {continent}"})
+            out_dir = os.path.join(OUTPUT_DIR, channel_id)
+            os.makedirs(out_dir, exist_ok=True)
+            out = os.path.join(out_dir, f"{continent}_{today}.mp4")
+            config = {"continents": groups, "date": today_fmt,
+                      "channel_name": f"ayaz_{channel_id}"}
+            make_reel(config, out, sport_id=channel_id)
+            kb = os.path.getsize(out) // 1024
+            return jsonify({"ok": True, "path": out,
+                           "download_url": f"/api/download/{channel_id}/{continent}_{today}.mp4",
+                           "kb": kb})
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({"ok": False, "error": str(e)})
+
+
+@app.route("/api/download/<channel_id>/<filename>")
+def api_download_channel(channel_id, filename):
+    if not re.match(r"^[\w\-\.]+$", filename):
+        return jsonify({"error": "Invalid filename"}), 400
+    path = os.path.join(OUTPUT_DIR, channel_id, filename)
+    if not os.path.exists(path):
+        return jsonify({"error": "File not found"}), 404
+    return send_file(path, as_attachment=True, mimetype="video/mp4")
 
 
 if __name__ == "__main__":

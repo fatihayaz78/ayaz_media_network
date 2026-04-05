@@ -211,7 +211,11 @@ let descLoading = false;
 let descError = null;
 let openSections = {theme:false, music:false, data:true, desc:false, action:true};
 let datePreset = "today";
-const CHANNEL_RANGE = {};  // stores {from, to} per channel
+const CHANNEL_RANGE = {};
+let activeContinent = "ALL";  // ALL means no filter
+const CONT_CHANNELS = ["finance","music","news","sports","fixtures","futbol","basket","tenis","motor"];
+const CONT_LIST = ["AMERICAS","EUROPE","ASIA","AFRICA"];
+const CONT_FLAGS = {"AMERICAS":"\u{1F30E}","EUROPE":"\u{1F30D}","ASIA":"\u{1F30F}","AFRICA":"\u{1F30D}"};
 let customDateFrom = "";
 let customDateTo = "";
 
@@ -248,8 +252,53 @@ function setMusicVolume(chId, v){ saveState(chId, {musicVolume:v}); }
 
 function visibleRows(){
   const hidden = new Set(getHidden(active));
-  return getFetchedRows().filter(r => !hidden.has(r.id));
+  let rows = getFetchedRows().filter(r => !hidden.has(r.id));
+  if(activeContinent !== "ALL" && CONT_CHANNELS.includes(active)){
+    rows = rows.filter(r => mapRowCont(r) === activeContinent);
+  }
+  return rows;
 }
+
+function mapRowCont(row){
+  const cont=row.continent||'';const lg=row.league||'';const cat=row.category||'';
+  const exMap={DAX:'EUROPE',CAC40:'EUROPE',FTSE100:'EUROPE',BIST100:'EUROPE',SP500:'AMERICAS',NASDAQ:'AMERICAS',BOVESPA:'AMERICAS',NIKKEI:'ASIA',KOSPI:'ASIA',SSE:'ASIA',BSE:'ASIA',HSI:'ASIA',TWSE:'ASIA',Tadawul:'ASIA',JSE:'AFRICA',EGX30:'AFRICA'};
+  if(exMap[lg]) return exMap[lg];
+  const t=row.type||'';
+  if(t==='metals'||t==='crypto') return 'GLOBAL';
+  if(t==='forex' && cont && CONT_LIST.includes(cont)) return cont;
+  if(CONT_LIST.includes(cont)) return cont;
+  if(cont==='ASIA-PACIFIC') return 'ASIA';
+  const cMap={USA:'AMERICAS',Brazil:'AMERICAS',Mexico:'AMERICAS',UK:'EUROPE',Germany:'EUROPE',France:'EUROPE',Turkey:'EUROPE',Spain:'EUROPE',Italy:'EUROPE',Japan:'ASIA',India:'ASIA','South Korea':'ASIA',China:'ASIA','South Africa':'AFRICA'};
+  for(const[c,m] of Object.entries(cMap)) if(cat.includes(c)) return m;
+  return 'EUROPE';
+}
+
+function contCounts(){
+  const rows=getFetchedRows();
+  const counts={};
+  for(const c of CONT_LIST) counts[c]=0;
+  for(const r of rows){
+    const c=mapRowCont(r);
+    if(c==='GLOBAL'){for(const k of CONT_LIST) counts[k]++;} else if(counts[c]!==undefined) counts[c]++;
+  }
+  return counts;
+}
+
+function renderContTabs(){
+  if(!CONT_CHANNELS.includes(active)) return '';
+  const cc=contCounts();
+  return `<div style="display:flex;gap:3px;margin-bottom:8px;flex-wrap:wrap">
+    <button style="padding:4px 10px;font-size:10px;border:1px solid ${activeContinent==='ALL'?'var(--accent)':'var(--border2)'};border-radius:var(--radius);cursor:pointer;background:${activeContinent==='ALL'?'var(--accent)':'transparent'};color:${activeContinent==='ALL'?'var(--acc-inv)':'var(--text2)'}" onclick="setContinent('ALL')">All</button>
+    ${CONT_LIST.map(c=>{
+      const n=cc[c]||0;
+      const on=activeContinent===c;
+      return `<button style="padding:4px 10px;font-size:10px;border:1px solid ${on?'var(--accent)':'var(--border2)'};border-radius:var(--radius);cursor:pointer;background:${on?'var(--accent)':'transparent'};color:${on?'var(--acc-inv)':'var(--text2)'}" onclick="setContinent('${c}')">${CONT_FLAGS[c]} ${c} ${n?'('+n+')':''}</button>`;
+    }).join('')}
+    <a href="/channel-editor/${active}/${activeContinent==='ALL'?'EUROPE':activeContinent}" style="margin-left:auto;font-size:10px;padding:4px 8px;color:var(--info)">\u270F Edit Reel</a>
+  </div>`;
+}
+
+function setContinent(c){ activeContinent=c; renderSidebar(); renderMain(); }
 
 // ── Date helpers ─────────────────────────────────────────────────────────────
 function todayStr(){ return new Date().toISOString().slice(0,10); }
@@ -289,6 +338,7 @@ function selectChannel(id){
   downloadUrl = null;
   descError = null;
   datePreset = DATE_DEFAULTS[id]||"today";
+  activeContinent = "ALL";
   openSections = {theme:false, music:false, data:true, desc:false, action:true};
   renderSidebar(); renderMain();
 }
@@ -651,6 +701,7 @@ function renderMain(){
         <span class="sec-badge">${fetchedRows.length?fetchedRows.length+" fetched":"empty"}</span>
       </div>
       <div class="sec-body${openSections.data?" open":""}">
+        ${renderContTabs()}
         ${renderDataTabs()}
         ${renderDatePresets()}
         <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px">
