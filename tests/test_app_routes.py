@@ -208,3 +208,16 @@ def test_crypto_fallback():
     rows = f._fetch_crypto()
     assert len(rows) == 5
     assert all(r["continent"] == "CRYPTO" for r in rows)
+
+
+def test_split_by_continent():
+    from sports_daemon import split_by_continent
+    rows = [
+        {"id": "1", "home": "SAP", "league": "DAX", "category": "\U0001f1e9\U0001f1ea Germany", "continent": "EUROPE"},
+        {"id": "2", "home": "AAPL", "league": "SP500", "category": "\U0001f1fa\U0001f1f8 USA", "continent": "AMERICAS"},
+        {"id": "3", "home": "Toyota", "league": "NIKKEI", "category": "\U0001f1ef\U0001f1f5 Japan", "continent": "ASIA"},
+    ]
+    result = split_by_continent(rows)
+    assert "EUROPE" in result
+    assert "AMERICAS" in result
+    assert "ASIA" in result

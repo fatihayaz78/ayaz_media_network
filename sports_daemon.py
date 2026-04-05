@@ -37,8 +37,34 @@ MUSIC_DIR   = os.path.join(BASE_DIR, "music")
 UPLOAD_DIR  = os.path.join(BASE_DIR, "uploads")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+COUNTRY_CONTINENT = {
+    # AMERICAS
+    "USA": "AMERICAS", "Canada": "AMERICAS", "Brazil": "AMERICAS",
+    "Mexico": "AMERICAS", "Argentina": "AMERICAS", "Chile": "AMERICAS",
+    # EUROPE
+    "UK": "EUROPE", "Germany": "EUROPE", "France": "EUROPE",
+    "Turkey": "EUROPE", "Russia": "EUROPE", "Italy": "EUROPE",
+    "Spain": "EUROPE", "Netherlands": "EUROPE", "Poland": "EUROPE",
+    "Sweden": "EUROPE",
+    # ASIA
+    "China": "ASIA", "India": "ASIA", "Japan": "ASIA",
+    "South Korea": "ASIA", "Pakistan": "ASIA", "Indonesia": "ASIA",
+    "Saudi Arabia": "ASIA", "UAE": "ASIA", "Israel": "ASIA",
+    "Philippines": "ASIA",
+    # AFRICA
+    "South Africa": "AFRICA", "Nigeria": "AFRICA", "Egypt": "AFRICA",
+    "Kenya": "AFRICA", "Morocco": "AFRICA", "Ghana": "AFRICA",
+}
+
+EXCHANGE_CONTINENT = {
+    "DAX": "EUROPE", "CAC40": "EUROPE", "FTSE100": "EUROPE", "BIST100": "EUROPE",
+    "SP500": "AMERICAS", "NASDAQ": "AMERICAS", "BOVESPA": "AMERICAS",
+    "NIKKEI": "ASIA", "KOSPI": "ASIA",
+    "COMMODITIES": "AMERICAS", "CRYPTO": "AMERICAS",
+}
+
 CONTINENT_ORDER = [
-    "EUROPE", "AMERICAS", "ASIA-PACIFIC", "ASIA", "MOTORSPORT", "OTHER",
+    "EUROPE", "AMERICAS", "ASIA-PACIFIC", "ASIA", "AFRICA", "MOTORSPORT", "OTHER",
     # New channel categories
     "UPCOMING", "CONFIRMED", "RUMOURS",
     "CHARTS", "DEALS", "ESPORTS", "RELEASES",
@@ -115,6 +141,59 @@ def group_by_continent(rows: list, league_display: dict) -> list:
         continents.append({"name": cont_name, "groups": groups})
 
     return continents
+
+
+def split_by_continent(rows: list) -> dict:
+    """
+    Split rows into 4 continent buckets: AMERICAS, EUROPE, ASIA, AFRICA.
+    Returns: {"AMERICAS": [grouped], "EUROPE": [grouped], ...}
+    Each value is the output of group_by_continent() for that subset.
+    """
+    buckets = {"AMERICAS": [], "EUROPE": [], "ASIA": [], "AFRICA": []}
+
+    for row in rows:
+        # Determine continent from row fields
+        cont = row.get("continent", "")
+        league = row.get("league", "")
+        category = row.get("category", "")
+
+        # Try exchange mapping first (finance)
+        target = EXCHANGE_CONTINENT.get(league)
+
+        # Try existing continent field
+        if not target:
+            if cont in buckets:
+                target = cont
+            elif cont == "ASIA-PACIFIC":
+                target = "ASIA"
+
+        # Try country name from category (e.g. "🇩🇪 Germany")
+        if not target:
+            for country, mapped_cont in COUNTRY_CONTINENT.items():
+                if country in category:
+                    target = mapped_cont
+                    break
+
+        # Fallback: try continent field directly
+        if not target:
+            if "EUROPE" in cont or "EUROPE" in category:
+                target = "EUROPE"
+            elif "AMERICA" in cont or "AMERICA" in category:
+                target = "AMERICAS"
+            elif "ASIA" in cont:
+                target = "ASIA"
+            elif "AFRICA" in cont:
+                target = "AFRICA"
+
+        if target and target in buckets:
+            buckets[target].append(row)
+
+    # Group each bucket
+    result = {}
+    for cont_name, cont_rows in buckets.items():
+        if cont_rows:
+            result[cont_name] = group_by_continent(cont_rows, {})
+    return result
 
 
 # ── Kanal yönlendirici ────────────────────────────────────────────────────────

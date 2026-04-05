@@ -4,6 +4,39 @@
 
 ---
 
+## [Sprint 18.3] April 2026 — 4-Continent Reel Architecture
+**Phase:** 18.3 | **Status:** ✅ Complete
+
+### What was built
+- CONTINENT_THEMES: 4 color themes (Americas=red, Europe=blue, Asia=gold, Africa=green)
+- COUNTRY_CONTINENT map: 30+ countries mapped to 4 continents
+- EXCHANGE_CONTINENT map: finance exchanges → continents
+- split_by_continent(): splits channel rows into 4 buckets
+- Channel editor: 4 continent tabs with per-continent row counts
+  - Each tab shows filtered data preview
+  - Per-continent config saved to reel_config_{CONTINENT}.json
+  - "Make All 4" button generates all continent reels
+- Editor linked from /channel sidebar (pencil icon per channel)
+- CONTINENT_COLORS updated to match CONTINENT_THEMES
+
+### Test results
+```
+tests/test_app_routes.py        24/24 passed (1 new: split_by_continent)
+tests/channels/test_fixtures.py  5/5 passed
+Total: 29/29 passed
+```
+
+### Files changed
+- video_maker.py — CONTINENT_THEMES dict, updated CONTINENT_COLORS
+- sports_daemon.py — COUNTRY_CONTINENT, EXCHANGE_CONTINENT, split_by_continent()
+- static/channel_editor.html — 4-tab continent UI with data preview
+- static/channel.html — editor link (pencil icon) in sidebar
+- tests/test_app_routes.py — split_by_continent test
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 18.2] April 2026 — Reel Editor + Bug Fixes
 **Phase:** 18.2 | **Status:** ✅ Complete
 

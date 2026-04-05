@@ -16,39 +16,45 @@ a{color:var(--info);text-decoration:none}a:hover{text-decoration:underline}
 .nav-links a:hover{background:var(--bg2);text-decoration:none}
 .nav-links a.active{color:var(--accent);font-weight:600}
 #status{font-size:11px;color:var(--text3)}
-.layout{display:grid;grid-template-columns:45fr 55fr;gap:16px;max-width:1300px;margin:20px auto;padding:0 16px}
-.panel{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;overflow-y:auto;max-height:calc(100vh - 100px)}
-h2{font-size:14px;margin-bottom:10px;border-bottom:0.5px solid var(--border);padding-bottom:6px}
-h3{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 8px}
-.field{margin-bottom:8px}
+.container{max-width:1300px;margin:16px auto;padding:0 16px}
+.layout{display:grid;grid-template-columns:45fr 55fr;gap:14px}
+.panel{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;overflow-y:auto;max-height:calc(100vh - 110px)}
+h2{font-size:14px;margin-bottom:8px;border-bottom:0.5px solid var(--border);padding-bottom:5px}
+h3{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 6px}
+.field{margin-bottom:7px}
 .field label{display:block;font-size:10px;font-weight:600;color:var(--text3);margin-bottom:2px}
-.field input[type=text],.field select,.field textarea,.field input[type=number]{width:100%;height:28px;padding:0 8px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit}
-.field textarea{height:60px;padding:6px 8px;resize:vertical}
-.field input[type=color]{width:40px;height:28px;border:0.5px solid var(--border2);border-radius:var(--radius);cursor:pointer;padding:1px}
-.field-row{display:flex;gap:10px}.field-row .field{flex:1}
-.check-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:12px}
-.check-row input{width:14px;height:14px}
-.btn{height:30px;padding:0 14px;font-size:11px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.field input[type=text],.field select,.field textarea{width:100%;height:26px;padding:0 7px;font-size:11px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit}
+.field textarea{height:50px;padding:5px 7px;resize:vertical}
+.field input[type=color]{width:36px;height:26px;border:0.5px solid var(--border2);border-radius:var(--radius);cursor:pointer;padding:1px}
+.field-row{display:flex;gap:8px}.field-row .field{flex:1}
+.check-row{display:flex;align-items:center;gap:5px;margin-bottom:7px;font-size:11px}
+.check-row input{width:13px;height:13px}
+.btn{height:28px;padding:0 12px;font-size:10px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:4px}
 .btn-primary{background:var(--accent);color:var(--acc-inv)}
 .btn-primary:hover{opacity:.85}
 .btn-success{background:var(--success);color:#fff}
-.btn-success:hover{opacity:.85}
 .btn-info{background:var(--info);color:#fff}
-.btn-info:hover{opacity:.85}
-.btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.msg{padding:6px 10px;border-radius:var(--radius);font-size:11px;margin-top:6px}
+.btn-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.msg{padding:5px 8px;border-radius:var(--radius);font-size:10px;margin-top:5px}
 .msg-ok{background:var(--success-bg);color:var(--success)}
 .msg-err{background:var(--danger-bg);color:var(--danger)}
-.data-row{padding:5px 8px;border-bottom:0.5px solid var(--border);font-size:11px;display:flex;gap:8px;align-items:center}
+
+/* Continent tabs */
+.cont-tabs{display:flex;gap:3px;margin-bottom:12px}
+.cont-tab{padding:6px 14px;font-size:11px;border:1px solid var(--border2);border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;background:var(--bg2);color:var(--text2);display:flex;align-items:center;gap:4px}
+.cont-tab.on{background:var(--bg);border-bottom-color:var(--bg);font-weight:600;color:var(--text)}
+.cont-tab .cnt{font-size:9px;padding:0 5px;border-radius:8px;background:var(--success-bg);color:var(--success);font-weight:600}
+
+.data-row{padding:4px 8px;border-bottom:0.5px solid var(--border);font-size:11px;display:flex;gap:6px;align-items:center}
 .data-row:hover{background:var(--bg2)}
-.data-home{font-weight:600;min-width:100px}
-.data-score{font-family:monospace;font-weight:700;min-width:60px;text-align:center}
-.data-away{flex:1;color:var(--text2)}
-.empty{text-align:center;padding:20px;color:var(--text3);font-size:12px}
+.data-home{font-weight:600;min-width:90px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.data-score{font-family:monospace;font-weight:700;min-width:55px;text-align:center;font-size:11px}
+.data-away{flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{text-align:center;padding:16px;color:var(--text3);font-size:11px}
 .spin{display:inline-block;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.dl-box{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--success-bg);border:0.5px solid #c0dd97;border-radius:var(--radius);margin-top:8px}
-.dl-btn{height:28px;padding:0 12px;font-size:11px;font-weight:600;background:var(--success);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.dl-box{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--success-bg);border:0.5px solid #c0dd97;border-radius:var(--radius);margin-top:6px}
+.dl-btn{height:24px;padding:0 10px;font-size:10px;font-weight:600;background:var(--success);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:3px}
 </style>
 </head>
 <body>
@@ -63,88 +69,123 @@ h3{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;le
   <span id="status"></span>
 </div>
 
-<div class="layout">
-  <div class="panel" id="config-panel">
-    <h2 id="editor-title">Channel Editor</h2>
+<div class="container">
+  <h2 id="editor-title" style="margin-bottom:12px">Channel Editor</h2>
 
-    <h3>Header</h3>
-    <div class="field"><label>Header Title</label><input type="text" id="header_text"></div>
+  <!-- Continent tabs -->
+  <div class="cont-tabs" id="cont-tabs"></div>
 
-    <h3>Footer</h3>
-    <div class="field"><label>Channel Handle</label><input type="text" id="footer_text"></div>
+  <div class="layout">
+    <div class="panel" id="config-panel">
+      <h3>Header</h3>
+      <div class="field"><label>Header Title</label><input type="text" id="header_text"></div>
 
-    <h3>Style</h3>
-    <div class="field-row">
-      <div class="field"><label>Background</label><input type="color" id="bg_color"></div>
-      <div class="field"><label>Accent</label><input type="color" id="accent_color"></div>
-      <div class="field"><label>Speed</label>
-        <select id="reel_speed"><option value="1.0">1.0x</option><option value="1.5" selected>1.5x</option><option value="2.0">2.0x</option></select>
+      <h3>Footer</h3>
+      <div class="field"><label>Channel Handle</label><input type="text" id="footer_text"></div>
+
+      <h3>Style</h3>
+      <div class="field-row">
+        <div class="field"><label>Background</label><input type="color" id="bg_color"></div>
+        <div class="field"><label>Accent</label><input type="color" id="accent_color"></div>
+        <div class="field"><label>Speed</label>
+          <select id="reel_speed"><option value="1.0">1.0x</option><option value="1.5" selected>1.5x</option><option value="2.0">2.0x</option></select>
+        </div>
       </div>
-    </div>
-    <div class="field"><label>Frequency</label>
-      <select id="frequency"><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
-    </div>
-
-    <h3>YouTube</h3>
-    <div class="field"><label>YT Title Template</label><input type="text" id="yt_title"></div>
-    <div class="field"><label>YT Description</label><textarea id="yt_description"></textarea></div>
-    <div class="field"><label>YT Tags (comma separated)</label><input type="text" id="yt_tags"></div>
-    <div class="field-row">
-      <div class="field"><label>Category</label>
-        <select id="yt_category"><option value="17">Sports</option><option value="25">News</option><option value="10">Music</option><option value="20">Gaming</option><option value="28">SciTech</option></select>
+      <div class="field"><label>Frequency</label>
+        <select id="frequency"><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
       </div>
-      <div class="field"><label>Privacy</label>
-        <select id="yt_privacy"><option value="public">Public</option><option value="unlisted">Unlisted</option><option value="private">Private</option></select>
+
+      <h3>YouTube</h3>
+      <div class="field"><label>YT Title</label><input type="text" id="yt_title"></div>
+      <div class="field"><label>YT Description</label><textarea id="yt_description"></textarea></div>
+      <div class="field"><label>YT Tags</label><input type="text" id="yt_tags"></div>
+      <div class="field-row">
+        <div class="field"><label>Category</label>
+          <select id="yt_category"><option value="17">Sports</option><option value="25">News</option><option value="10">Music</option><option value="20">Gaming</option><option value="28">SciTech</option></select>
+        </div>
+        <div class="field"><label>Privacy</label>
+          <select id="yt_privacy"><option value="public">Public</option><option value="unlisted">Unlisted</option><option value="private">Private</option></select>
+        </div>
       </div>
-    </div>
-    <div class="check-row"><input type="checkbox" id="auto_upload"><label for="auto_upload">Auto Upload after reel generation</label></div>
+      <div class="check-row"><input type="checkbox" id="auto_upload"><label for="auto_upload">Auto Upload</label></div>
 
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="saveConfig()">Save Config</button>
-      <button class="btn btn-success" id="reel-btn" onclick="generateReel()">Preview Reel</button>
-      <button class="btn btn-info" onclick="uploadToYT()">Upload to YT</button>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveConfig()">Save</button>
+        <button class="btn btn-success" id="reel-btn" onclick="generateReel()">Make Reel</button>
+        <button class="btn btn-info" onclick="makeAll4()">Make All 4</button>
+      </div>
+      <div id="msg"></div>
+      <div id="dl-area"></div>
     </div>
-    <div id="msg"></div>
-    <div id="dl-area"></div>
-  </div>
 
-  <div class="panel">
-    <h2>Data Preview</h2>
-    <div style="display:flex;gap:4px;margin-bottom:10px">
-      <button class="btn btn-primary" onclick="fetchData('today')" style="font-size:10px;height:26px;padding:0 10px">Today</button>
-      <button class="btn btn-primary" onclick="fetchData('week')" style="font-size:10px;height:26px;padding:0 10px">This Week</button>
-      <button class="btn btn-primary" onclick="fetchData('month')" style="font-size:10px;height:26px;padding:0 10px">This Month</button>
+    <div class="panel">
+      <h3>Data Preview — <span id="cont-label"></span></h3>
+      <div style="display:flex;gap:4px;margin-bottom:8px">
+        <button class="btn btn-primary" onclick="fetchData('today')" style="font-size:9px;height:24px;padding:0 8px">Today</button>
+        <button class="btn btn-primary" onclick="fetchData('week')" style="font-size:9px;height:24px;padding:0 8px">Week</button>
+        <button class="btn btn-primary" onclick="fetchData('month')" style="font-size:9px;height:24px;padding:0 8px">Month</button>
+      </div>
+      <div id="data-area"><div class="empty">Click a period to fetch data.</div></div>
     </div>
-    <div id="data-area"><div class="empty">Click a period to fetch data.</div></div>
   </div>
 </div>
 
 <script>
 const chId = window.location.pathname.split('/').pop();
+const CONTS = ["AMERICAS","EUROPE","ASIA","AFRICA"];
+const CONT_FLAGS = {"AMERICAS":"\u{1F30E}","EUROPE":"\u{1F30D}","ASIA":"\u{1F30F}","AFRICA":"\u{1F30D}"};
+const CONT_COLORS = {"AMERICAS":"#DC2626","EUROPE":"#3B82F6","ASIA":"#EAB308","AFRICA":"#22C55E"};
 const CATS={finance:"25",music:"10",techai:"28",news:"25",transfer:"17",games:"20"};
-let fetchedRows = [];
+
+let activeCont = "EUROPE";
+let allRows = [];
+let contCounts = {};
 
 document.getElementById('editor-title').textContent = chId.charAt(0).toUpperCase()+chId.slice(1)+' \u2014 Reel Editor';
-document.getElementById('nav-title').textContent = chId.charAt(0).toUpperCase()+chId.slice(1)+' Editor';
+document.getElementById('nav-title').textContent = chId.charAt(0).toUpperCase()+chId.slice(1);
 
-async function loadConfig(){
+function renderContTabs(){
+  document.getElementById('cont-tabs').innerHTML = CONTS.map(c => {
+    const cnt = contCounts[c]||0;
+    return `<div class="cont-tab${c===activeCont?' on':''}" onclick="switchCont('${c}')" style="border-color:${c===activeCont?CONT_COLORS[c]:'var(--border2)'}">
+      ${CONT_FLAGS[c]} ${c} ${cnt?`<span class="cnt">${cnt}</span>`:''}
+    </div>`;
+  }).join('');
+  document.getElementById('cont-label').textContent = CONT_FLAGS[activeCont]+' '+activeCont;
+}
+
+function switchCont(c){
+  activeCont = c;
+  renderContTabs();
+  loadContConfig();
+  renderDataForCont();
+}
+
+async function loadContConfig(){
+  // Try continent-specific config, fall back to base
   try{
-    const r=await fetch(`/api/reel-config/${chId}`);
-    const j=await r.json();
-    const c=j.config||{};
-    document.getElementById('header_text').value=c.header_text||'';
-    document.getElementById('footer_text').value=c.footer_text||'@ayaz_'+chId;
-    document.getElementById('bg_color').value=c.bg_color||'#0D0F1A';
-    document.getElementById('accent_color').value=c.accent_color||'#4F96FF';
-    document.getElementById('reel_speed').value=String(c.reel_speed||'1.5');
-    document.getElementById('frequency').value=c.frequency||'weekly';
-    document.getElementById('yt_title').value=c.yt_title||'';
-    document.getElementById('yt_description').value=c.yt_description||'';
-    document.getElementById('yt_tags').value=c.yt_tags||'';
-    document.getElementById('yt_category').value=c.yt_category||CATS[chId]||'17';
-    document.getElementById('yt_privacy').value=c.yt_privacy||'public';
-    document.getElementById('auto_upload').checked=!!c.auto_upload;
-  }catch(e){ console.error(e); }
+    let r = await fetch(`/api/reel-config/${chId}_${activeCont}`);
+    let j = await r.json();
+    let c = j.config||{};
+    if(!c.header_text){
+      r = await fetch(`/api/reel-config/${chId}`);
+      j = await r.json();
+      c = j.config||{};
+    }
+    const bg = CONT_COLORS[activeCont]||'#0D0F1A';
+    document.getElementById('header_text').value = c.header_text||'';
+    document.getElementById('footer_text').value = c.footer_text||'@ayaz_'+chId;
+    document.getElementById('bg_color').value = c.bg_color||'#0D0F1A';
+    document.getElementById('accent_color').value = c.accent_color||bg;
+    document.getElementById('reel_speed').value = String(c.reel_speed||'1.5');
+    document.getElementById('frequency').value = c.frequency||'weekly';
+    document.getElementById('yt_title').value = c.yt_title||'';
+    document.getElementById('yt_description').value = c.yt_description||'';
+    document.getElementById('yt_tags').value = c.yt_tags||'';
+    document.getElementById('yt_category').value = c.yt_category||CATS[chId]||'17';
+    document.getElementById('yt_privacy').value = c.yt_privacy||'public';
+    document.getElementById('auto_upload').checked = !!c.auto_upload;
+  }catch(e){console.error(e);}
 }
 
 async function saveConfig(){
@@ -161,10 +202,14 @@ async function saveConfig(){
     yt_category:document.getElementById('yt_category').value,
     yt_privacy:document.getElementById('yt_privacy').value,
     auto_upload:document.getElementById('auto_upload').checked,
+    continent:activeCont,
   };
   try{
+    // Save to continent-specific config
+    await fetch(`/api/reel-config/${chId}_${activeCont}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    // Also save base config
     await fetch(`/api/reel-config/${chId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    document.getElementById('msg').innerHTML='<div class="msg msg-ok">Config saved</div>';
+    document.getElementById('msg').innerHTML='<div class="msg msg-ok">\u2705 Config saved for '+activeCont+'</div>';
   }catch(e){
     document.getElementById('msg').innerHTML='<div class="msg msg-err">Save failed</div>';
   }
@@ -180,42 +225,83 @@ async function fetchData(period){
   try{
     const r=await fetch(`/api/fetch/channel?channel_id=${chId}&from=${f}&to=${t}`);
     const j=await r.json();
-    fetchedRows=j.data||[];
-    if(!fetchedRows.length){document.getElementById('data-area').innerHTML='<div class="empty">No data.</div>';return;}
-    document.getElementById('data-area').innerHTML=`<div style="font-size:10px;color:var(--text3);margin-bottom:6px">${fetchedRows.length} rows \u00b7 ${f} \u2192 ${t}</div>`+
-      fetchedRows.map(r=>`<div class="data-row"><span class="data-home">${esc(r.home)}</span><span class="data-score">${esc(r.score)}</span><span class="data-away">${esc(r.away)}</span></div>`).join('');
+    allRows=j.data||[];
+    // Count per continent
+    contCounts={};
+    for(const row of allRows){
+      const c=mapRowToContinent(row);
+      contCounts[c]=(contCounts[c]||0)+1;
+    }
+    renderContTabs();
+    renderDataForCont();
   }catch(e){
     document.getElementById('data-area').innerHTML='<div class="msg msg-err">Error: '+e.message+'</div>';
   }
 }
 
+function mapRowToContinent(row){
+  const cont=row.continent||'';
+  const league=row.league||'';
+  const cat=row.category||'';
+  // Exchange mapping
+  const exMap={DAX:'EUROPE',CAC40:'EUROPE',FTSE100:'EUROPE',BIST100:'EUROPE',SP500:'AMERICAS',NASDAQ:'AMERICAS',BOVESPA:'AMERICAS',NIKKEI:'ASIA',KOSPI:'ASIA',COMMODITIES:'AMERICAS',CRYPTO:'AMERICAS'};
+  if(exMap[league]) return exMap[league];
+  if(cont==='EUROPE'||cont==='AMERICAS'||cont==='ASIA'||cont==='AFRICA') return cont;
+  if(cont==='ASIA-PACIFIC') return 'ASIA';
+  // Country lookup from category
+  const cMap={USA:'AMERICAS',Brazil:'AMERICAS',Mexico:'AMERICAS',Argentina:'AMERICAS',UK:'EUROPE',Germany:'EUROPE',France:'EUROPE',Turkey:'EUROPE',Spain:'EUROPE',Italy:'EUROPE',Netherlands:'EUROPE',Sweden:'EUROPE',Japan:'ASIA',India:'ASIA','South Korea':'ASIA',China:'ASIA',Indonesia:'ASIA',Philippines:'ASIA','Saudi Arabia':'ASIA','South Africa':'AFRICA',Nigeria:'AFRICA',Egypt:'AFRICA',Kenya:'AFRICA',Morocco:'AFRICA'};
+  for(const[country,mapped] of Object.entries(cMap)){
+    if(cat.includes(country)) return mapped;
+  }
+  return 'EUROPE'; // fallback
+}
+
+function renderDataForCont(){
+  const rows=allRows.filter(r=>mapRowToContinent(r)===activeCont);
+  if(!rows.length){document.getElementById('data-area').innerHTML='<div class="empty">No data for '+activeCont+'</div>';return;}
+  document.getElementById('data-area').innerHTML=`<div style="font-size:10px;color:var(--text3);margin-bottom:4px">${rows.length} rows for ${activeCont}</div>`+
+    rows.map(r=>`<div class="data-row"><span class="data-home">${esc(r.home)}</span><span class="data-score">${esc(r.score)}</span><span class="data-away">${esc(r.away)}</span></div>`).join('');
+}
+
 async function generateReel(){
-  if(!fetchedRows.length){alert('Fetch data first');return;}
+  const rows=allRows.filter(r=>mapRowToContinent(r)===activeCont);
+  if(!rows.length){alert('Fetch data first');return;}
   const btn=document.getElementById('reel-btn');
-  btn.disabled=true;btn.innerHTML='<span class="spin">\u25CC</span> Generating...';
+  btn.disabled=true;btn.innerHTML='<span class="spin">\u25CC</span> Making...';
   document.getElementById('dl-area').innerHTML='';
   try{
     const gm={};
-    for(const r of fetchedRows){const lg=r.league||'OTHER';if(!gm[lg])gm[lg]={league:lg,display_name:r.category&&r.category!==r.continent?r.category+' \u00b7 '+lg:lg,continent:r.continent||r.category||'OTHER',matches:[]};gm[lg].matches.push(r);}
+    for(const r of rows){const lg=r.league||'OTHER';if(!gm[lg])gm[lg]={league:lg,display_name:r.category&&r.category!==r.continent?r.category+' \u00b7 '+lg:lg,continent:r.continent||r.category||'OTHER',matches:[]};gm[lg].matches.push(r);}
     const bg=document.getElementById('bg_color').value;
     const ac=document.getElementById('accent_color').value;
     const hex2rgb=h=>{h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
+    const hdr=document.getElementById('header_text').value||chId.toUpperCase();
     const r=await fetch('/api/make-reel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      sport_id:chId,sport_name:chId,channel_name:document.getElementById('footer_text').value||'ayaz_'+chId,
-      groups:Object.values(gm),custom_theme:{bg:hex2rgb(bg),accent:hex2rgb(ac),dim:hex2rgb(bg).map(c=>Math.min(c+20,60))},
+      sport_id:chId,sport_name:chId+' '+activeCont,
+      channel_name:document.getElementById('footer_text').value||'ayaz_'+chId,
+      groups:Object.values(gm),
+      custom_theme:{bg:hex2rgb(bg),accent:hex2rgb(ac),dim:hex2rgb(bg).map(c=>Math.min(c+20,60))},
     })});
     const j=await r.json();
     if(!j.ok)throw new Error(j.error);
-    document.getElementById('dl-area').innerHTML=`<div class="dl-box"><span style="color:var(--success)">\u2713 Ready</span><a class="dl-btn" href="${j.download_url}" download>\u2B07 Download</a></div>`;
+    document.getElementById('dl-area').innerHTML=`<div class="dl-box"><span style="color:var(--success)">\u2713 ${activeCont} ready</span><a class="dl-btn" href="${j.download_url}" download>\u2B07 Download</a></div>`;
   }catch(e){alert('Error: '+e.message);}
-  btn.disabled=false;btn.innerHTML='Preview Reel';
+  btn.disabled=false;btn.innerHTML='Make Reel';
 }
 
-async function uploadToYT(){alert('Configure YouTube credentials first (see docs/YOUTUBE_SETUP.md)');}
+async function makeAll4(){
+  for(const c of CONTS){
+    activeCont=c;
+    renderContTabs();
+    await generateReel();
+  }
+  document.getElementById('msg').innerHTML='<div class="msg msg-ok">\u2705 All 4 continent reels generated</div>';
+}
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-loadConfig();
+renderContTabs();
+loadContConfig();
 </script>
 </body>
 </html>

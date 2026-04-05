@@ -273,10 +273,11 @@ function renderSidebar(){
       const rows = CHANNEL_DATA[ch.id]||[];
       const hidden = new Set((loadState(ch.id).hiddenRows||[]));
       const vis = rows.filter(r=>!hidden.has(r.id)).length;
-      return `<div class="si${ch.id===active?" on":""}" onclick="selectChannel('${ch.id}')">
+      return `<div class="si${ch.id===active?" on":""}" onclick="selectChannel('${ch.id}')" style="position:relative">
         <span class="si-ico">${ch.icon}</span>
         <span class="si-name">${ch.name}</span>
         ${vis?`<span class="si-cnt">${vis}</span>`:""}
+        <a href="/channel-editor/${ch.id}" onclick="event.stopPropagation()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);text-decoration:none" title="Editor">\u270F</a>
       </div>`;
     }).join("")}
   `;

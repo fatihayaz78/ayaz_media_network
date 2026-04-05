@@ -62,7 +62,8 @@ Phase 16:   ✅ YouTube upload + /upload UI + per-channel YT config
 Phase 17:   ✅ COMPLETE (thumbnail generation, branding, auto-thumbnail)
 Phase 18.1: ✅ COMPLETE (date filter bug fixed, finance yf_period, all channels audited)
 Phase 18.2: ✅ COMPLETE (channel editor, header/footer fixes, coin SSL fallback)
-Phase 18.3: 📋 PLANNED (visual polish — reel design upgrade)
+Phase 18.3: ✅ COMPLETE (4-continent architecture, continent themes, split_by_continent)
+Phase 18.4: 📋 PLANNED (expand country coverage + AFRICA data sources)
 ```
 
 ---

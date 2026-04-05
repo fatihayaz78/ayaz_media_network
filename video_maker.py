@@ -159,22 +159,31 @@ SPORT_IDENTITY = {
 }
 
 # Her kıta için sabit aksent rengi (sport aksentiyle karışmaz)
+# 4-continent reel themes (Phase 18.3)
+CONTINENT_THEMES = {
+    "AMERICAS": {"accent": (220, 38, 38),  "dim": (60, 10, 10), "bg": (10, 5, 5),   "flag": "\U0001f30e"},
+    "EUROPE":   {"accent": (59, 130, 246), "dim": (10, 20, 50), "bg": (5, 8, 20),   "flag": "\U0001f30d"},
+    "ASIA":     {"accent": (234, 179, 8),  "dim": (50, 40, 5),  "bg": (12, 10, 3),  "flag": "\U0001f30f"},
+    "AFRICA":   {"accent": (34, 197, 94),  "dim": (5, 30, 10),  "bg": (3, 10, 5),   "flag": "\U0001f30d"},
+}
+
 CONTINENT_COLORS = {
-    "EUROPE":       (79, 150, 255),
-    "AMERICAS":     (220, 64, 64),
-    "ASIA-PACIFIC": (88, 192, 48),
-    "ASIA":         (88, 192, 48),
+    "EUROPE":       (59, 130, 246),
+    "AMERICAS":     (220, 38, 38),
+    "ASIA-PACIFIC": (234, 179, 8),
+    "ASIA":         (234, 179, 8),
+    "AFRICA":       (34, 197, 94),
     "MOTORSPORT":   (240, 120, 32),
     "OTHER":        (150, 150, 180),
-    "UPCOMING":     (64, 200, 112),   # fixtures green
-    "CHARTS":       (224, 64, 251),   # music violet
-    "AI & TECH":    (96, 165, 250),   # techai blue
-    "GAMING":       (168, 85, 247),   # games purple
-    "MARKETS":      (0, 200, 83),     # finance green
-    "COMMODITIES":  (218, 165, 32),   # gold
-    "CRYPTO":       (247, 147, 26),   # bitcoin orange
-    "TRANSFERS":    (255, 140, 0),    # transfer orange
-    "NEWS":         (129, 140, 248),  # news indigo
+    "UPCOMING":     (64, 200, 112),
+    "CHARTS":       (224, 64, 251),
+    "AI & TECH":    (96, 165, 250),
+    "GAMING":       (168, 85, 247),
+    "MARKETS":      (0, 200, 83),
+    "COMMODITIES":  (218, 165, 32),
+    "CRYPTO":       (247, 147, 26),
+    "TRANSFERS":    (255, 140, 0),
+    "NEWS":         (129, 140, 248),
 }
 
 LEAGUE_COLORS = {
