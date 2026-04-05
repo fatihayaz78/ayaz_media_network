@@ -471,6 +471,58 @@ def generate_footer(sport_id: str, channel_name: str, ident_override: dict = Non
     return img
 
 
+# ── Section dividers + % change colors ────────────────────────────────────────
+SECTION_ORDER = ["stocks", "forex", "metals", "crypto"]
+SECTION_LABELS = {
+    "stocks": "\U0001f4c8  STOCKS",
+    "forex":  "\U0001f4b1  FOREX",
+    "metals": "\U0001f947  METALS",
+    "crypto": "\u20bf   CRYPTO",
+}
+SECTION_DIVIDER_H = 64
+
+
+def draw_section_divider(img, draw, y, section_type, accent, bg_rgb):
+    """Draw a full-width accent bar with centered pill label."""
+    label = SECTION_LABELS.get(section_type, section_type.upper())
+    f_sect = get_font(28, bold=True)
+
+    # Full-width accent bar
+    draw.rectangle(
+        [MARGIN, y + 28, W - MARGIN, y + 31],
+        fill=accent + (180,)
+    )
+
+    # Pill background centered on bar
+    bb = draw.textbbox((0, 0), label, font=f_sect)
+    lw = bb[2] - bb[0]
+    lh = bb[3] - bb[1]
+    pill_w = lw + 32
+    pill_x = (W - pill_w) // 2
+    pill_y = y + 14
+
+    pill_bg = Image.new("RGBA", (pill_w, lh + 16), bg_rgb + (255,))
+    img.alpha_composite(pill_bg, (pill_x, pill_y))
+
+    # Label text in accent color
+    draw.text(
+        (pill_x + 16, pill_y + 4),
+        label, font=f_sect,
+        fill=accent + (255,)
+    )
+
+
+def get_pct_color(text: str) -> tuple:
+    """Return green/red/gray RGBA based on % change sign."""
+    t = str(text).strip()
+    if t.startswith("+"):
+        return (34, 197, 94, 245)     # green
+    elif t.startswith("-"):
+        return (239, 68, 68, 245)     # red
+    else:
+        return (156, 163, 175, 220)   # gray
+
+
 # ── CONTENT STRIP (kayan) ─────────────────────────────────────────────────────
 def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
     """
@@ -479,6 +531,7 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
     """
     ident      = SPORT_IDENTITY.get(sport_id, SPORT_IDENTITY["diger"])
     bg         = ident["bg"]
+    accent     = ident.get("accent", (140, 140, 180))
     continents = config.get("continents", [])
 
     f_cont   = get_font(34, bold=True)
@@ -492,8 +545,9 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
     LEAGUE_GAP = 22
     CONT_GAP   = 44
 
-    # Yükseklik hesapla
+    # Yükseklik hesapla — include section divider heights
     total_h = 28
+    seen_types = set()
     for ci, cont in enumerate(continents):
         if ci > 0:
             total_h += CONT_GAP
@@ -503,7 +557,12 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
             if not g.get("matches"):
                 continue
             total_h += LEAGUE_H
-            total_h += len(g["matches"]) * ROW_H
+            for m in g["matches"]:
+                rtype = m.get("type")
+                if rtype and rtype not in seen_types:
+                    seen_types.add(rtype)
+                    total_h += SECTION_DIVIDER_H
+                total_h += ROW_H
             total_h += LEAGUE_GAP
     total_h += 80
     total_h  = max(total_h, 400)
@@ -552,7 +611,15 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
             y += LEAGUE_H
 
             # Maç satırları
+            current_section = None
             for mi, m in enumerate(matches):
+                # Section divider for finance-type rows
+                row_type = m.get("type")
+                if row_type and row_type != current_section:
+                    current_section = row_type
+                    draw_section_divider(img, draw, y, row_type, accent, bg)
+                    y += SECTION_DIVIDER_H
+
                 # Alternatif satır arkaplanı
                 if mi % 2 == 0:
                     row_bg = Image.new("RGBA", (W - 2*MARGIN, ROW_H - 8),
@@ -604,8 +671,11 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
                     outline=col + (100,), width=2
                 )
 
-                # Skor metni (lig renginin aydınlatılmış hali)
-                sc_col = tuple(min(c + 90, 255) for c in col) + (255,)
+                # Skor metni — green/red if contains %, else league color
+                if "%" in str(score):
+                    sc_col = get_pct_color(score)
+                else:
+                    sc_col = tuple(min(c + 90, 255) for c in col) + (255,)
                 draw.text((box_x + 14, box_y + 6), score, font=f_score,
                           fill=sc_col)
 
@@ -616,10 +686,11 @@ def generate_content_strip(config: dict, sport_id: str) -> Image.Image:
                 draw.text((hx, y + 18), home, font=f_team,
                           fill=(225, 225, 240, 245))
 
-                # Deplasman (sola yaslı)
+                # Deplasman (sola yaslı) — green/red if % change
+                away_color = get_pct_color(away) if "%" in str(away) else (225, 225, 240, 245)
                 ax = box_x + box_w + 16
                 draw.text((ax, y + 18), away, font=f_team,
-                          fill=(225, 225, 240, 245))
+                          fill=away_color)
 
                 y += ROW_H
 

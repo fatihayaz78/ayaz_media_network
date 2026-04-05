@@ -28,7 +28,7 @@ Report: `Tests: N/N | Git: [hash] | Port: 5052`
 | docs/channels/fixtures.md | Fixtures channel | Fixtures work |
 
 ## CURRENT STATE
-Build: Post-Audit | Tests: 31/31 | Git: e4ec3a2 | Port: 5052 | Venv: amn
+Build: Phase 18.6 | Tests: 34/34 | Git: cdc9fa7+ | Port: 5052 | Venv: amn
 
 ## WHAT WORKS
 - 36 Flask routes, all return 200
@@ -45,11 +45,13 @@ Build: Post-Audit | Tests: 31/31 | Git: e4ec3a2 | Port: 5052 | Venv: amn
 - YouTube upload: upload_video() with OAuth2
 
 ## WHAT IS NOT IMPLEMENTED
-- Section dividers in reel video (STOCKS/FOREX/METALS/CRYPTO headers)
-- Green/red % change colors in reel rows
 - YouTube credentials.json (not configured)
 - AFRICA music data sources
 - CoinGecko live (SSL blocked, static fallback active)
+
+## RECENTLY COMPLETED (Phase 18.6)
+- Section dividers in reel video: STOCKS/FOREX/METALS/CRYPTO pill labels
+- Green/red % change colors in reel rows
 
 ## SPRINT PROTOCOL (mandatory)
 BEFORE: Run checklist, read ARCHITECTURE.md, read relevant channel .md

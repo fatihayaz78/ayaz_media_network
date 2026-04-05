@@ -4,6 +4,44 @@
 
 ---
 
+## [Sprint 18.6] April 2026 — Reel Visual: Dividers + Colors
+**Phase:** 18.6 | **Status:** ✅ Complete
+
+### What was built
+- draw_section_divider(): accent bar + centered pill label per data type
+- SECTION_ORDER: stocks -> forex -> metals -> crypto
+- SECTION_LABELS: emoji + uppercase name per section
+- get_pct_color(): green (+34,197,94) / red (239,68,68) / gray (156,163,175)
+- Applied to: away field (% change) + score field (when contains %)
+- Stock rows now have type="stocks" field
+- accent variable exposed in generate_content_strip()
+
+### Verified outputs (raw)
+```
+draw_section_divider exists: OK
+get_pct_color('+4.94%') = (34, 197, 94, 245)
+get_pct_color('-2.30%') = (239, 68, 68, 245)
+get_pct_color('1.0842') = (156, 163, 175, 220)
+
+EUROPE:   36 rows | 1695KB | 63.1s
+AMERICAS: 29 rows | 1409KB | 53.9s
+ASIA:     45 rows | 2151KB | 77.0s
+AFRICA:   20 rows | 1010KB | 42.5s
+```
+
+### Test results
+```
+34/34 passed (3 new: get_pct_color positive/negative/neutral)
+```
+
+### Files changed
+- video_maker.py — draw_section_divider, get_pct_color, accent in content_strip
+- channels/finance/finance_fetcher.py — type="stocks" on stock rows
+- tests/test_app_routes.py — 3 new tests
+- CLAUDE.md, docs/REELS_UI.md, docs/channels/finance.md, docs/CHANGELOG.md
+
+---
+
 ## [Audit] April 2026 — Full Code Audit
 ### Working (verified with test client + raw output)
 - All 18 page/API routes return 200

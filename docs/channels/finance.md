@@ -27,5 +27,5 @@ output/finance/{CONTINENT}_{date}.mp4 + output/thumbnails/finance_{date}.jpg
 - Fetch: WORKING (91 rows typical)
 - Split: WORKING (AMERICAS 29, EUROPE 37, ASIA 40, AFRICA 18)
 - Reel: WORKING
-- Section dividers: NOT YET
-- Green/red colors: NOT YET
+- Section dividers: YES (Phase 18.6) — STOCKS/FOREX/METALS/CRYPTO
+- Green/red colors: YES (Phase 18.6) — green(+) red(-) gray(neutral)

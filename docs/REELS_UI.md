@@ -60,7 +60,8 @@ Two columns: 45% config | 55% data preview
 - Rows: 68px height, alternating bg
 - Standard layout: [home left] [score center box] [away right]
 - Wide row (score=""): [label small] [title bold] [subtitle dim]
-- NOT YET: section dividers, green/red % colors
+- Section dividers: accent bar + pill label (STOCKS/FOREX/METALS/CRYPTO)
+- % change colors: green (+) / red (-) / gray (neutral)
 
 ### Footer (220px)
 - "SUBSCRIBE FOR MORE" — (210,210,225) visible

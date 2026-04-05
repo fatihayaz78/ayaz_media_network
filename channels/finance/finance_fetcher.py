@@ -397,6 +397,7 @@ class FinanceFetcher(BaseFetcher):
                         "continent": continent,
                         "time":      ticker,
                         "status":    "\u25b2" if change >= 0 else "\u25bc",
+                        "type":      "stocks",
                     })
         return rows
 

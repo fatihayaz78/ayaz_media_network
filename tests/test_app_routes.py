@@ -244,3 +244,18 @@ def test_reel_config_continent_api(client):
                         "channels", "finance_EUROPE", "reel_config.json")
     if os.path.exists(path):
         os.remove(path)
+
+
+def test_get_pct_color_positive():
+    from video_maker import get_pct_color
+    assert get_pct_color("+4.94%") == (34, 197, 94, 245)
+
+
+def test_get_pct_color_negative():
+    from video_maker import get_pct_color
+    assert get_pct_color("-2.30%") == (239, 68, 68, 245)
+
+
+def test_get_pct_color_neutral():
+    from video_maker import get_pct_color
+    assert get_pct_color("1.0842") == (156, 163, 175, 220)
