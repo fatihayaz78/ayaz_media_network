@@ -4,6 +4,50 @@
 
 ---
 
+## [Sprint 18.1] April 2026 — Date Filter Bug Fix
+**Phase:** 18.1 | **Status:** ✅ Complete
+
+### Root cause
+Combined C + D: Finance fetcher used hardcoded `period="5d"` in yfinance, ignoring
+date_from/date_to. Cache key only used date_from (not date_to). Music/news/games
+data sources don't support date filtering at all.
+
+### What was fixed
+- Finance fetcher: yf_period derived from date range (5d for today/week, 1mo for month)
+- Cache key now includes both date_from and date_to
+- UI: date range label "Showing: 2026-03-28 -> 2026-04-05" below fetch button
+- API response includes date_from/date_to for transparency
+
+### Channel audit
+```
+channel   | period sent | fetcher uses dates | Today!=Month | status
+finance   | ✅          | ✅ (yf_period)     | ✅ (5d vs 1mo) | FIXED
+music     | ✅          | ❌ (weekly cache)  | ❌ (same)      | BY DESIGN
+news      | ✅          | ❌ (RSS latest)    | ❌ (same)      | BY DESIGN
+games     | ✅          | ❌ (API latest)    | ❌ (same)      | BY DESIGN
+transfer  | ✅          | ❌ (RSS+sample)    | ❌ (same)      | BY DESIGN
+techai    | ✅          | ❌ (items.json)    | ❌ (same)      | BY DESIGN
+sports    | ✅          | ✅ (API per date)  | ✅             | OK
+fixtures  | ✅          | ✅ (API per date)  | ✅             | OK
+```
+
+Note: music/news/games/transfer/techai return latest available data regardless
+of date range — this is correct for their data sources (RSS, charts, APIs).
+
+### Test results
+```
+26/26 passed
+```
+
+### Files changed
+- channels/finance/finance_fetcher.py — yf_period from date range, cache key fix
+- static/channel.html — date range label, CHANNEL_RANGE state
+- app.py — date_from/date_to in API response
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 17] April 2026 — Thumbnail Generation + Channel Branding
 **Phase:** 17 | **Status:** ✅ Complete
 

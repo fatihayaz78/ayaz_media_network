@@ -218,23 +218,38 @@ class FinanceFetcher(BaseFetcher):
     sport_id   = "finance"
 
     def fetch(self, date_from: str, date_to: str) -> List[Dict]:
-        cache_key = f"finance_{date_from}"
+        cache_key = f"finance_{date_from}_{date_to}"
         today = datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%d")
-        if date_from < today:
+        if date_from < today and date_to < today:
             cached = self._load_cache(cache_key)
             if cached is not None:
                 return cached
 
+        # Determine yfinance period from date range
+        try:
+            from_dt = datetime.strptime(date_from, "%Y-%m-%d")
+            to_dt = datetime.strptime(date_to, "%Y-%m-%d")
+            delta = (to_dt - from_dt).days
+        except Exception:
+            delta = 0
+
+        if delta <= 1:
+            yf_period = "5d"      # "Today" — need ≥2 days for % change
+        elif delta <= 7:
+            yf_period = "5d"      # "This Week"
+        else:
+            yf_period = "1mo"     # "This Month"
+
         rows: List[Dict] = []
-        rows.extend(self._fetch_stocks())
-        rows.extend(self._fetch_commodities())
+        rows.extend(self._fetch_stocks(yf_period))
+        rows.extend(self._fetch_commodities(yf_period))
         rows.extend(self._fetch_crypto())
 
-        if date_from < today:
+        if date_from < today and date_to < today:
             self._save_cache(cache_key, rows)
         return rows
 
-    def _fetch_stocks(self) -> List[Dict]:
+    def _fetch_stocks(self, yf_period: str = "5d") -> List[Dict]:
         rows = []
         for continent, markets in MARKETS.items():
             for market_name, market_info in markets.items():
@@ -246,7 +261,7 @@ class FinanceFetcher(BaseFetcher):
                 try:
                     data = yf.download(
                         tickers,
-                        period="5d",
+                        period=yf_period,
                         interval="1d",
                         auto_adjust=True,
                         progress=False,
@@ -310,7 +325,7 @@ class FinanceFetcher(BaseFetcher):
                     })
         return rows
 
-    def _fetch_commodities(self) -> List[Dict]:
+    def _fetch_commodities(self, yf_period: str = "5d") -> List[Dict]:
         commodities = {
             "GC=F": ("Gold",   "XAU", "$"),
             "SI=F": ("Silver", "XAG", "$"),
@@ -318,7 +333,7 @@ class FinanceFetcher(BaseFetcher):
         rows = []
         try:
             symbols = list(commodities.keys())
-            data = yf.download(symbols, period="5d", interval="1d",
+            data = yf.download(symbols, period=yf_period, interval="1d",
                               auto_adjust=True, progress=False)
             close = data["Close"]
             for symbol, (name, ticker_display, cur) in commodities.items():

@@ -148,7 +148,8 @@ def api_fetch_channel():
             data = fetch_sport(channel_id, date_from, date_to,
                                leagues_filter=leagues_filter or None)
 
-        return jsonify({"ok": True, "data": data, "count": len(data)})
+        return jsonify({"ok": True, "data": data, "count": len(data),
+                       "date_from": date_from, "date_to": date_to})
 
     except Exception as ex:
         import traceback; traceback.print_exc()

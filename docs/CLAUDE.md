@@ -60,7 +60,8 @@ Phase 15B:  ✅ News RSS overhaul (10 countries), transfer fix, sport mocks
 Phase 15C:  ✅ Techai manual editor (/techai-editor)
 Phase 16:   ✅ YouTube upload + /upload UI + per-channel YT config
 Phase 17:   ✅ COMPLETE (thumbnail generation, branding, auto-thumbnail)
-Phase 18:   📋 PLANNED (dashboard analytics + upload statistics)
+Phase 18.1: ✅ COMPLETE (date filter bug fixed, finance yf_period, all channels audited)
+Phase 18.2: 📋 PLANNED (reel visual polish)
 ```
 
 ---

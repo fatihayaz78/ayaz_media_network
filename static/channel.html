@@ -211,6 +211,7 @@ let descLoading = false;
 let descError = null;
 let openSections = {theme:false, music:false, data:true, desc:false, action:true};
 let datePreset = "today";
+const CHANNEL_RANGE = {};  // stores {from, to} per channel
 let customDateFrom = "";
 let customDateTo = "";
 
@@ -370,6 +371,7 @@ async function doFetch(){
     if(!j.ok) throw new Error(j.error||"API error");
     CHANNEL_DATA[active] = j.data||[];
     CHANNEL_TS[active] = new Date().toLocaleTimeString();
+    CHANNEL_RANGE[active] = {from:fromDate, to:toDate};
     sessionStorage.setItem("data_"+active, JSON.stringify(CHANNEL_DATA[active]));
     if(!CHANNEL_DATA[active].length) fetchError="No data found.";
   }catch(e){
@@ -650,10 +652,11 @@ function renderMain(){
       <div class="sec-body${openSections.data?" open":""}">
         ${renderDataTabs()}
         ${renderDatePresets()}
-        <div style="margin-bottom:10px">
+        <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px">
           <button class="fbtn" onclick="doFetch()" ${fetchLoading?"disabled":""}>
             ${fetchLoading?`<span class="spin">\u25CC</span> Fetching...`:"\u2193 Fetch Data"}
           </button>
+          ${CHANNEL_RANGE[active]?`<span style="font-size:11px;color:var(--text3)">Showing: ${CHANNEL_RANGE[active].from} \u2192 ${CHANNEL_RANGE[active].to}</span>`:""}
         </div>
         ${fetchError?`<div class="errbox">\u26A0 ${esc(fetchError)}</div>`:""}
         ${renderDataRows()}
