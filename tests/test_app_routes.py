@@ -207,7 +207,7 @@ def test_crypto_fallback():
     f = FinanceFetcher()
     rows = f._fetch_crypto()
     assert len(rows) == 5
-    assert all(r["continent"] == "CRYPTO" for r in rows)
+    assert all(r["continent"] == "GLOBAL" for r in rows)
 
 
 def test_split_by_continent():

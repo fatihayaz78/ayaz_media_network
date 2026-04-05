@@ -90,7 +90,60 @@ MARKETS = {
                         "105560.KS","055550.KS","012330.KS","066570.KS","034730.KS",
                         "009150.KS","032830.KS","018260.KS","003490.KS","010130.KS"],
         },
+        "SSE": {
+            "country": "China", "flag": "\U0001f1e8\U0001f1f3",
+            "tickers": ["600519.SS","601398.SS","600036.SS"],
+        },
+        "BSE": {
+            "country": "India", "flag": "\U0001f1ee\U0001f1f3",
+            "tickers": ["RELIANCE.NS","TCS.NS","HDFCBANK.NS","INFY.NS","HINDUNILVR.NS"],
+        },
+        "HSI": {
+            "country": "Hong Kong", "flag": "\U0001f1ed\U0001f1f0",
+            "tickers": ["0005.HK","0700.HK","0941.HK","1299.HK","0388.HK"],
+        },
+        "TWSE": {
+            "country": "Taiwan", "flag": "\U0001f1f9\U0001f1fc",
+            "tickers": ["2330.TW","2317.TW","2454.TW","2412.TW"],
+        },
+        "Tadawul": {
+            "country": "Saudi Arabia", "flag": "\U0001f1f8\U0001f1e6",
+            "tickers": ["2222.SR","1180.SR","2010.SR","1010.SR"],
+        },
     },
+    "AFRICA": {
+        "JSE": {
+            "country": "South Africa", "flag": "\U0001f1ff\U0001f1e6",
+            "tickers": ["NPN.JO","AGL.JO","MTN.JO","SOL.JO","SBK.JO"],
+        },
+        "EGX30": {
+            "country": "Egypt", "flag": "\U0001f1ea\U0001f1ec",
+            "tickers": ["COMI.CA","HRHO.CA","ETEL.CA"],
+        },
+    },
+}
+
+# Forex pairs per continent
+FOREX_PAIRS = {
+    "EUROPE":   ["EURUSD=X","GBPUSD=X","CHFUSD=X","TRYUSD=X","SEKUSD=X","PLNUSD=X"],
+    "AMERICAS": ["CADUSD=X","BRLUSD=X","MXNUSD=X"],
+    "ASIA":     ["JPYUSD=X","CNYUSD=X","INRUSD=X","KRWUSD=X","HKDUSD=X","SGDUSD=X"],
+    "AFRICA":   ["ZARUSD=X","EGPUSD=X"],
+}
+
+FOREX_NAMES = {
+    "EURUSD=X": "EUR/USD", "GBPUSD=X": "GBP/USD", "CHFUSD=X": "CHF/USD",
+    "TRYUSD=X": "TRY/USD", "SEKUSD=X": "SEK/USD", "PLNUSD=X": "PLN/USD",
+    "CADUSD=X": "CAD/USD", "BRLUSD=X": "BRL/USD", "MXNUSD=X": "MXN/USD",
+    "JPYUSD=X": "JPY/USD", "CNYUSD=X": "CNY/USD", "INRUSD=X": "INR/USD",
+    "KRWUSD=X": "KRW/USD", "HKDUSD=X": "HKD/USD", "SGDUSD=X": "SGD/USD",
+    "ZARUSD=X": "ZAR/USD", "EGPUSD=X": "EGP/USD",
+}
+
+# Metals/commodities — global, same in all reels
+METALS_TICKERS = {
+    "GC=F": "Gold", "SI=F": "Silver", "PL=F": "Platinum",
+    "HG=F": "Copper", "BZ=F": "Brent Oil", "NG=F": "Natural Gas",
 }
 
 CRYPTO_IDS = ["bitcoin", "ethereum", "binancecoin", "solana", "ripple"]
@@ -186,9 +239,28 @@ TICKER_NAMES = {
     "CAP.PA":    "Capgemini",     "PUB.PA":    "Publicis",
     "STM":       "STMicro",       "VIE.PA":    "Veolia",
     "LR.PA":     "Legrand",       "RNO.PA":    "Renault",
+    # Asia new exchanges
+    "600519.SS": "Kweichow Moutai","601398.SS": "ICBC",
+    "600036.SS": "Merchants Bank",
+    "RELIANCE.NS":"Reliance",      "TCS.NS":    "TCS",
+    "HDFCBANK.NS":"HDFC Bank",     "INFY.NS":   "Infosys",
+    "HINDUNILVR.NS":"Hindustan Uni",
+    "0005.HK":   "HSBC HK",       "0700.HK":   "Tencent",
+    "0941.HK":   "China Mobile",   "1299.HK":   "AIA Group",
+    "0388.HK":   "HK Exchanges",
+    "2330.TW":   "TSMC",          "2317.TW":    "Hon Hai",
+    "2454.TW":   "MediaTek",      "2412.TW":    "Chunghwa Tel",
+    "2222.SR":   "Saudi Aramco",  "1180.SR":    "Al Rajhi Bank",
+    "2010.SR":   "SABIC",         "1010.SR":    "Riyad Bank",
+    # Africa
+    "NPN.JO":    "Naspers",       "AGL.JO":     "Anglo American",
+    "MTN.JO":    "MTN Group",     "SOL.JO":     "Sasol",
+    "SBK.JO":    "Standard Bank",
+    "COMI.CA":   "CIB Egypt",     "HRHO.CA":    "Hermes Egypt",
+    "ETEL.CA":   "Telecom Egypt",
 }
 
-CONTINENT_ORDER = ["EUROPE", "AMERICAS", "ASIA", "COMMODITIES", "CRYPTO"]
+CONTINENT_ORDER = ["EUROPE", "AMERICAS", "ASIA", "AFRICA", "FOREX", "METALS", "COMMODITIES", "CRYPTO"]
 
 
 def _currency(symbol: str) -> str:
@@ -242,7 +314,8 @@ class FinanceFetcher(BaseFetcher):
 
         rows: List[Dict] = []
         rows.extend(self._fetch_stocks(yf_period))
-        rows.extend(self._fetch_commodities(yf_period))
+        rows.extend(self._fetch_forex(yf_period))
+        rows.extend(self._fetch_metals(yf_period))
         rows.extend(self._fetch_crypto())
 
         if date_from < today and date_to < today:
@@ -367,6 +440,95 @@ class FinanceFetcher(BaseFetcher):
             print(f"[finance] Commodities fetch failed: {e}")
         return rows
 
+    def _fetch_forex(self, yf_period: str = "5d") -> List[Dict]:
+        """Fetch forex pairs for all continents via batch download."""
+        all_pairs = []
+        pair_continent = {}
+        for continent, pairs in FOREX_PAIRS.items():
+            for pair in pairs:
+                all_pairs.append(pair)
+                pair_continent[pair] = continent
+
+        if not all_pairs:
+            return []
+
+        rows = []
+        try:
+            data = yf.download(all_pairs, period=yf_period, interval="1d",
+                               auto_adjust=True, progress=False, threads=True)
+            close = data["Close"]
+            opn   = data["Open"]
+            for pair in all_pairs:
+                try:
+                    c_series = close[pair].dropna()
+                    o_series = opn[pair].dropna()
+                    if len(c_series) < 1 or len(o_series) < 1:
+                        continue
+                    price_start = float(o_series.iloc[0])
+                    price_now   = float(c_series.iloc[-1])
+                    if price_start == 0:
+                        continue
+                    change = (price_now - price_start) / price_start * 100
+                    continent = pair_continent[pair]
+                    name = FOREX_NAMES.get(pair, pair.replace("=X", ""))
+                    rows.append({
+                        "id":        f"fin-forex-{pair}",
+                        "home":      name,
+                        "score":     f"{price_now:.4f}",
+                        "away":      _format_change(change),
+                        "league":    "FOREX",
+                        "category":  f"\U0001f4b1 {continent}",
+                        "continent": continent,
+                        "time":      pair.replace("=X", ""),
+                        "status":    "\u25b2" if change >= 0 else "\u25bc",
+                        "type":      "forex",
+                    })
+                except Exception:
+                    continue
+        except Exception as e:
+            print(f"[finance] Forex batch download failed: {e}")
+        print(f"[finance] Forex rows: {len(rows)}")
+        return rows
+
+    def _fetch_metals(self, yf_period: str = "5d") -> List[Dict]:
+        """Fetch metals/commodities — global data."""
+        rows = []
+        try:
+            symbols = list(METALS_TICKERS.keys())
+            data = yf.download(symbols, period=yf_period, interval="1d",
+                              auto_adjust=True, progress=False)
+            close = data["Close"]
+            opn   = data["Open"]
+            for symbol, name in METALS_TICKERS.items():
+                try:
+                    c_series = close[symbol].dropna()
+                    o_series = opn[symbol].dropna()
+                    if len(c_series) < 1 or len(o_series) < 1:
+                        continue
+                    price_start = float(o_series.iloc[0])
+                    curr        = float(c_series.iloc[-1])
+                    if price_start == 0:
+                        continue
+                    change = (curr - price_start) / price_start * 100
+                    rows.append({
+                        "id":        f"fin-metal-{symbol}",
+                        "home":      name,
+                        "score":     f"${curr:,.2f}",
+                        "away":      _format_change(change),
+                        "league":    "METALS",
+                        "category":  "\U0001f947 Global",
+                        "continent": "GLOBAL",
+                        "time":      symbol.replace("=F", ""),
+                        "status":    "\u25b2" if change >= 0 else "\u25bc",
+                        "type":      "metals",
+                    })
+                except Exception:
+                    continue
+        except Exception as e:
+            print(f"[finance] Metals fetch failed: {e}")
+        print(f"[finance] Metals rows: {len(rows)}")
+        return rows
+
     def _fetch_crypto(self) -> List[Dict]:
         print("[finance] Fetching crypto from CoinGecko...")
         params = {
@@ -434,9 +596,10 @@ class FinanceFetcher(BaseFetcher):
                 "away":      _format_change(change),
                 "league":    "CRYPTO",
                 "category":  "\U0001f310 Global",
-                "continent": "CRYPTO",
+                "continent": "GLOBAL",
                 "time":      symbol,
                 "status":    "\u25b2" if change >= 0 else "\u25bc",
+                "type":      "crypto",
             })
         print(f"[finance] Crypto rows: {len(rows)}")
         return rows

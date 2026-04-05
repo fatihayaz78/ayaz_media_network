@@ -63,7 +63,8 @@ Phase 17:   ✅ COMPLETE (thumbnail generation, branding, auto-thumbnail)
 Phase 18.1: ✅ COMPLETE (date filter bug fixed, finance yf_period, all channels audited)
 Phase 18.2: ✅ COMPLETE (channel editor, header/footer fixes, coin SSL fallback)
 Phase 18.3: ✅ COMPLETE (4-continent architecture, continent themes, split_by_continent)
-Phase 18.4: 📋 PLANNED (expand country coverage + AFRICA data sources)
+Phase 18.4: ✅ COMPLETE (finance 4-section continent reels: stocks+forex+metals+crypto)
+Phase 18.5: 📋 PLANNED (sports continent reels)
 ```
 
 ---

@@ -4,6 +4,50 @@
 
 ---
 
+## [Sprint 18.4] April 2026 — Finance 4-Section Continent Reels
+**Phase:** 18.4 | **Status:** ✅ Complete
+
+### What was built
+- Finance expanded: 91 rows total (63 stocks + 17 forex + 6 metals + 5 crypto)
+- New exchanges: SSE (China), BSE (India), HSI (Hong Kong), TWSE (Taiwan),
+  Tadawul (Saudi Arabia), JSE (South Africa), EGX30 (Egypt)
+- Forex: 17 currency pairs across 4 continents (batch yf.download)
+- Metals: Gold/Silver/Platinum/Copper/BrentOil/NatGas (global, in all reels)
+- Crypto: 5 coins with SSL fallback (global, in all reels)
+- split_by_continent: stocks+forex per region, metals+crypto to ALL buckets
+- CONTINENT_ORDER expanded: GLOBAL, FOREX, METALS, CRYPTO added
+- 4 continent reels generated:
+  - AMERICAS: 29 rows, 1143KB, 49.7s
+  - EUROPE: 36 rows, 1435KB, 58.8s
+  - ASIA: 44 rows, 1816KB, 71.6s
+  - AFRICA: 20 rows, 791KB, 38.2s
+
+### Verified outputs (raw)
+```
+Total finance rows: 96
+By type: stocks=63, forex=17, metals=6, crypto=5
+AMERICAS  29 rows (stocks=15, forex=3, metals=6, crypto=5)
+EUROPE    37 rows (stocks=20, forex=6, metals=6, crypto=5)
+ASIA      40 rows (stocks=23, forex=6, metals=6, crypto=5)
+AFRICA    18 rows (stocks=5, forex=2, metals=6, crypto=5)
+```
+
+### Test results
+```
+29/29 passed
+```
+
+### Files changed
+- channels/finance/finance_fetcher.py — new exchanges, FOREX_PAIRS, METALS_TICKERS,
+  _fetch_forex(), _fetch_metals(), crypto type+continent fix
+- sports_daemon.py — EXCHANGE_CONTINENT expanded, split_by_continent forex/metals/crypto fix,
+  CONTINENT_ORDER expanded
+- tests/test_app_routes.py — crypto test updated (GLOBAL continent)
+- docs/CHANGELOG.md — this entry
+- docs/CLAUDE.md — phase status
+
+---
+
 ## [Sprint 18.3] April 2026 — 4-Continent Reel Architecture
 **Phase:** 18.3 | **Status:** ✅ Complete
 

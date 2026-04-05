@@ -58,13 +58,21 @@ COUNTRY_CONTINENT = {
 
 EXCHANGE_CONTINENT = {
     "DAX": "EUROPE", "CAC40": "EUROPE", "FTSE100": "EUROPE", "BIST100": "EUROPE",
+    "AEX": "EUROPE", "SMI": "EUROPE", "IBEX35": "EUROPE", "FTMIB": "EUROPE",
+    "OMXS30": "EUROPE", "OMXC25": "EUROPE", "WIG20": "EUROPE",
     "SP500": "AMERICAS", "NASDAQ": "AMERICAS", "BOVESPA": "AMERICAS",
-    "NIKKEI": "ASIA", "KOSPI": "ASIA",
-    "COMMODITIES": "AMERICAS", "CRYPTO": "AMERICAS",
+    "TSX": "AMERICAS", "BMV": "AMERICAS",
+    "NIKKEI": "ASIA", "KOSPI": "ASIA", "SSE": "ASIA", "BSE": "ASIA",
+    "HSI": "ASIA", "TWSE": "ASIA", "Tadawul": "ASIA",
+    "JSE": "AFRICA", "EGX30": "AFRICA",
+    "FOREX": "GLOBAL", "METALS": "GLOBAL",
+    "COMMODITIES": "GLOBAL", "CRYPTO": "GLOBAL",
 }
 
 CONTINENT_ORDER = [
-    "EUROPE", "AMERICAS", "ASIA-PACIFIC", "ASIA", "AFRICA", "MOTORSPORT", "OTHER",
+    "EUROPE", "AMERICAS", "ASIA-PACIFIC", "ASIA", "AFRICA",
+    "GLOBAL", "FOREX", "METALS", "CRYPTO",
+    "MOTORSPORT", "OTHER",
     # New channel categories
     "UPCOMING", "CONFIRMED", "RUMOURS",
     "CHARTS", "DEALS", "ESPORTS", "RELEASES",
@@ -184,6 +192,18 @@ def split_by_continent(rows: list) -> dict:
                 target = "ASIA"
             elif "AFRICA" in cont:
                 target = "AFRICA"
+
+        # GLOBAL rows (metals, crypto) go to ALL buckets
+        row_type = row.get("type", "")
+        if row_type in ("metals", "crypto"):
+            for b in buckets.values():
+                b.append(row)
+            continue
+
+        # Forex: use the row's own continent field (not exchange mapping)
+        if row_type == "forex" and cont in buckets:
+            buckets[cont].append(row)
+            continue
 
         if target and target in buckets:
             buckets[target].append(row)
